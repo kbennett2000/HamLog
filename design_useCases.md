@@ -37,19 +37,19 @@
 - [I am a lone activator in a single park responding to a single Park-2-Park contact](https://github.com/kbennett2000/HamLog/issues/21)
 - [I am a lone activator in a single park responding to multiple Park-2-Park contacts](https://github.com/kbennett2000/HamLog/issues/22)
 
-- [I am a lone activator in multiple parks responding to a single Park-2-Park contact]()
-- [I am a lone activator in multiple parks responding to multiple Park-2-Park contacts]()
+- [I am a lone activator in multiple parks responding to a single Park-2-Park contact](https://github.com/kbennett2000/HamLog/issues/23)
+- [I am a lone activator in multiple parks responding to multiple Park-2-Park contacts](https://github.com/kbennett2000/HamLog/issues/24)
 
-- [We are a group of activators in a single park responding to a single Park-2-Park contact]()
-- [We are a group of activators in a single park responding to multiple Park-2-Park contacts]()
+- [We are a group of activators in a single park responding to a single Park-2-Park contact](https://github.com/kbennett2000/HamLog/issues/25)
+- [We are a group of activators in a single park responding to multiple Park-2-Park contacts](https://github.com/kbennett2000/HamLog/issues/26)
 
-- [We are a group of activators in multiple parks responding to a single Park-2-Park contact]()
-- [We are a group of activators in multiple parks responding to multiple Park-2-Park contacts]()
+- [We are a group of activators in multiple parks responding to a single Park-2-Park contact](https://github.com/kbennett2000/HamLog/issues/27)
+- [We are a group of activators in multiple parks responding to multiple Park-2-Park contacts](https://github.com/kbennett2000/HamLog/issues/28)
 
 
 ## CONTEST, NON-POTA
-- [I am a lone operator making a single contest contact]()
-- [I am a lone operator making multiple contest contacts]()
+- [I am a lone operator making a single contest contact](https://github.com/kbennett2000/HamLog/issues/29)
+- [I am a lone operator making multiple contest contacts](https://github.com/kbennett2000/HamLog/issues/30)
 
-- [We are a group of operators making a single contest contact]()
-- [We are a group of operators making multiple contest contacts]()
+- [We are a group of operators making a single contest contact](https://github.com/kbennett2000/HamLog/issues/31)
+- [We are a group of operators making multiple contest contacts](https://github.com/kbennett2000/HamLog/issues/32)

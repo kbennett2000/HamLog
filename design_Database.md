@@ -2,7 +2,7 @@
 - [makeMySQLDB.js](/backend/makeMySQLDB.js)
 - [makeMySQLTables.js](/backend/makeMySQLTables.js)
 
-## CONTACTS Table
+## Contacts
 ```sql
 CREATE TABLE `testDB`.`Contacts` (
   `QSO_ID` INT AUTO_INCREMENT,
@@ -18,12 +18,18 @@ CREATE TABLE `testDB`.`Contacts` (
 );
 ```
 
-## POTA_QSOS
-- POTA_QSO_ID (pk)
-- QSO_ID (fk)
-- POTAPark_ID
-- QSO_Type (1 for Hunter, 2 for Activator)
-
+## POTA_QSOs
+*QSO_Type (1 for Hunter, 2 for Activator)
+```sql
+CREATE TABLE `testDB`.`POTA_QSOs` (
+  `POTA_QSO_ID` INT AUTO_INCREMENT,
+  `QSO_ID` INT,
+  `POTAPark_ID` VARCHAR(10), 
+  `QSO_Type` VARCHAR(2),
+  PRIMARY KEY (`POTA_QSO_ID`),
+  FOREIGN KEY (`QSO_ID`) REFERENCES `Contacts`(`QSO_ID`)
+);
+```
 
 
 ## SOTA_QSOS
@@ -33,20 +39,35 @@ CREATE TABLE `testDB`.`Contacts` (
 
 
 
-## CONTEST_QSOS
-- CONTEST_QSO_ID (pk)
-- CONTEST_ID (fk)
-- CONTEST_QSO_NUMBER (autonumber field, counts the number of QSOs in the contest)
-- CONTEST_QSO_CONTEST_EXCHANGE_DATE (VALUES of the data that is supposed to be exchanged during QSOs, such as grid square number, signal reports, contact id, etc)
-
+## Contest_QSOs
+*CONTEST_QSO_NUMBER (autonumber field in application, counts the number of QSOs in the contest)
+*CONTEST_QSO_CONTEST_EXCHANGE_DATE (VALUES of the data that is supposed to be exchanged during QSOs, such as grid square number, signal reports, contact id, etc)
+```sql
+CREATE TABLE `testDB`.`Contest_QSOs` (
+  `CONTEST_QSO_ID` INT AUTO_INCREMENT,
+  `QSO_ID` INT,
+  `CONTEST_ID` INT, 
+  `CONTEST_QSO_NUMBER` VARCHAR(10),
+  `CONTEST_QSO_EXCHANGE_DATA` VARCHAR(128), 
+  PRIMARY KEY (`CONTEST_QSO_ID`),
+  FOREIGN KEY (`QSO_ID`) REFERENCES `Contacts`(`QSO_ID`),
+  FOREIGN KEY (`CONTEST_ID`) REFERENCES `Contests`(`CONTEST_ID`)
+);
+```
 
   
-## CONTEST_INFO
-- CONTEST_ID (pk)
-- CONTEST_NAME
-- CONTEST_DESCRIPTION
-- CONTEST_BEGINS_ON_DATE
-- CONTEST_BEGINS_ON_TIME
-- CONTEST_ENDS_ON_DATE
-- CONTEST_ENDS_ON_TIME
-- CONTEST_EXCHANGE_DATA (Descripton of the data that is supposed to be exchanged during QSOs, such as grid square number, signal reports, contact id, etc)
+## Contests
+*CONTEST_EXCHANGE_DATA (Descripton of the data that is supposed to be exchanged during QSOs, such as grid square number, signal reports, contact id, etc)
+ ```sql
+CREATE TABLE `testDB`.`Contests` (
+  `CONTEST_ID` INT AUTO_INCREMENT,
+  `CONTEST_NAME` VARCHAR(512), 
+  `CONTEST_DESCRIPTION` VARCHAR(1024),
+  `CONTEST_BEGINS_ON_DATE` DATETIME NULL,
+  `CONTEST_BEGINS_ON_TIME` DATETIME NULL,
+  `CONTEST_ENDS_ON_DATE` DATETIME NULL,
+  `CONTEST_ENDS_ON_TIME` DATETIME NULL,
+  `CONTEST_EXCHANGE_DATA` VARCHAR(1024) NULL,
+  PRIMARY KEY (`CONTEST_ID`)
+);
+``` 

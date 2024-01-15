@@ -3,15 +3,19 @@
 - [makeMySQLTables.js](/backend/makeMySQLTables.js)
 
 ## CONTACTS Table
-- QSO_ID (pk)
-- Date
-- UTCTime
-- MTZTime
-- Callsign
-- Frequency
-- Notes
-
-
+```sql
+CREATE TABLE `testDB`.`Contacts` (
+  `QSO_ID` INT GENERATED ALWAYS AS () VIRTUAL,
+  `QSO_Date` DATETIME NULL,
+  `QSO_UTCTime` VARCHAR(45) NULL,
+  `QSO_MTZTime` VARCHAR(45) NULL,
+  `QSO_Callsign` VARCHAR(45) NULL,
+  `QSO_Frequency` VARCHAR(45) NULL,
+  `QSO_Notes` VARCHAR(45) NULL,
+  `QSO_Received` VARCHAR(45) NULL,
+  `QSO_Sent` VARCHAR(45) NULL,
+  PRIMARY KEY (`QSO_ID`));
+```
 
 ## POTA_QSOS
 - POTA_QSO_ID (pk)

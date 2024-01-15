@@ -5,7 +5,7 @@
 ## CONTACTS Table
 ```sql
 CREATE TABLE `testDB`.`Contacts` (
-  `QSO_ID` INT GENERATED ALWAYS AS () VIRTUAL,
+  `QSO_ID` INT AUTO_INCREMENT,
   `QSO_Date` DATETIME NULL,
   `QSO_UTCTime` VARCHAR(45) NULL,
   `QSO_MTZTime` VARCHAR(45) NULL,
@@ -14,7 +14,8 @@ CREATE TABLE `testDB`.`Contacts` (
   `QSO_Notes` VARCHAR(45) NULL,
   `QSO_Received` VARCHAR(45) NULL,
   `QSO_Sent` VARCHAR(45) NULL,
-  PRIMARY KEY (`QSO_ID`));
+  PRIMARY KEY (`QSO_ID`)
+);
 ```
 
 ## POTA_QSOS

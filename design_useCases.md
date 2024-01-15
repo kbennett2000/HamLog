@@ -9,6 +9,7 @@
 
 
 ## NON-CONTEST, POTA
+### Hunting
 - [I am a lone operator hunting a single POTA activator in a single park](https://github.com/kbennett2000/HamLog/issues/5)
 - [I am a lone operator hunting a single POTA activator in multiple parks](https://github.com/kbennett2000/HamLog/issues/6)
 
@@ -21,6 +22,7 @@
 - [We are a group of operators hunting multiple POTA activators in a single park](https://github.com/kbennett2000/HamLog/issues/11)
 - [We are a group of operators hunting multiple POTA activators in multiple parks](https://github.com/kbennett2000/HamLog/issues/12)
 
+### Activating
 - [I am a lone activator in a single park responding to a single contact](https://github.com/kbennett2000/HamLog/issues/13)
 - [I am a lone activator in a single park responding to multiple contacts](https://github.com/kbennett2000/HamLog/issues/14)
 
@@ -33,7 +35,7 @@
 - [We are a group of activators in multiple parks responding to a single contact](https://github.com/kbennett2000/HamLog/issues/19)
 - [We are a group of activators in multiple parks responding to multiple contacts](https://github.com/kbennett2000/HamLog/issues/20)
 
-### Park-2-Park
+### Activating, Park-2-Park
 - [I am a lone activator in a single park responding to a single Park-2-Park contact](https://github.com/kbennett2000/HamLog/issues/21)
 - [I am a lone activator in a single park responding to multiple Park-2-Park contacts](https://github.com/kbennett2000/HamLog/issues/22)
 

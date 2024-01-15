@@ -1,3 +1,7 @@
+# SEE:
+- [makeMySQLDB.js](/backend/makeMySQLDB.js)
+- [makeMySQLTables.js](/backend/makeMySQLTables.js)
+
 ## CONTACTS Table
 - QSO_ID (pk)
 - Date

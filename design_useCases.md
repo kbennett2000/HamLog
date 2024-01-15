@@ -30,7 +30,7 @@
 - [I am a lone activator in multiple parks responding to multiple contacts](https://github.com/kbennett2000/HamLog/issues/16)
 
 - [We are a group of activators in a single park responding to a single contact](https://github.com/kbennett2000/HamLog/issues/17)
-- [We are a group of activators in a single park responding to multiple contacts](https://github.com/kbennett2000/HamLog/issues/18))
+- [We are a group of activators in a single park responding to multiple contacts](https://github.com/kbennett2000/HamLog/issues/18)
 
 - [We are a group of activators in multiple parks responding to a single contact](https://github.com/kbennett2000/HamLog/issues/19)
 - [We are a group of activators in multiple parks responding to multiple contacts](https://github.com/kbennett2000/HamLog/issues/20)

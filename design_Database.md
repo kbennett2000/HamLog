@@ -15,10 +15,10 @@
 - QSO_Type (1 for Hunter, 2 for Activator)
 
 
-# TODO: What fields are needed to record a SOTA hunt, activation?
 ## SOTA_QSOS
 - SOTA_QSO_ID (pk)
 - QSO_ID (fk)
+### TODO: What fields are needed to record a SOTA hunt, activation?
 
 
 ## CONTEST_QSOS

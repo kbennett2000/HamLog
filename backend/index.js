@@ -8,7 +8,7 @@ app.use(express.json());
 app.use(cors());
 
 let dbHamLog = mysql.createPool({
-  host: "192.168.0.235",
+  host: "192.168.1.85",
   user: "testUser",
   password: "password1",
   database: "HamLogDB",
@@ -17,58 +17,116 @@ let dbHamLog = mysql.createPool({
   queueLimit: 0,
 });
 
+/*
 // READ Endpoint
 app.get("/Read_Contacts", async (req, res) => {
-  const promise = dbHam.promise();
-  const query = "SELECT * FROM Contacts";
+  const promise = dbHamLog.promise();
+  const query = "SELECT * FROM Contacts ORDER BY QSO_ID DESC;";
   const [rows, fields] = await promise.execute(query);
-  return res.status(200).json({ ConditionReports: rows });
+  return res.status(200).json({ Contacts: rows });
 });
 
-// TODO: Add correct field names
-// TODO: Pass parameters in
-// CREATE endpoint
+// READ Endpoint
+app.get("/Read_POTA_QSOs", async (req, res) => {
+  const { QSO_ID } = req.query;
+  const promise = dbHamLog.promise();
+  const query = `SELECT * FROM POTA_QSOs WHERE QSO_ID = ${mysql.escape(QSO_ID)}`;
+  console.log(query);
+  const [rows, fields] = await promise.execute(query);
+  return res.status(200).json({ POTA_QSOs: rows });
+});
+*/
+
+// CREATE Endpoint
 app.get("/Create_Contacts", async (req, res) => {
-  const promise = dbHam.promise();
-  const value1 = "something";
-  const value2 = "something else";
-  const value3 = "another something else";
-  const query = `INSERT INTO Contacts (column1, column2, column3) VALUES (\"${value1}\", \"${value2}\", \"${value3}\")`;
-  const [rows, fields] = await promise.execute(query);
-  return res.status(200).json({ ConditionReports: rows });
+  const { QSO_Date, QSO_MTZTime, QSO_Callsign, QSO_Frequency, QSO_Notes, QSO_Received, QSO_Sent } = req.query;
+  const promise = dbHamLog.promise();
+  const formatted_QSO_Date = formatDate(QSO_Date) + " 00:00:00";
+  const query = `INSERT INTO HamLogDB.Contacts (\`QSO_Date\`, \`QSO_MTZTime\`, \`QSO_Callsign\`, \`QSO_Frequency\`, \`QSO_Notes\`, \`QSO_Received\`, \`QSO_Sent\`) `;  
+  const queryValue = `VALUES (\'${formatted_QSO_Date}\', \'${QSO_MTZTime}\', \'${QSO_Callsign}\', \'${QSO_Frequency}\', \'${QSO_Notes}\', \'${QSO_Received}\', \'${QSO_Sent}\')`;
+  console.log(query + queryValue);
+  const [rows, fields] = await promise.execute(query + queryValue);
+  return res.status(200).json({ Contacts: rows });
 });
 
-// TODO: Add correct field names
-// TODO: Pass parameters in
-// TODO: Add UPDATE endpoint
-app.get("/Update_Contacts", async (req, res) => {
-  const promise = dbHam.promise();
-  const value1 = "something";
-  const value2 = "something else";
-  const value3 = "another something else";
-  const newValue1 = "new val 1";
-  const newValue2 = "new val 2";
-  const newValue3 = "new val 3";
-  const query = `UPDATE Contacts SET column1 = \"${newValue1}\", column2 = \"${newValue2}\", column3 = \"${newValue3}\" WHERE  column1 = \"${value1}\", column2 = \"${value2}\", column3 = \"${value3}\"`;
-  const [rows, fields] = await promise.execute(query);
-  return res.status(200).json({ ConditionReports: rows });
+// CREATE Endpoint
+app.get("/Create_POTA_QSOs", async (req, res) => {
+  const { QSO_ID, POTAPark_ID, QSO_Type } = req.query;
+  const promise = dbHamLog.promise();
+  const query = `INSERT INTO HamLogDB.POTA_QSOs (\`QSO_ID\`, \`POTAPark_ID\`, \`QSO_Type\`) `;  
+  const queryValue = `VALUES (\'${QSO_ID}\', \'${POTAPark_ID}\', \'${QSO_Type}\')`;
+  console.log(query + queryValue);
+  const [rows, fields] = await promise.execute(query + queryValue);
+  return res.status(200).json({ POTA_QSOs: rows });
 });
 
-// TODO: Add correct field names
-// TODO: Pass parameters in
-// TODO: Add DELETE endpoint
-app.get("/Create_Contacts", async (req, res) => {
-  const promise = dbHam.promise();
-  const value1 = "something";
-  const value2 = "something else";
-  const value3 = "another something else";
-  const query = `DELETE FROM Contacts WHERE column1 = \"${value1}\", column2 = \"${value2}\", column3 = \"${value3}\"`;
+// DELETE Endpoint
+app.get("/Delete_Contacts", async (req, res) => {
+  const promise = dbHamLog.promise();
+  const query = "DELETE FROM Contacts WHERE QSO_Callsign = \'xxx\';";
   const [rows, fields] = await promise.execute(query);
-  return res.status(200).json({ ConditionReports: rows });
+  return res.status(200).json({ Contacts: rows });
 });
 
-// TODO: Add CRUD endpoint for POTA_Hunter_Table
+// getContactsAndPOTAQSOs Endpoint
+app.get('/getContactsAndPOTAQSOs', async (req, res) => {
+  try {
+    const promise = dbHamLog.promise();
 
-app.listen(8800, "0.0.0.0", () => {
+    // Fetch all records from Contacts table
+    const [contactsRows] = await promise.execute('SELECT * FROM Contacts ORDER BY QSO_ID DESC;');
+
+    // Fetch joined records from POTA_QSOs table
+    const [potaQsosRows] = await promise.execute(`SELECT Contacts.*, POTA_QSOs.* FROM Contacts LEFT JOIN POTA_QSOs ON Contacts.QSO_ID = POTA_QSOs.QSO_ID`);
+
+    // Organize data in a nested structure
+    const result = contactsRows.map(contact => {
+      const relatedPOTAQSOs = potaQsosRows
+        .filter(potaQSO => potaQSO.QSO_ID === contact.QSO_ID)
+        .map(({ POTA_QSO_ID, QSO_ID, POTAPark_ID, QSO_Type }) => ({
+          POTA_QSO_ID,
+          QSO_ID,
+          POTAPark_ID,
+          QSO_Type,
+        }));
+
+      return {
+        ...contact,
+        POTA_QSOs: relatedPOTAQSOs,
+      };
+    });
+
+    res.json(result);
+
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+app.get("/Last_Insert_ID", async (req, res) => {
+  const promise = dbHamLog.promise();
+  const query = "SELECT LAST_INSERT_ID();";
+  const [rows, fields] = await promise.execute(query);
+  return res.status(200).json({ LastInsertID: rows });
+});
+
+
+
+function formatDate(inputString) {
+  const inputDate = new Date(inputString);
+  
+  if (!isNaN(inputDate)) {
+    const year = inputDate.getFullYear();
+    const month = String(inputDate.getMonth() + 1).padStart(2, '0');
+    const day = String(inputDate.getDate()).padStart(2, '0');
+    
+    return `${year}-${month}-${day}`;
+  } else {
+    return "Invalid Date";
+  }
+}
+
+app.listen(7800, "0.0.0.0", () => {
   console.log("Connected to backend");
 });

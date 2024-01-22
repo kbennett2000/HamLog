@@ -2,12 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 const InsertContacts = () => {
-  const today = new Date();
-  const formattedDate = formatDateToMMDDYYYY(today);
-
   const initialFormData = {
-    QSO_Date: formattedDate,
-    QSO_MTZTime: getCurrentTime(),
     QSO_Callsign: '',
     QSO_Frequency: '',
     QSO_Notes: '',
@@ -33,7 +28,7 @@ const InsertContacts = () => {
   };
 
   const addQSORecord = () => {
-    setQSORecords([...qsoRecords, { QSO_ID: '', POTAPark_ID: '', QSO_Type: '' }]);
+    setQSORecords([...qsoRecords, { QSO_ID: '', POTAPark_ID: '', QSO_Type: '1' }]);
   };
 
   function formatDateToMMDDYYYY(date) {
@@ -59,7 +54,7 @@ const InsertContacts = () => {
     let lastInsertID = "";
 
     try {
-      const requestURL = `http://localhost:7800/Create_Contacts?QSO_Date=${formData.QSO_Date}&QSO_MTZTime=${formData.QSO_MTZTime}&QSO_Callsign=${formData.QSO_Callsign}&QSO_Frequency=${formData.QSO_Frequency}&QSO_Notes=${formData.QSO_Notes}&QSO_Received=${formData.QSO_Received}&QSO_Sent=${formData.QSO_Sent}`;
+      const requestURL = `http://localhost:7800/Create_Contacts?QSO_Date=${formatDateToMMDDYYYY(new Date())}&QSO_MTZTime=${getCurrentTime()}&QSO_Callsign=${formData.QSO_Callsign}&QSO_Frequency=${formData.QSO_Frequency}&QSO_Notes=${formData.QSO_Notes}&QSO_Received=${formData.QSO_Received}&QSO_Sent=${formData.QSO_Sent}`;
       console.log('requestURL is ' + requestURL);
       await axios.get(requestURL);
       console.log('Contact record inserted successfully');
@@ -74,6 +69,8 @@ const InsertContacts = () => {
       
       for (const qsoRecord of qsoRecords) {
         try {
+          console.log('qsoRecord.POTAPark_ID is ' + qsoRecord.POTAPark_ID);
+          console.log('qsoRecord.QSO_Type is ' + qsoRecord.QSO_Type);
           if (qsoRecord.POTAPark_ID !== '' && qsoRecord.QSO_Type !== '') {
             const requestURL2 = `http://localhost:7800/Create_POTA_QSOs?QSO_ID=${lastInsertID}&POTAPark_ID=${qsoRecord.POTAPark_ID}&QSO_Type=${qsoRecord.QSO_Type}`;
             console.log('requestURL is ' + requestURL2);
@@ -95,14 +92,6 @@ const InsertContacts = () => {
 
   return (
         <form onSubmit={handleSubmit} className="max-w-md mx-auto mt-8 shadow-md p-6 bg-white rounded-md">
-            <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="QSO_Date">Date:</label>
-                <input type="text" name="QSO_Date" value={formData.QSO_Date} onChange={handleChange} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500"/>
-            </div>
-            <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="QSO_MTZTime">MTZ Time:</label>
-                <input type="text" name="QSO_MTZTime" value={formData.QSO_MTZTime} onChange={handleChange} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500"/>
-            </div>
             <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="QSO_Callsign">Callsign:</label>
                 <input type="text" name="QSO_Callsign" value={formData.QSO_Callsign} onChange={handleChange} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500" autoFocus />

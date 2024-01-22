@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useDispatch } from 'react-redux';
 
 const InsertContacts = () => {
+
+  const dispatch = useDispatch();
+
   const initialFormData = {
     QSO_Callsign: '',
     QSO_Frequency: '',
@@ -63,6 +67,9 @@ const InsertContacts = () => {
         const res = await axios.get("http://localhost:7800/Last_Insert_ID");
         lastInsertID = res.data.LastInsertID[0]['LAST_INSERT_ID()'];
         console.log("LAST INSERT ID IS " + lastInsertID);
+
+        dispatch({ type: 'SET_LAST_INSERT_ID', payload: lastInsertID });
+
       } catch (err) {
         console.log(err);
       }
@@ -134,13 +141,6 @@ const InsertContacts = () => {
             <button type="submit" className="w-full bg-blue-500 text-white p-3 rounded-md focus:outline-none hover:bg-blue-700">Insert Contact</button>
         </form>
     );
-
-
-
-
-
-
-
 };
 
 export default InsertContacts;

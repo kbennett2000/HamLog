@@ -1,34 +1,47 @@
+// Importing React, useEffect, and useState hooks from 'react' and axios for making HTTP requests.
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-// TODO: Edit config parameters
-// *** TODO: CHANGE ENDPOINT LOCATION BEFORE DEPLOY!!
-//const dataEndpointLocation = "http://192.168.1.85:7800/getContactsAndPOTAQSOs";
+// Constant string holding the API endpoint URL for data fetching.
 const dataEndpointLocation = "http://localhost:7800/getContactsAndPOTAQSOs";
 
+// Constant string defining the page title.
 const pageTitle = "Manage Contacts";
 
+// Contacts component definition using arrow function syntax.
 const Contacts = () => {
+  // Using useState hook to create 'conditions' state variable with initial empty array.
   const [conditions, setConditions] = useState([]);
+
+  // Using useState to create 'expandedRows' state variable to track which rows are expanded, initially an empty array.
   const [expandedRows, setExpandedRows] = useState([]);
 
+  // fetchData is an asynchronous function to fetch data from the server.
   const fetchData = async () => {
     try {
+      // Using axios to make a GET request to the data endpoint.
       const res = await axios.get(dataEndpointLocation);
+      
+      // Updating the 'conditions' state with the fetched data.
       setConditions(res.data);
     } catch (err) {
+      // Logging errors to the console if the request fails.
       console.log(err);
     }
   };
 
+  // useEffect hook to perform side effects in the component.
   useEffect(() => {
-    fetchData(); // Initial fetch
+    fetchData(); // Calling fetchData when the component mounts.
 
-    // TODO: Adjust 1 minute refresh internal if needed
+    // Setting up an interval to refresh data every minute (60000 milliseconds).
     const interval = setInterval(fetchData, 1 * 60 * 1000);
-    return () => clearInterval(interval); // Clear the interval on component unmount
-  }, []);
 
+    // Cleanup function to clear the interval when the component unmounts.
+    return () => clearInterval(interval);
+  }, []); // Empty dependency array ensures this effect runs only once after the initial render.
+
+  // toggleRow function updates the 'expandedRows' state to show or hide additional row details.
   const toggleRow = (index) => {
     setExpandedRows((prevRows) => {
       const newRows = [...prevRows];
@@ -37,6 +50,7 @@ const Contacts = () => {
     });
   };
 
+  // Render function returning JSX for the Contacts component.
   return (
     <>
       <h1 className="text-3xl font-bold mb-4">{pageTitle}</h1>

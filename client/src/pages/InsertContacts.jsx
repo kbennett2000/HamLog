@@ -14,7 +14,6 @@ const InsertContacts = () => {
     QSO_Sent: '',
   };
   
-  //const initialPOTAQSOFormData = [{ QSO_ID: '', POTAPark_ID: '', QSO_Type: '' }];
   const initialPOTAQSOFormData = [];
 
   const [formData, setFormData] = useState(initialFormData);

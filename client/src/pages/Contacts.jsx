@@ -3,8 +3,7 @@ import axios from "axios";
 
 // TODO: Edit config parameters
 // *** TODO: CHANGE ENDPOINT LOCATION BEFORE DEPLOY!!
-//const dataEndpointLocation = "http://192.168.1.85:7800/Read_Contacts";
-//const dataEndpointLocation = "http://localhost:7800/Read_Contacts";
+//const dataEndpointLocation = "http://192.168.1.85:7800/getContactsAndPOTAQSOs";
 const dataEndpointLocation = "http://localhost:7800/getContactsAndPOTAQSOs";
 
 const pageTitle = "Manage Contacts";

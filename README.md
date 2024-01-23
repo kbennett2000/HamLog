@@ -9,4 +9,4 @@ Ham Logging Software with POTA, SOTA, and Contest support
 - [A list of open questions](openQuestions.md)
 
 ## Features List
-- [A list of featuers to add to application](featuresList.md)
+- [A list of features to add to application](featuresList.md)

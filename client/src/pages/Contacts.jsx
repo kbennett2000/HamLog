@@ -8,7 +8,6 @@ const dataEndpointLocation = "http://localhost:7800/getContactsAndPOTAQSOs";
 
 const pageTitle = "Manage Contacts";
 
-// TODO: Change page name
 const Contacts = () => {
   const [conditions, setConditions] = useState([]);
   const [expandedRows, setExpandedRows] = useState([]);
@@ -118,5 +117,4 @@ const Contacts = () => {
   
 };
 
-// TODO: Change page name
 export default Contacts;

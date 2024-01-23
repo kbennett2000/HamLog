@@ -3,6 +3,11 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
 
+// The number of Contest QSOs recorded for this Contact record 
+let contestQSOCounter = 0;
+// The maximum number of Contest QSOs that can be recorded for this Contact record
+let contestQSOLimit = 1;
+
 // Defining a React functional component named InsertContacts.
 const InsertContacts = () => {
 
@@ -21,11 +26,17 @@ const InsertContacts = () => {
   // Initializing an array to hold POTA QSO form data, initially empty.
   const initialPOTAQSOFormData = [];
 
+  // Initializing an array to hold Contest QSO form data, initially empty.
+  const initialContestQSOFormData = [];
+
   // useState hook is used to create 'formData' state variable and its updater function 'setFormData'.
   const [formData, setFormData] = useState(initialFormData);
 
   // useState hook to create 'qsoRecords' state variable and its updater function 'setQSORecords'.
   const [qsoRecords, setQSORecords] = useState(initialPOTAQSOFormData);
+
+  // useState hook to create 'contestRecords' state variable and its updater function 'setContestRecords'.
+  const [contestRecords, setContestRecords] = useState(initialContestQSOFormData);
 
   // Function to handle changes in the form input fields, updating 'formData' state.
   const handleChange = (e) => {
@@ -45,12 +56,34 @@ const InsertContacts = () => {
     setQSORecords(newQSORecords);
   };
 
+  // Function to handle changes in Contest records, updating 'contestRecords' state.
+  const handleContestChange = (index, e) => {
+    // Creating a new array from the existing Contest records.
+    const newContestRecords = [...contestRecords];
+    // Updating the specific Contest record at the given index.
+    newContestRecords[index][e.target.name] = e.target.value;
+    // Logging the changed value to the console.
+    console.log("e.target.value is " + e.target.value);
+    // Updating the 'contestRecords' state with the modified records.
+    setQSORecords(newContestRecords);
+  };
+
   // Function to add a new QSO record to the 'qsoRecords' state.
   const addQSORecord = () => {
     // Adding a new QSO record to the existing records with default values.
     setQSORecords([...qsoRecords, { QSO_ID: '', POTAPark_ID: '', QSO_Type: '1' }]);
   };
 
+  // Function to add a new Contest record to the 'contestRecords' state.
+  const addContestRecord = () => {
+    // Ensure only the maximum number (contestQSOLimit) of Content QSO records can be entered
+    if (contestQSOCounter < contestQSOLimit) {
+      contestQSOCounter++;
+      // Adding a new Contest record to the existing records with default values.
+      setContestRecords([...contestRecords, { QSO_ID: '', Contest_ID: '', Contest_QSO_Number: '', Contest_QSO_Exchange_Data: '', }]);
+    }
+  };
+  
   // Function to format a JavaScript Date object into a string in MM/DD/YYYY format.
   function formatDateToMMDDYYYY(date) {
     // Getting the month, adding 1 as JavaScript Date months are 0-based, and formatting with a leading zero if needed.
@@ -135,9 +168,34 @@ const InsertContacts = () => {
         }
       }
 
+      // Looping through each Contest record in the state.
+      for (const contestRecord of contestRecords) {
+        try {
+          // Logging the Contest record details to the console.
+          console.log('contestRecord.Contest_ID is ' + contestRecord.Contest_ID);
+          console.log('contestRecord.Contest_QSO_Number is ' + contestRecord.Contest_QSO_Number);
+          console.log('contestRecord.Contest_QSO_Exchange_Data is ' + contestRecord.Contest_QSO_Exchange_Data);
+          // Checking if the Contest record has necessary data before making a request.
+          if (contestRecord.Contest_ID !== '') {
+            // Constructing the request URL for creating Contest QSOs.
+            const requestURL3 = `http://localhost:7800/Create_Contest_QSOs?QSO_ID=${lastInsertID}&Contest_ID=${contestRecord.Contest_ID}&Contest_QSO_Number=${contestRecord.Contest_QSO_Number}&Contest_Exchange_Data=${contestRecord.Contest_QSO_Exchange_Data}`;
+            // Logging the request URL to the console.
+            console.log('requestURL is ' + requestURL3);
+            // Making an HTTP GET request to the constructed URL.
+            await axios.get(requestURL3);
+            // Logging a success message to the console.
+            console.log('Contest_QSOs record inserted successfully');
+          }
+        } catch (err) {
+          // Logging any errors that occur during the request.
+          console.log(err);
+        }
+      }      
+
       // Clearing the form data after successful submission by resetting to initial state.
       setFormData(initialFormData);
       setQSORecords(initialPOTAQSOFormData);
+      setContestRecords(initialContestQSOFormData);
     } catch (error) {
       // Logging any errors that occur during the form submission.
       console.error('Error inserting record:', error);
@@ -184,6 +242,34 @@ const InsertContacts = () => {
                 </div>
               </div>
               ))}
+
+
+
+            <button type="button" onClick={addContestRecord} className="bg-green-500 text-white p-3 rounded-md focus:outline-none hover:bg-green-700">Add POTA Park(s)</button>
+
+            {contestRecords.map((contest, index) => (
+              <div key={index} className="flex space-x-4">
+                <div className="flex-1">
+                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={`Contest_ID_${index}`}>Contest ID:</label>
+                  <input type="text" name="Contest_ID" id={`Contest_ID_${index}`} value={contest.Contest_ID} onChange={(e) => handleContestChange(index, e)} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500" />
+                </div>
+                <div className="flex-1">
+                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={`Contest_QSO_Number_${index}`}>Contest QSO Number:</label>
+                  <input type="text" name="Contest_QSO_Number" id={`Contest_QSO_Number_${index}`} value={contest.Contest_QSO_Number} onChange={(e) => handleContestChange(index, e)} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500" />
+                </div>
+                <div className="flex-1">
+                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={`Contest_QSO_Exchange_Data_${index}`}>Contest QSO Exchange Data:</label>
+                  <input type="text" name="Contest_QSO_Exchange_Data" id={`Contest_QSO_Exchange_Data_${index}`} value={contest.Contest_QSO_Exchange_Data} onChange={(e) => handleContestChange(index, e)} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500" />
+                </div>
+              </div>
+              ))}
+
+
+
+
+
+
+
 
             <button type="submit" className="w-full bg-blue-500 text-white p-3 rounded-md focus:outline-none hover:bg-blue-700">Insert Contact</button>
         </form>

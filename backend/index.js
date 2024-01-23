@@ -60,6 +60,17 @@ app.get("/Create_POTA_QSOs", async (req, res) => {
   return res.status(200).json({ POTA_QSOs: rows });
 });
 
+// CREATE Endpoint
+app.get("/Create_Contest_QSOs", async (req, res) => {
+  const { QSO_ID, Contest_ID, Contest_QSO_Number, Contest_QSO_Exchange_Date } = req.query;
+  const promise = dbHamLog.promise();
+  const query = `INSERT INTO HamLogDB.Contest_QSOs (\`QSO_ID\`, \`Contest_ID\`, \`Contest_QSO_Number\`, \`Contest_QSO_Exchange_Date\`) `;  
+  const queryValue = `VALUES (\'${QSO_ID}\', \'${Contest_ID}\', \'${Contest_QSO_Number}\', \`${Contest_QSO_Exchange_Date}\`)`;
+  console.log(query + queryValue);
+  const [rows, fields] = await promise.execute(query + queryValue);
+  return res.status(200).json({ POTA_QSOs: rows });
+});
+
 // DELETE Endpoint
 app.get("/Delete_Contacts", async (req, res) => {
   const promise = dbHamLog.promise();
@@ -110,8 +121,6 @@ app.get("/Last_Insert_ID", async (req, res) => {
   const [rows, fields] = await promise.execute(query);
   return res.status(200).json({ LastInsertID: rows });
 });
-
-
 
 function formatDate(inputString) {
   const inputDate = new Date(inputString);

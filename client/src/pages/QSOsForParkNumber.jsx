@@ -75,7 +75,7 @@ const QSOsForParkNumber = ({ parkNumberToSearchFor, isOpen, displayTime }) => {
                                         <td className={TableCell1}>{condition.QSO_MTZTime.slice(0, 5)}</td>                            
                                       )}
                                       <td className={TableCell1}>{condition.QSO_Callsign}</td>        
-                                      <td className={TableCell1}>{condition.QSO_Frequency.slice(0, 6)}</td>
+                                      <td className={TableCell1}>{condition.QSO_Frequency.slice(0, 7)}</td>
                                   </tr>
                                   </React.Fragment>
                               ))}

@@ -13,7 +13,7 @@ let contestQSOCounter = 0;
 let contestQSOLimit = 1;
 
 // Defining a React functional component named InsertContacts.
-const InsertContacts = ({ isOpen, onClose }) => {
+const InsertContacts = ({ isOpen, onClose, onClosed }) => {
   const [showQSOsForCallsign, setShowQSOsForCallsign] = useState(false);
   const [currentCallsign, setCurrentCallsign] = useState([]);
   const [showQSOsForParkNumber, setShowQSOsForParkNumber] = useState(false);
@@ -206,6 +206,7 @@ const InsertContacts = ({ isOpen, onClose }) => {
       setQSORecords(initialPOTAQSOFormData);
       setContestRecords(initialContestQSOFormData);
       onClose();
+      onClosed();
     } catch (error) {
       // Logging any errors that occur during the form submission.
       console.error('Error inserting record:', error);

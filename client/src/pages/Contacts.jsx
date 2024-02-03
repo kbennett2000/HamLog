@@ -101,6 +101,10 @@ const Contacts = () => {
     setShowQSOsForParkNumber(false);
   }
 
+  const handleInsertContactsClosed = () => {
+    fetchData();
+  };
+  
   useEffect(() => {
     fetchData();
     const interval = setInterval(fetchData, 60000);
@@ -199,7 +203,7 @@ const Contacts = () => {
       </div>
       <div id='ControlsDiv' className="flex items-center space-x-2">
         <DeleteConfirmationModal isOpen={showModal} onClose={() => setShowModal(false)} onConfirm={handleUserChoice} />
-        <InsertContacts isOpen={showInsertContacts} onClose={() => setShowInsertContacts(false)} />
+        <InsertContacts isOpen={showInsertContacts} onClose={() => setShowInsertContacts(false)} onClosed={handleInsertContactsClosed} />
         <QSOsForCallsign callSignToSearchFor={currentCallsign} isOpen={showQSOsForCallsign} displayTime={false} />
         <QSOsForParkNumber parkNumberToSearchFor={currentParkNumber} isOpen={showQSOsForParkNumber} displayTime={false} />
       </div>

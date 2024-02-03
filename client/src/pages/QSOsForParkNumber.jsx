@@ -11,7 +11,6 @@ const QSOsForParkNumber = ({ parkNumberToSearchFor, isOpen }) => {
   
   const fetchData = async () => {
     try {
-        console.log("QSOsForParkNumber.fetchData() - " + dataEndpointLocation);
       const res = await axios.get(dataEndpointLocation);
       // Check if the response is an array, otherwise set to an empty array
       setConditions(Array.isArray(res.data.Contacts) ? res.data.Contacts : []);     

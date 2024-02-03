@@ -86,8 +86,6 @@ const InsertContacts = ({ isOpen, onClose }) => {
     const newContestRecords = [...contestRecords];
     // Updating the specific Contest record at the given index.
     newContestRecords[index][e.target.name] = e.target.value;
-    // Logging the changed value to the console.
-    console.log("e.target.value is " + e.target.value);
     // Updating the 'contestRecords' state with the modified records.
     setQSORecords(newContestRecords);
   };
@@ -154,20 +152,14 @@ const InsertContacts = ({ isOpen, onClose }) => {
     try {
       // Constructing the request URL with query parameters for creating contact records.
       const requestURL = `http://localhost:7800/Create_Contacts?QSO_Date=${formatDateToMMDDYYYY(new Date())}&QSO_MTZTime=${getCurrentTime()}&QSO_Callsign=${formData.QSO_Callsign}&QSO_Frequency=${formData.QSO_Frequency}&QSO_Notes=${formData.QSO_Notes}&QSO_Received=${formData.QSO_Received}&QSO_Sent=${formData.QSO_Sent}`;
-      // Logging the request URL to the console.
-      console.log('requestURL is ' + requestURL);
       // Making an HTTP GET request to the constructed URL.
       await axios.get(requestURL);
-      // Logging a success message to the console.
-      console.log('Contact record inserted successfully');
 
       try {
         // Making an HTTP GET request to get the ID of the last inserted record.
         const res = await axios.get("http://localhost:7800/Last_Insert_ID");
         // Extracting the last insert ID from the response.
         lastInsertID = res.data.LastInsertID[0]['LAST_INSERT_ID()'];
-        // Logging the last insert ID to the console.
-        console.log("LAST INSERT ID IS " + lastInsertID);
 
         // Dispatching an action to Redux to update the state with the last insert ID.
         dispatch({ type: 'SET_LAST_INSERT_ID', payload: lastInsertID });
@@ -180,19 +172,12 @@ const InsertContacts = ({ isOpen, onClose }) => {
       // Looping through each QSO record in the state.
       for (const qsoRecord of qsoRecords) {
         try {
-          // Logging the QSO record details to the console.
-          console.log('qsoRecord.POTAPark_ID is ' + qsoRecord.POTAPark_ID);
-          console.log('qsoRecord.QSO_Type is ' + qsoRecord.QSO_Type);
           // Checking if the QSO record has necessary data before making a request.
           if (qsoRecord.POTAPark_ID && qsoRecord.QSO_Type) {
             // Constructing the request URL for creating POTA QSOs.
             const requestURL2 = `http://localhost:7800/Create_POTA_QSOs?QSO_ID=${lastInsertID}&POTAPark_ID=${qsoRecord.POTAPark_ID}&QSO_Type=${qsoRecord.QSO_Type}`;
-            // Logging the request URL to the console.
-            console.log('requestURL is ' + requestURL2);
             // Making an HTTP GET request to the constructed URL.
             await axios.get(requestURL2);
-            // Logging a success message to the console.
-            console.log('POTA_QSOs record inserted successfully');
           }
         } catch (err) {
           // Logging any errors that occur during the request.
@@ -203,20 +188,12 @@ const InsertContacts = ({ isOpen, onClose }) => {
       // Looping through each Contest record in the state.
       for (const contestRecord of contestRecords) {
         try {
-          // Logging the Contest record details to the console.
-          console.log('contestRecord.Contest_ID is ' + contestRecord.Contest_ID);
-          console.log('contestRecord.Contest_QSO_Number is ' + contestRecord.Contest_QSO_Number);
-          console.log('contestRecord.Contest_QSO_Exchange_Data is ' + contestRecord.Contest_QSO_Exchange_Data);
           // Checking if the Contest record has necessary data before making a request.
           if (contestRecord.Contest_ID) {
             // Constructing the request URL for creating Contest QSOs.
             const requestURL3 = `http://localhost:7800/Create_Contest_QSOs?QSO_ID=${lastInsertID}&Contest_ID=${contestRecord.Contest_ID}&Contest_QSO_Number=${contestRecord.Contest_QSO_Number}&Contest_QSO_Exchange_Data=${contestRecord.Contest_QSO_Exchange_Data}`;
-            // Logging the request URL to the console.
-            console.log('requestURL is ' + requestURL3);
             // Making an HTTP GET request to the constructed URL.
             await axios.get(requestURL3);
-            // Logging a success message to the console.
-            console.log('Contest_QSOs record inserted successfully');
           }
         } catch (err) {
           // Logging any errors that occur during the request.
@@ -244,9 +221,6 @@ const InsertContacts = ({ isOpen, onClose }) => {
     setShowQSOsForCallsign(false);
   }
 
-
-
-
   const handleParkNumberMouseOver = (parkNumber) => {
     setCurrentParkNumber(parkNumber);
     setShowQSOsForParkNumber(true);
@@ -255,10 +229,6 @@ const InsertContacts = ({ isOpen, onClose }) => {
   const handleParkNumberMouseLeave = () => {
     setShowQSOsForParkNumber(false);
   }
-
-
-
-
 
   if (!isOpen) return null;
 
@@ -298,23 +268,7 @@ const InsertContacts = ({ isOpen, onClose }) => {
                   <div key={index} className="flex space-x-4">
                     <div className="flex-1">
                       <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={`POTAPark_ID_${index}`}>POTA Park ID:</label>
-
-
-
-
-
-
-
                       <input type="text" name="POTAPark_ID" id={`POTAPark_ID_${index}`} value={qso.POTAPark_ID} onChange={(e) => handleQSOPOTAIDChange(index, e)} className={InputBoxClassName} onMouseLeave={() => handleParkNumberMouseLeave()} onMouseOver={() => handleParkNumberMouseOver(currentParkNumber)}/>
-
-                      
-
-
-
-
-
-
-
                     </div>
                     <div className="flex-1">
                       <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={`QSO_Type_${index}`}>QSO Type:</label>

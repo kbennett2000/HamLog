@@ -182,11 +182,11 @@ const Contacts = () => {
             </div>
           </div>
         </div>        
-        <DeleteConfirmationModal isOpen={showModal} onClose={() => setShowModal(false)} onConfirm={handleUserChoice} />
-        <InsertContacts isOpen={showInsertContacts} onClose={() => setShowInsertContacts(false)} />
-        <QSOsForCallsign callSignToSearchFor={currentCallsign} isOpen={showQSOsForCallsign} />
-        <QSOsForParkNumber parkNumberToSearchFor={currentParkNumber} isOpen={showQSOsForParkNumber} />
       </div>
+      <DeleteConfirmationModal isOpen={showModal} onClose={() => setShowModal(false)} onConfirm={handleUserChoice} />
+      <InsertContacts isOpen={showInsertContacts} onClose={() => setShowInsertContacts(false)} />
+      <QSOsForCallsign callSignToSearchFor={currentCallsign} isOpen={showQSOsForCallsign} />
+      <QSOsForParkNumber parkNumberToSearchFor={currentParkNumber} isOpen={showQSOsForParkNumber} />
     </>
   );
 };

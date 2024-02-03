@@ -6,7 +6,6 @@ import QSOsForCallsign from './QSOsForCallsign';
 import QSOsForParkNumber from './QSOsForParkNumber';
 import config from '../config';
 const { InputBoxClassName, ButtonClassNameBlue, ButtonClassNameGreen, InputLabel1 } = config;
-
 // The number of Contest QSOs recorded for this Contact record 
 let contestQSOCounter = 0;
 // The maximum number of Contest QSOs that can be recorded for this Contact record

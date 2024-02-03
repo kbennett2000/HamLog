@@ -147,31 +147,9 @@ const Contacts = () => {
                               <button onClick={() => HandleDelete(condition.QSO_ID)} className={ButtonClassNameRed}>X</button>
                             </td>
                           </tr>
-                          {expandedRows[index] && (condition.QSO_Received || condition.QSO_Sent || condition.QSO_Notes) && (          
-                            <tr>
-                              <td colspan='6'>
-                                <table id='ExpandedRowsTable' className={TableStyle1}>
-                                  <thead className={TableHeadStyle2}>
-                                    <tr>
-                                      <th scope="col" className={TableHeading1}>Received</th>
-                                      <th scope="col" className={TableHeading1}>Sent</th>
-                                      <th scope="col" className={TableHeading1}>Notes</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody className={TableBodyStyle1}>
-                                    <tr>
-                                      <td className={TableCell1}>{condition.QSO_Received}</td>
-                                      <td className={TableCell1}>{condition.QSO_Sent}</td>
-                                      <td className={TableCell1} style={{ whiteSpace: 'pre-wrap' }}>{condition.QSO_Notes}</td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-                              </td>
-                            </tr>                  
-                          )}
+                          <tr>
                           {expandedRows[index] && condition.POTA_QSOs.length > 0 && (
-                            <tr>
-                            <td colspan='6'>
+                            <td colspan='3'>
                               <table>
                                 <thead className={TableHeadStyle3}>
                                   <th scope="col" className={TableHeading2}>Park Number</th>
@@ -187,8 +165,28 @@ const Contacts = () => {
                                 </tbody>
                               </table>
                             </td>
-                            </tr>
+                          )}                            
+                          {expandedRows[index] && (condition.QSO_Received || condition.QSO_Sent || condition.QSO_Notes) && (          
+                            <td colspan='3'>
+                              <table id='ExpandedRowsTable' className={TableStyle1}>
+                                <thead className={TableHeadStyle2}>
+                                  <tr>
+                                    <th scope="col" className={TableHeading1}>Received</th>
+                                    <th scope="col" className={TableHeading1}>Sent</th>
+                                    <th scope="col" className={TableHeading1}>Notes</th>
+                                  </tr>
+                                </thead>
+                                <tbody className={TableBodyStyle1}>
+                                  <tr>
+                                    <td className={TableCell1}>{condition.QSO_Received}</td>
+                                    <td className={TableCell1}>{condition.QSO_Sent}</td>
+                                    <td className={TableCell1} style={{ whiteSpace: 'pre-wrap' }}>{condition.QSO_Notes}</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </td>
                           )}
+                          </tr>
                         </React.Fragment>
                       ))}
                     </tbody>

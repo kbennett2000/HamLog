@@ -129,7 +129,7 @@ const Contacts = () => {
                           <th scope="col" className={TableHeading1}>Time</th>
                           <th scope="col" className={TableHeading1}>Callsign</th>
                           <th scope="col" className={TableHeading1}>Frequency</th>
-                          <th scope="col" className={TableHeading1}>Erase</th>
+                          <th scope="col" className={TableHeading1}>Delete</th>
                       </tr>
                     </thead>
                     <tbody className={TableBodyStyle1}>

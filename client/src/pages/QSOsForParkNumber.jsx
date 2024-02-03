@@ -46,45 +46,45 @@ const QSOsForParkNumber = ({ parkNumberToSearchFor, isOpen }) => {
 
   return (
     <>
-        <div className="fixed top-0 right-0 mt-4 mr-4 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full md:w-auto" id="my-modal">
-            <div className="relative p-5 border w-auto shadow-lg rounded-md bg-white">
-                <h1 className="text-3xl font-bold mb-4">QSOs with {parkNumberToSearchFor}</h1>
-                <div className="mx-auto">
-                    <div className="mx-auto">
-                    <div className="flex flex-col">
-                        <div className="overflow-x-auto shadow-md sm:rounded-lg">
-                        <div className="inline-block min-w-full align-middle">
-                            <div className="overflow-hidden ">
-                            <table className={TableStyle1}>
-                                <thead className={TableHeadStyle3}>
-                                <tr>
-                                    <th scope="col" className={TableHeading1}>Date</th>
-                                    <th scope="col" className={TableHeading1}>Mountain Time</th>
-                                    <th scope="col" className={TableHeading1}>Callsign</th>
-                                    <th scope="col" className={TableHeading1}>Frequency</th>
-                                </tr>
-                                </thead>
-                                <tbody className={TableBodyStyle1}>
-                                {conditions.map((condition, index) => (
-                                    <React.Fragment key={index}>
-                                    <tr className={`hover:bg-green-100 dark:hover:bg-green-700 ${index % 2 === 0 ? "bg-gray-100 dark:bg-gray-400" : "" } ${index % 2 === 1 ? "bg-gray-300 dark:bg-gray-600" : "" }`} >
-                                        <td className={TableCell1}>{new Date(condition.QSO_Date).toLocaleDateString("en-US")}</td>
-                                        <td className={TableCell1}>{condition.QSO_MTZTime}</td>                            
-                                        <td className={TableCell1}>{condition.QSO_Callsign}</td>        
-                                        <td className={TableCell1}>{condition.QSO_Frequency + ' MHz'}</td>
-                                    </tr>
-                                    </React.Fragment>
-                                ))}
-                                </tbody>
-                            </table>
-                            </div>
-                        </div>
-                        </div>
-                    </div>
-                    </div>        
-                </div>
-            </div>
-        </div>
+      <div className="fixed top-0 right-0 mt-4 mr-4 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full md:w-auto" id="my-modal">
+          <div className="relative p-5 border w-auto shadow-lg rounded-md bg-white">
+              <h1 className="text-3xl font-bold mb-4">QSOs with {parkNumberToSearchFor}</h1>
+              <div className="mx-auto">
+                  <div className="mx-auto">
+                  <div className="flex flex-col">
+                      <div className="overflow-x-auto shadow-md sm:rounded-lg">
+                      <div className="inline-block min-w-full align-middle">
+                          <div className="overflow-hidden ">
+                          <table className={TableStyle1}>
+                              <thead className={TableHeadStyle3}>
+                              <tr>
+                                  <th scope="col" className={TableHeading1}>Date</th>
+                                  <th scope="col" className={TableHeading1}>Time</th>
+                                  <th scope="col" className={TableHeading1}>Call</th>
+                                  <th scope="col" className={TableHeading1}>Freq</th>
+                              </tr>
+                              </thead>
+                              <tbody className={TableBodyStyle1}>
+                              {conditions.map((condition, index) => (
+                                  <React.Fragment key={index}>
+                                  <tr className={`hover:bg-green-100 dark:hover:bg-green-700 ${index % 2 === 0 ? "bg-gray-100 dark:bg-gray-400" : "" } ${index % 2 === 1 ? "bg-gray-300 dark:bg-gray-600" : "" }`} >
+                                      <td className={TableCell1}>{new Date(condition.QSO_Date).toLocaleDateString("en-US")}</td>
+                                      <td className={TableCell1}>{condition.QSO_MTZTime.slice(0, 5)}</td>                            
+                                      <td className={TableCell1}>{condition.QSO_Callsign}</td>        
+                                      <td className={TableCell1}>{condition.QSO_Frequency.slice(0, 6)}</td>
+                                  </tr>
+                                  </React.Fragment>
+                              ))}
+                              </tbody>
+                          </table>
+                          </div>
+                      </div>
+                      </div>
+                  </div>
+                  </div>        
+              </div>
+          </div>
+      </div>
     </>
   );
 };

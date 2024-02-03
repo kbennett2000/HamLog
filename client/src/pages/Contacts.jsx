@@ -124,9 +124,9 @@ const Contacts = () => {
                       <tr>
                           <th scope="col" className={TableHeading1}>EXPAND</th>
                           <th scope="col" className={TableHeading1}>Date</th>
-                          <th scope="col" className={TableHeading1}>Mountain Time</th>
-                          <th scope="col" className={TableHeading1}>Callsign</th>
-                          <th scope="col" className={TableHeading1}>Frequency</th>
+                          <th scope="col" className={TableHeading1}>Time</th>
+                          <th scope="col" className={TableHeading1}>Call</th>
+                          <th scope="col" className={TableHeading1}>Freq</th>
                           <th scope="col" className={TableHeading1}>DELETE</th>
                       </tr>
                     </thead>
@@ -138,7 +138,7 @@ const Contacts = () => {
                               <button onClick={() => toggleRow(index)} className={ButtonClassNameBlue}>{expandedRows[index] ? "-" : "+"}</button>
                             </td>
                             <td className={TableCell1}>{new Date(condition.QSO_Date).toLocaleDateString("en-US")}</td>
-                            <td className={TableCell1}>{condition.QSO_MTZTime}</td>
+                            <td className={TableCell1}>{condition.QSO_MTZTime.slice(0, 5)}</td>
                             <td className={TableCell1} onMouseLeave={() => handleCallsignMouseLeave()} onMouseOver={() => handleCallsignMouseOver(condition.QSO_Callsign)}>{condition.QSO_Callsign}</td>                            
                             <td className={TableCell1}>{condition.QSO_Frequency + ' MHz'}</td>                            
                             <td className={TableCell1}>

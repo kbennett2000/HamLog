@@ -53,9 +53,9 @@ const InsertContacts = ({ isOpen, onClose, onClosed }) => {
 
   // Function to handle changes in the form Callsign input field, updating 'formData' state and setting the currentCallsign value.
   const handleCallsignChange = (e) => {
-    setCurrentCallsign(e.target.value);
+    setCurrentCallsign(e.target.value.toUpperCase());
     // Merging previous formData with the new value from the changed input field.
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({ ...formData, [e.target.name]: e.target.value.toUpperCase() });
   };
   
   // Function to handle changes in QSO records, updating 'qsoRecords' state.
@@ -70,11 +70,11 @@ const InsertContacts = ({ isOpen, onClose, onClosed }) => {
 
   // Function to handle changes in QSO records, updating 'qsoRecords' state.
   const handleQSOPOTAIDChange = (index, e) => {
-    setCurrentParkNumber(e.target.value);
+    setCurrentParkNumber(e.target.value.toUpperCase());
     // Creating a new array from the existing QSO records.
     const newQSORecords = [...qsoRecords];
     // Updating the specific QSO record at the given index.
-    newQSORecords[index][e.target.name] = e.target.value;
+    newQSORecords[index][e.target.name] = e.target.value.toUpperCase();
     // Updating the 'qsoRecords' state with the modified records.
     setQSORecords(newQSORecords);
   };

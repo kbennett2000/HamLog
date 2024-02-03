@@ -7,7 +7,7 @@ let dataEndpointLocation = "";
 let runCount = 0;
 let cachedParkNumber = '';
 
-const QSOsForParkNumber = ({ parkNumberToSearchFor, isOpen }) => {
+const QSOsForParkNumber = ({ parkNumberToSearchFor, isOpen, displayTime }) => {
   const [conditions, setConditions] = useState([]);
   dataEndpointLocation=`http://localhost:7800/Get_Contacts_for_ParkNumber?ParkNumber=${parkNumberToSearchFor}`;
   
@@ -59,7 +59,9 @@ const QSOsForParkNumber = ({ parkNumberToSearchFor, isOpen }) => {
                               <thead className={TableHeadStyle3}>
                               <tr>
                                   <th scope="col" className={TableHeading1}>Date</th>
-                                  <th scope="col" className={TableHeading1}>Time</th>
+                                  {displayTime && (         
+                                    <th scope="col" className={TableHeading1}>Time</th>
+                                  )}
                                   <th scope="col" className={TableHeading1}>Call</th>
                                   <th scope="col" className={TableHeading1}>Freq</th>
                               </tr>
@@ -69,7 +71,9 @@ const QSOsForParkNumber = ({ parkNumberToSearchFor, isOpen }) => {
                                   <React.Fragment key={index}>
                                   <tr className={`hover:bg-green-100 dark:hover:bg-green-700 ${index % 2 === 0 ? "bg-gray-100 dark:bg-gray-400" : "" } ${index % 2 === 1 ? "bg-gray-300 dark:bg-gray-600" : "" }`} >
                                       <td className={TableCell1}>{new Date(condition.QSO_Date).toLocaleDateString("en-US")}</td>
-                                      <td className={TableCell1}>{condition.QSO_MTZTime.slice(0, 5)}</td>                            
+                                      {displayTime && (         
+                                        <td className={TableCell1}>{condition.QSO_MTZTime.slice(0, 5)}</td>                            
+                                      )}
                                       <td className={TableCell1}>{condition.QSO_Callsign}</td>        
                                       <td className={TableCell1}>{condition.QSO_Frequency.slice(0, 6)}</td>
                                   </tr>

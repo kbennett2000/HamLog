@@ -200,16 +200,11 @@ const Contacts = () => {
       <div id='ControlsDiv' className="flex items-center space-x-2">
         <DeleteConfirmationModal isOpen={showModal} onClose={() => setShowModal(false)} onConfirm={handleUserChoice} />
         <InsertContacts isOpen={showInsertContacts} onClose={() => setShowInsertContacts(false)} />
-        <QSOsForCallsign callSignToSearchFor={currentCallsign} isOpen={showQSOsForCallsign} />
-        <QSOsForParkNumber parkNumberToSearchFor={currentParkNumber} isOpen={showQSOsForParkNumber} />
+        <QSOsForCallsign callSignToSearchFor={currentCallsign} isOpen={showQSOsForCallsign} displayTime={false} />
+        <QSOsForParkNumber parkNumberToSearchFor={currentParkNumber} isOpen={showQSOsForParkNumber} displayTime={false} />
       </div>
     </>
-  );
-
-
-
-
-  
+  );  
 };
 
 export default Contacts;

@@ -92,7 +92,7 @@ app.get('/getContactsAndPOTAQSOs', async (req, res) => {
     const promise = dbHamLog.promise();
 
     // Fetch all records from Contacts table
-    const [contactsRows] = await promise.execute('SELECT * FROM Contacts ORDER BY QSO_ID DESC;');
+    const [contactsRows] = await promise.execute('SELECT * FROM Contacts ORDER BY QSO_DATE DESC, QSO_MTZTime DESC');
 
     // Fetch joined records from POTA_QSOs table
     const [potaQsosRows] = await promise.execute(`SELECT Contacts.*, POTA_QSOs.* FROM Contacts LEFT JOIN POTA_QSOs ON Contacts.QSO_ID = POTA_QSOs.QSO_ID`);

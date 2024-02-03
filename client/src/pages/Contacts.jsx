@@ -122,12 +122,12 @@ const Contacts = () => {
                   <table id='MainDataTable' className={TableStyle1}>
                     <thead className={TableHeadStyle1}>
                       <tr>
-                          <th scope="col" className={TableHeading1}>EXPAND</th>
+                          <th scope="col" className={TableHeading1}>Expand</th>
                           <th scope="col" className={TableHeading1}>Date</th>
                           <th scope="col" className={TableHeading1}>Time</th>
-                          <th scope="col" className={TableHeading1}>Call</th>
-                          <th scope="col" className={TableHeading1}>Freq</th>
-                          <th scope="col" className={TableHeading1}>DELETE</th>
+                          <th scope="col" className={TableHeading1}>Callsign</th>
+                          <th scope="col" className={TableHeading1}>Frequency</th>
+                          <th scope="col" className={TableHeading1}>Erase</th>
                       </tr>
                     </thead>
                     <tbody className={TableBodyStyle1}>

@@ -48,7 +48,7 @@ const QSOsForParkNumber = ({ parkNumberToSearchFor, isOpen, displayTime }) => {
     <>
       <div className="fixed top-0 right-0 mt-4 mr-4 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full md:w-auto" id="my-modal">
           <div className="relative p-5 border w-auto shadow-lg rounded-md bg-white">
-              <h1 className="text-3xl font-bold mb-4">QSOs with {parkNumberToSearchFor}</h1>
+              <h1 className="text-3xl font-bold mb-4">{parkNumberToSearchFor}</h1>
               <div className="mx-auto">
                   <div className="mx-auto">
                   <div className="flex flex-col">

@@ -244,7 +244,7 @@ const InsertContacts = ({ isOpen, onClose, onClosed }) => {
         <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
           {/* Close button positioned in the top right corner */}
           <div className="flex justify-between items-start">
-            <h2 className="text-xl font-semibold">Insert Contact</h2>
+            <h2 className="text-xl font-semibold">Add QSO</h2>
             <button onClick={handleClose} className="text-xl rounded-full p-2 hover:bg-gray-200">
               &times; {/* This is a simple way to create a close (×) button */}
             </button>
@@ -261,10 +261,6 @@ const InsertContacts = ({ isOpen, onClose, onClosed }) => {
                 <input type="text" name="QSO_Frequency" value={formData.QSO_Frequency} onChange={handleChange} className={InputBoxClassName}/>
               </div>
             </div>
-                <div className="mb-4">
-                    <label className={InputLabel1} htmlFor="QSO_Notes">Notes:</label>
-                    <input type="text" name="QSO_Notes" value={formData.QSO_Notes} onChange={handleChange} className={InputBoxClassName}/>
-                </div>
                 <div className="flex space-x-2 mb-4">
                   <div>
                     <label className={InputLabel1} htmlFor="QSO_Received">Received:</label>
@@ -275,6 +271,10 @@ const InsertContacts = ({ isOpen, onClose, onClosed }) => {
                     <input type="text" name="QSO_Sent" value={formData.QSO_Sent} onChange={handleChange} className={InputBoxClassName}/>
                   </div>
                 </div>
+                <div className="mb-4">
+                    <label className={InputLabel1} htmlFor="QSO_Notes">Notes:</label>
+                    <input type="text" name="QSO_Notes" value={formData.QSO_Notes} onChange={handleChange} className={InputBoxClassName}/>
+                </div>                
                 {qsoRecords.map((qso, index) => (
                   <div key={index} className="flex space-x-4">
                     <div className="flex-1">
@@ -311,7 +311,7 @@ const InsertContacts = ({ isOpen, onClose, onClosed }) => {
                 <button type="button" onClick={addQSORecord} className={ButtonClassNameGreen}>+ POTA</button>
                 <button type="button" onClick={addContestRecord} className={ButtonClassNameGreen}>+ Contest</button>
               </div>
-              <button type="submit" className={ButtonClassNameBlue}>Insert Contact</button>
+              <button type="submit" className={ButtonClassNameBlue}>Add QSO</button>
             </form>
           </div>
         </div>

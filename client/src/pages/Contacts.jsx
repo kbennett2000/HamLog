@@ -113,7 +113,7 @@ const Contacts = () => {
     <>
       <h1 className="text-3xl font-bold mb-4">{pageTitle}</h1>
       <div className="flex items-center space-x-2">
-        <button onClick={() => HandleInsert()} className={ButtonClassNameGreen}>Add Contact</button>
+        <button onClick={() => HandleInsert()} className={ButtonClassNameGreen}>+ QSO</button>
       </div>
       <div className="mx-auto">
         <div className="mx-auto">
@@ -124,7 +124,7 @@ const Contacts = () => {
                   <table id='MainDataTable' className={TableStyle1}>
                     <thead className={TableHeadStyle1}>
                       <tr>
-                          <th scope="col" className={TableHeading1}>Expand</th>
+                          <th scope="col" className={TableHeading1}>Details</th>
                           <th scope="col" className={TableHeading1}>Date</th>
                           <th scope="col" className={TableHeading1}>Time</th>
                           <th scope="col" className={TableHeading1}>Callsign</th>

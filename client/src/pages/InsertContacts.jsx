@@ -249,27 +249,31 @@ const InsertContacts = ({ isOpen, onClose, onClosed }) => {
               &times; {/* This is a simple way to create a close (×) button */}
             </button>
           </div>
-          <div className="mt-3 text-center">
-            <form onSubmit={handleSubmit} className="max-w-md mx-auto mt-8 shadow-md p-6 bg-white rounded-md">
-                <div className="mb-4">
-                    <label className={InputLabel1} htmlFor="QSO_Callsign">Callsign:</label>
-                    <input type="text" name="QSO_Callsign" value={formData.QSO_Callsign} onChange={handleCallsignChange} className={InputBoxClassName} autoFocus onMouseLeave={() => handleCallsignMouseLeave()} onMouseOver={() => handleCallsignMouseOver(currentCallsign)}/>
-                </div>
-                <div className="mb-4">
-                    <label className={InputLabel1} htmlFor="QSO_Frequency">Frequency:</label>
-                    <input type="text" name="QSO_Frequency" value={formData.QSO_Frequency} onChange={handleChange} className={InputBoxClassName}/>
-                </div>
+          <div className="mt-1 text-center">
+            <form onSubmit={handleSubmit} className="max-w-md mx-auto mt-2 shadow-md p-2 bg-white rounded-md">
+            <div className="flex space-x-2 mb-4">
+              <div>
+                <label className={InputLabel1} htmlFor="QSO_Callsign">Callsign:</label>
+                <input type="text" name="QSO_Callsign" value={formData.QSO_Callsign} onChange={handleCallsignChange} className={InputBoxClassName} autoFocus onMouseLeave={() => handleCallsignMouseLeave()} onMouseOver={() => handleCallsignMouseOver(currentCallsign)}/>
+              </div>
+              <div>
+                <label className={InputLabel1} htmlFor="QSO_Frequency">Frequency:</label>
+                <input type="text" name="QSO_Frequency" value={formData.QSO_Frequency} onChange={handleChange} className={InputBoxClassName}/>
+              </div>
+            </div>
                 <div className="mb-4">
                     <label className={InputLabel1} htmlFor="QSO_Notes">Notes:</label>
                     <input type="text" name="QSO_Notes" value={formData.QSO_Notes} onChange={handleChange} className={InputBoxClassName}/>
                 </div>
-                <div className="mb-4">
+                <div className="flex space-x-2 mb-4">
+                  <div>
                     <label className={InputLabel1} htmlFor="QSO_Received">Received:</label>
                     <input type="text" name="QSO_Received" value={formData.QSO_Received} onChange={handleChange} className={InputBoxClassName}/>
-                </div>
-                <div className="mb-4">
+                  </div>
+                  <div>
                     <label className={InputLabel1} htmlFor="QSO_Sent">Sent:</label>
                     <input type="text" name="QSO_Sent" value={formData.QSO_Sent} onChange={handleChange} className={InputBoxClassName}/>
+                  </div>
                 </div>
                 {qsoRecords.map((qso, index) => (
                   <div key={index} className="flex space-x-4">

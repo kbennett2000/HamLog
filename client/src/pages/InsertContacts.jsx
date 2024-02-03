@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
+import QSOsForCallsign from './QSOsForCallsign';
 import config from '../config';
 const { InputBoxClassName, ButtonClassNameBlue, ButtonClassNameGreen } = config;
 
@@ -12,6 +13,8 @@ let contestQSOLimit = 1;
 
 // Defining a React functional component named InsertContacts.
 const InsertContacts = ({ isOpen, onClose }) => {
+  const [showQSOsForCallsign, setShowQSOsForCallsign] = useState(false);
+  const [currentCallsign, setCurrentCallsign] = useState([]);
 
   // useDispatch hook from Redux is used to dispatch actions, mainly used here for updating the global state.
   const dispatch = useDispatch();
@@ -46,6 +49,13 @@ const InsertContacts = ({ isOpen, onClose }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Function to handle changes in the form Callsign input field, updating 'formData' state and setting the currentCallsign value.
+  const handleCallsignChange = (e) => {
+    setCurrentCallsign(e.target.value);
+    // Merging previous formData with the new value from the changed input field.
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+  
   // Function to handle changes in QSO records, updating 'qsoRecords' state.
   const handleQSOChange = (index, e) => {
     // Creating a new array from the existing QSO records.
@@ -213,6 +223,15 @@ const InsertContacts = ({ isOpen, onClose }) => {
     }
   };
 
+  const handleMouseOver = (qsoCallsign) => {
+    setCurrentCallsign(qsoCallsign);
+    setShowQSOsForCallsign(true);
+  }
+
+  const handleMouseLeave = () => {
+    setShowQSOsForCallsign(false);
+  }
+
   if (!isOpen) return null;
 
   return (
@@ -229,7 +248,7 @@ const InsertContacts = ({ isOpen, onClose }) => {
             <form onSubmit={handleSubmit} className="max-w-md mx-auto mt-8 shadow-md p-6 bg-white rounded-md">
                 <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="QSO_Callsign">Callsign:</label>
-                    <input type="text" name="QSO_Callsign" value={formData.QSO_Callsign} onChange={handleChange} className={InputBoxClassName} autoFocus />
+                    <input type="text" name="QSO_Callsign" value={formData.QSO_Callsign} onChange={handleCallsignChange} className={InputBoxClassName} autoFocus onMouseLeave={() => handleMouseLeave()} onMouseOver={() => handleMouseOver(currentCallsign)}/>
                 </div>
                 <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="QSO_Frequency">Frequency:</label>
@@ -247,7 +266,6 @@ const InsertContacts = ({ isOpen, onClose }) => {
                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="QSO_Sent">Sent:</label>
                     <input type="text" name="QSO_Sent" value={formData.QSO_Sent} onChange={handleChange} className={InputBoxClassName}/>
                 </div>
-
                 {qsoRecords.map((qso, index) => (
                   <div key={index} className="flex space-x-4">
                     <div className="flex-1">
@@ -263,7 +281,6 @@ const InsertContacts = ({ isOpen, onClose }) => {
                     </div>
                   </div>
                   ))}
-
                 {contestRecords.map((contest, index) => (
                   <div key={index} className="flex space-x-4">
                     <div className="flex-1">
@@ -280,19 +297,16 @@ const InsertContacts = ({ isOpen, onClose }) => {
                     </div>
                   </div>
                   ))}
-
-
               {/* Flex container for buttons */}
               <div className="flex justify-center space-x-4 mb-4">
                 <button type="button" onClick={addQSORecord} className={ButtonClassNameGreen}>Add POTA Park(s)</button>
                 <button type="button" onClick={addContestRecord} className={ButtonClassNameGreen}>Add Contest QSO</button>
               </div>
-
               <button type="submit" className={ButtonClassNameBlue}>Insert Contact</button>
-
             </form>
           </div>
         </div>
+        <QSOsForCallsign callSignToSearchFor={currentCallsign} isOpen={showQSOsForCallsign} />
       </div>
     );
 };

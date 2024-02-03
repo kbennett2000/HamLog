@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import InsertContacts from "./InsertContacts";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
+import QSOsForCallsign from "./QSOsForCallsign";
 import config from '../config';
 const { InputBoxClassName, ButtonClassNameBlue, ButtonClassNameGreen, ButtonClassNameRed } = config;
 const dataEndpointLocation = "http://localhost:7800/getContactsAndPOTAQSOs";
@@ -12,6 +13,8 @@ const Contacts = () => {
   const [expandedRows, setExpandedRows] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [showInsertContacts, setShowInsertContacts] = useState(false);
+  const [showQSOsForCallsign, setShowQSOsForCallsign] = useState(false);
+  const [currentCallsign, setCurrentCallsign] = useState([]);
   const [currentQSOId, setCurrentQSOId] = useState(null);
 
   const fetchData = async () => {
@@ -40,11 +43,6 @@ const Contacts = () => {
     setShowInsertContacts(true);
   };
 
-  const CloseInsert = () => {
-      setShowInsertContacts(false);
-      fetchData();
-  };
-
   const handleUserChoice = async (choice) => {
     if (choice === "Yes") {
       // Delete the record
@@ -70,8 +68,13 @@ const Contacts = () => {
     setShowModal(false);
   };
 
-  const handleMouseOver = (qsoId) => {
-    console.log("QSO ID IS " + qsoId);
+  const handleMouseOver = (qsoCallsign) => {
+    setCurrentCallsign(qsoCallsign);
+    setShowQSOsForCallsign(true);
+  }
+
+  const handleMouseLeave = () => {
+    setShowQSOsForCallsign(false);
   }
 
   useEffect(() => {
@@ -111,9 +114,9 @@ const Contacts = () => {
                               <button onClick={() => toggleRow(index)} className={ButtonClassNameBlue}>+</button>
                             </td>
                             <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">{new Date(condition.QSO_Date).toLocaleDateString("en-US")}</td>
-                            <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">{condition.QSO_MTZTime}</td>                            
-                            <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white" onMouseOver={() => handleMouseOver(condition.QSO_ID)}>{condition.QSO_Callsign}</td>
-                            <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">{condition.QSO_Frequency + ' MHz'}</td>
+                            <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">{condition.QSO_MTZTime}</td>
+                            <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white" onMouseLeave={() => handleMouseLeave()} onMouseOver={() => handleMouseOver(condition.QSO_Callsign)}>{condition.QSO_Callsign}</td>                            
+                            <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">{condition.QSO_Frequency + ' MHz'}</td>                            
                             <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">
                               <button onClick={() => HandleDelete(condition.QSO_ID)} className={ButtonClassNameRed}>X</button>
                             </td>
@@ -169,6 +172,7 @@ const Contacts = () => {
         </div>        
         <DeleteConfirmationModal isOpen={showModal} onClose={() => setShowModal(false)} onConfirm={handleUserChoice} />
         <InsertContacts isOpen={showInsertContacts} onClose={() => setShowInsertContacts(false)} />
+        <QSOsForCallsign callSignToSearchFor={currentCallsign} isOpen={showQSOsForCallsign} />
       </div>
     </>
   );

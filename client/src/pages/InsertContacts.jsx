@@ -230,6 +230,13 @@ const InsertContacts = ({ isOpen, onClose }) => {
     setShowQSOsForParkNumber(false);
   }
 
+  const handleClose = () => {
+    setFormData(initialFormData);
+    setQSORecords(initialPOTAQSOFormData);
+    setContestRecords(initialContestQSOFormData);
+    onClose();
+  }
+
   if (!isOpen) return null;
 
   return (
@@ -238,7 +245,7 @@ const InsertContacts = ({ isOpen, onClose }) => {
           {/* Close button positioned in the top right corner */}
           <div className="flex justify-between items-start">
             <h2 className="text-xl font-semibold">Insert Contact</h2>
-            <button onClick={onClose} className="text-xl rounded-full p-2 hover:bg-gray-200">
+            <button onClick={handleClose} className="text-xl rounded-full p-2 hover:bg-gray-200">
               &times; {/* This is a simple way to create a close (×) button */}
             </button>
           </div>
@@ -286,19 +293,19 @@ const InsertContacts = ({ isOpen, onClose }) => {
                       <input type="text" name="Contest_ID" id={`Contest_ID_${index}`} value={contest.Contest_ID} onChange={(e) => handleContestChange(index, e)} className={InputBoxClassName} />
                     </div>
                     <div className="flex-1">
-                      <label className={InputLabel1} htmlFor={`Contest_QSO_Number_${index}`}>Contest QSO Number:</label>
+                      <label className={InputLabel1} htmlFor={`Contest_QSO_Number_${index}`}>QSO No:</label>
                       <input type="text" name="Contest_QSO_Number" id={`Contest_QSO_Number_${index}`} value={contest.Contest_QSO_Number} onChange={(e) => handleContestChange(index, e)} className={InputBoxClassName} />
                     </div>
                     <div className="flex-1">
-                      <label className={InputLabel1} htmlFor={`Contest_QSO_Exchange_Data_${index}`}>Contest QSO Exchange Data:</label>
+                      <label className={InputLabel1} htmlFor={`Contest_QSO_Exchange_Data_${index}`}>Exchange:</label>
                       <input type="text" name="Contest_QSO_Exchange_Data" id={`Contest_QSO_Exchange_Data_${index}`} value={contest.Contest_QSO_Exchange_Data} onChange={(e) => handleContestChange(index, e)} className={InputBoxClassName} />
                     </div>
                   </div>
                   ))}
               {/* Flex container for buttons */}
               <div className="flex justify-center space-x-4 mb-4">
-                <button type="button" onClick={addQSORecord} className={ButtonClassNameGreen}>Add POTA Park(s)</button>
-                <button type="button" onClick={addContestRecord} className={ButtonClassNameGreen}>Add Contest QSO</button>
+                <button type="button" onClick={addQSORecord} className={ButtonClassNameGreen}>+ POTA</button>
+                <button type="button" onClick={addContestRecord} className={ButtonClassNameGreen}>+ Contest</button>
               </div>
               <button type="submit" className={ButtonClassNameBlue}>Insert Contact</button>
             </form>

@@ -62,10 +62,10 @@ app.get("/Create_POTA_QSOs", async (req, res) => {
 
 // CREATE Endpoint
 app.get("/Create_Contest_QSOs", async (req, res) => {
-  const { QSO_ID, Contest_ID, Contest_QSO_Number, Contest_QSO_Exchange_Date } = req.query;
+  const { QSO_ID, Contest_ID, Contest_QSO_Number, Contest_QSO_Exchange_Data } = req.query;
   const promise = dbHamLog.promise();
-  const query = `INSERT INTO HamLogDB.Contest_QSOs (\`QSO_ID\`, \`Contest_ID\`, \`Contest_QSO_Number\`, \`Contest_QSO_Exchange_Date\`) `;  
-  const queryValue = `VALUES (\'${QSO_ID}\', \'${Contest_ID}\', \'${Contest_QSO_Number}\', \`${Contest_QSO_Exchange_Date}\`)`;
+  const query = `INSERT INTO HamLogDB.Contest_QSOs (\`QSO_ID\`, \`Contest_ID\`, \`Contest_QSO_Number\`, \`Contest_QSO_Exchange_Data\`) `;  
+  const queryValue = `VALUES (\'${QSO_ID}\', \'${Contest_ID}\', \'${Contest_QSO_Number}\', \'${Contest_QSO_Exchange_Data}\')`;
   console.log(query + queryValue);
   const [rows, fields] = await promise.execute(query + queryValue);
   return res.status(200).json({ POTA_QSOs: rows });
@@ -73,8 +73,9 @@ app.get("/Create_Contest_QSOs", async (req, res) => {
 
 // DELETE Endpoint
 app.get("/Delete_Contacts", async (req, res) => {
+  const { QSO_ID } = req.query;
   const promise = dbHamLog.promise();
-  const query = "DELETE FROM Contacts WHERE QSO_Callsign = \'xxx\';";
+  const query = `DELETE FROM Contacts WHERE QSO_ID = \'${QSO_ID}\';`;
   const [rows, fields] = await promise.execute(query);
   return res.status(200).json({ Contacts: rows });
 });

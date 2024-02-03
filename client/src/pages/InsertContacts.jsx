@@ -152,7 +152,7 @@ const InsertContacts = () => {
           console.log('qsoRecord.POTAPark_ID is ' + qsoRecord.POTAPark_ID);
           console.log('qsoRecord.QSO_Type is ' + qsoRecord.QSO_Type);
           // Checking if the QSO record has necessary data before making a request.
-          if (qsoRecord.POTAPark_ID !== '' && qsoRecord.QSO_Type !== '') {
+          if (qsoRecord.POTAPark_ID && qsoRecord.QSO_Type) {
             // Constructing the request URL for creating POTA QSOs.
             const requestURL2 = `http://localhost:7800/Create_POTA_QSOs?QSO_ID=${lastInsertID}&POTAPark_ID=${qsoRecord.POTAPark_ID}&QSO_Type=${qsoRecord.QSO_Type}`;
             // Logging the request URL to the console.
@@ -176,9 +176,9 @@ const InsertContacts = () => {
           console.log('contestRecord.Contest_QSO_Number is ' + contestRecord.Contest_QSO_Number);
           console.log('contestRecord.Contest_QSO_Exchange_Data is ' + contestRecord.Contest_QSO_Exchange_Data);
           // Checking if the Contest record has necessary data before making a request.
-          if (contestRecord.Contest_ID !== '') {
+          if (contestRecord.Contest_ID) {
             // Constructing the request URL for creating Contest QSOs.
-            const requestURL3 = `http://localhost:7800/Create_Contest_QSOs?QSO_ID=${lastInsertID}&Contest_ID=${contestRecord.Contest_ID}&Contest_QSO_Number=${contestRecord.Contest_QSO_Number}&Contest_Exchange_Data=${contestRecord.Contest_QSO_Exchange_Data}`;
+            const requestURL3 = `http://localhost:7800/Create_Contest_QSOs?QSO_ID=${lastInsertID}&Contest_ID=${contestRecord.Contest_ID}&Contest_QSO_Number=${contestRecord.Contest_QSO_Number}&Contest_QSO_Exchange_Data=${contestRecord.Contest_QSO_Exchange_Data}`;
             // Logging the request URL to the console.
             console.log('requestURL is ' + requestURL3);
             // Making an HTTP GET request to the constructed URL.
@@ -243,9 +243,7 @@ const InsertContacts = () => {
               </div>
               ))}
 
-
-
-            <button type="button" onClick={addContestRecord} className="bg-green-500 text-white p-3 rounded-md focus:outline-none hover:bg-green-700">Add POTA Park(s)</button>
+            <button type="button" onClick={addContestRecord} className="bg-green-500 text-white p-3 rounded-md focus:outline-none hover:bg-green-700">Add Contest QSO</button>
 
             {contestRecords.map((contest, index) => (
               <div key={index} className="flex space-x-4">
@@ -263,13 +261,6 @@ const InsertContacts = () => {
                 </div>
               </div>
               ))}
-
-
-
-
-
-
-
 
             <button type="submit" className="w-full bg-blue-500 text-white p-3 rounded-md focus:outline-none hover:bg-blue-700">Insert Contact</button>
         </form>

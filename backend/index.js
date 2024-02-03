@@ -74,9 +74,19 @@ app.get("/Create_Contest_QSOs", async (req, res) => {
 // DELETE Endpoint
 app.get("/Delete_Contacts", async (req, res) => {
   const { QSO_ID } = req.query;
+
   const promise = dbHamLog.promise();
-  const query = `DELETE FROM Contacts WHERE QSO_ID = \'${QSO_ID}\';`;
-  const [rows, fields] = await promise.execute(query);
+  let query = `DELETE FROM POTA_QSOs WHERE QSO_ID = \'${QSO_ID}\';`;
+  let [rows, fields] = await promise.execute(query);
+
+  query = `DELETE FROM Contest_QSOs WHERE QSO_ID = \'${QSO_ID}\';`;
+  [rows, fields] = await promise.execute(query);
+
+
+  query = `DELETE FROM Contacts WHERE QSO_ID = \'${QSO_ID}\';`;
+  [rows, fields] = await promise.execute(query);
+
+
   return res.status(200).json({ Contacts: rows });
 });
 

@@ -9,7 +9,7 @@ let contestQSOCounter = 0;
 let contestQSOLimit = 1;
 
 // Defining a React functional component named InsertContacts.
-const InsertContacts = () => {
+const InsertContacts = ({ closeInsert }) => {
 
   // useDispatch hook from Redux is used to dispatch actions, mainly used here for updating the global state.
   const dispatch = useDispatch();
@@ -116,6 +116,14 @@ const InsertContacts = () => {
     // Preventing the default form submission behavior.
     e.preventDefault();
 
+    // Check if Callsign and Frequency fields are blank
+    if (!formData.QSO_Callsign.trim() || !formData.QSO_Frequency.trim()) {
+      // Alerting the user that Callsign and Frequency fields cannot be blank
+      alert("Callsign and Frequency fields cannot be blank.");
+      // Returning early from the function to prevent form submission
+      return;    
+    }
+    
     // Variable to store the ID of the last inserted record.
     let lastInsertID = "";
 
@@ -196,6 +204,7 @@ const InsertContacts = () => {
       setFormData(initialFormData);
       setQSORecords(initialPOTAQSOFormData);
       setContestRecords(initialContestQSOFormData);
+      closeInsert();
     } catch (error) {
       // Logging any errors that occur during the form submission.
       console.error('Error inserting record:', error);
@@ -263,6 +272,7 @@ const InsertContacts = () => {
               ))}
 
             <button type="submit" className="w-full bg-blue-500 text-white p-3 rounded-md focus:outline-none hover:bg-blue-700">Insert Contact</button>
+            <button onClick={closeInsert} className="w-full bg-blue-500 text-white p-3 rounded-md focus:outline-none hover:bg-blue-700">Close</button>
         </form>
     );
 };

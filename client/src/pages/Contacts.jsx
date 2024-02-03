@@ -140,7 +140,7 @@ const Contacts = () => {
                             <td className={TableCell1}>{new Date(condition.QSO_Date).toLocaleDateString("en-US")}</td>
                             <td className={TableCell1}>{condition.QSO_MTZTime.slice(0, 5)}</td>
                             <td className={TableCell1} onMouseLeave={() => handleCallsignMouseLeave()} onMouseOver={() => handleCallsignMouseOver(condition.QSO_Callsign)}>{condition.QSO_Callsign}</td>                            
-                            <td className={TableCell1}>{condition.QSO_Frequency + ' MHz'}</td>                            
+                            <td className={TableCell1}>{condition.QSO_Frequency}</td>                            
                             <td className={TableCell1}>
                               <button onClick={() => HandleDelete(condition.QSO_ID)} className={ButtonClassNameRed}>X</button>
                             </td>

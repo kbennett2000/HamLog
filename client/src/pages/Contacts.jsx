@@ -83,8 +83,8 @@ const Contacts = () => {
   return (
     <>
       <h1 className="text-3xl font-bold mb-4">{pageTitle}</h1>
-      <div class="flex items-center space-x-2">
-        <button onClick={() => HandleInsert()} class={ButtonClassNameGreen}>Add Contact</button>
+      <div className="flex items-center space-x-2">
+        <button onClick={() => HandleInsert()} className={ButtonClassNameGreen}>Add Contact</button>
       </div>
       <div className="mx-auto">
         <div className="mx-auto">
@@ -108,14 +108,14 @@ const Contacts = () => {
                         <React.Fragment key={index}>
                           <tr className={`hover:bg-green-100 dark:hover:bg-green-700 ${index % 2 === 0 ? "bg-gray-100 dark:bg-gray-400" : "" } ${index % 2 === 1 ? "bg-gray-300 dark:bg-gray-600" : "" }`} >
                             <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">                                  
-                              <button onClick={() => toggleRow(index)} class={ButtonClassNameBlue}>+</button>
+                              <button onClick={() => toggleRow(index)} className={ButtonClassNameBlue}>+</button>
                             </td>
                             <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">{new Date(condition.QSO_Date).toLocaleDateString("en-US")}</td>
                             <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">{condition.QSO_MTZTime}</td>                            
                             <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white" onMouseOver={() => handleMouseOver(condition.QSO_ID)}>{condition.QSO_Callsign}</td>
                             <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">{condition.QSO_Frequency + ' MHz'}</td>
                             <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                              <button onClick={() => HandleDelete(condition.QSO_ID)} class={ButtonClassNameRed}>X</button>
+                              <button onClick={() => HandleDelete(condition.QSO_ID)} className={ButtonClassNameRed}>X</button>
                             </td>
                           </tr>
                           {expandedRows[index] && (

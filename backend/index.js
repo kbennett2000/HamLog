@@ -126,6 +126,15 @@ app.get('/getContactsAndPOTAQSOs', async (req, res) => {
   }
 });
 
+// Get_Contacts_for_Callsign
+app.get("/Get_Contacts_for_Callsign", async (req, res) => {
+  const { QSO_Callsign } = req.query;
+  const promise = dbHamLog.promise();
+  const query = `SELECT * FROM Contacts WHERE QSO_Callsign = \'${QSO_Callsign}\' ORDER BY QSO_ID DESC`;  
+  const [rows, fields] = await promise.execute(query);
+  return res.status(200).json({ Contacts: rows });
+});
+
 app.get("/Last_Insert_ID", async (req, res) => {
   const promise = dbHamLog.promise();
   const query = "SELECT LAST_INSERT_ID();";

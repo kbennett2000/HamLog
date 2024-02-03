@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Contacts from "../pages/Contacts";
-
 import "../App.css";
 
 const ContactsControl = () => {
@@ -11,7 +10,9 @@ const ContactsControl = () => {
   };
 
   return (
-    <Contacts />
+    <>
+      <Contacts />
+    </>
   );
 };
 

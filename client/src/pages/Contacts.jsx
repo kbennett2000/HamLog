@@ -5,7 +5,19 @@ import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import QSOsForCallsign from "./QSOsForCallsign";
 import QSOsForParkNumber from "./QSOsForParkNumber";
 import config from '../config';
-const { ButtonClassNameBlue, ButtonClassNameGreen, ButtonClassNameRed, TableHeading1, TableHeading2, TableCell1 } = config;
+const { 
+  ButtonClassNameBlue, 
+  ButtonClassNameGreen, 
+  ButtonClassNameRed, 
+  TableHeading1, 
+  TableHeading2, 
+  TableCell1, 
+  TableStyle1, 
+  TableBodyStyle1, 
+  TableHeadStyle1, 
+  TableHeadStyle2, 
+  TableHeadStyle3,
+} = config;
 const dataEndpointLocation = "http://localhost:7800/getContactsAndPOTAQSOs";
 const pageTitle = "A Less Shitty Logbook";
 let expandContractButtonLabel = '+';
@@ -107,8 +119,8 @@ const Contacts = () => {
             <div className="overflow-x-auto shadow-md sm:rounded-lg">
               <div className="inline-block min-w-full align-middle">
                 <div className="overflow-hidden ">
-                  <table className="min-w-full divide-y divide-gray-200 table-fixed dark:divide-gray-700">
-                    <thead className="bg-blue-600 dark:bg-blue-900">
+                  <table id='MainDataTable' className={TableStyle1}>
+                    <thead className={TableHeadStyle1}>
                       <tr>
                           <th scope="col" className={TableHeading1}>EXPAND</th>
                           <th scope="col" className={TableHeading1}>Date</th>
@@ -118,7 +130,7 @@ const Contacts = () => {
                           <th scope="col" className={TableHeading1}>DELETE</th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                    <tbody className={TableBodyStyle1}>
                       {conditions.map((condition, index) => (
                         <React.Fragment key={index}>
                           <tr className={`hover:bg-green-100 dark:hover:bg-green-700 ${index % 2 === 0 ? "bg-gray-100 dark:bg-gray-400" : "" } ${index % 2 === 1 ? "bg-gray-300 dark:bg-gray-600" : "" }`} >
@@ -133,18 +145,18 @@ const Contacts = () => {
                               <button onClick={() => HandleDelete(condition.QSO_ID)} className={ButtonClassNameRed}>X</button>
                             </td>
                           </tr>
-                          {expandedRows[index] && (condition.QSO_Received || condition.QSO_Sent || condition.QSO_Notes) && (                            
-                            <tr key={condition.QSO_ID}>
-                              <td colSpan="12" className="p-4">
-                                <table className="min-w-full divide-y divide-gray-200 table-fixed dark:divide-gray-700">
-                                  <thead className="bg-green-600 dark:bg-green-900">
+                          {expandedRows[index] && (condition.QSO_Received || condition.QSO_Sent || condition.QSO_Notes) && (          
+                            <tr>
+                              <td colspan='6'>
+                                <table id='ExpandedRowsTable' className={TableStyle1}>
+                                  <thead className={TableHeadStyle2}>
                                     <tr>
                                       <th scope="col" className={TableHeading1}>Received</th>
                                       <th scope="col" className={TableHeading1}>Sent</th>
                                       <th scope="col" className={TableHeading1}>Notes</th>
                                     </tr>
                                   </thead>
-                                  <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                                  <tbody className={TableBodyStyle1}>
                                     <tr>
                                       <td className={TableCell1}>{condition.QSO_Received}</td>
                                       <td className={TableCell1}>{condition.QSO_Sent}</td>
@@ -153,16 +165,17 @@ const Contacts = () => {
                                   </tbody>
                                 </table>
                               </td>
-                            </tr>
+                            </tr>                  
                           )}
                           {expandedRows[index] && condition.POTA_QSOs.length > 0 && (
-                            <>
+                            <tr>
+                            <td colspan='6'>
                               <table>
-                                <thead className="bg-blue-500 dark:bg-blue-800">
+                                <thead className={TableHeadStyle3}>
                                   <th scope="col" className={TableHeading2}>Park Number</th>
                                   <th scope="col" className={TableHeading2}>QSO Type</th>
                                 </thead>
-                                <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                                <tbody className={TableBodyStyle1}>
                                   {condition.POTA_QSOs.map((potaQSO, index2) => (
                                     <tr className={`hover:bg-blue-100 dark:hover:bg-blue-700 ${index2 % 2 === 0 ? "bg-gray-200 dark:bg-gray-500" : "" }`}>
                                       <td key={potaQSO.POTA_QSO_ID} className={TableCell1} onMouseLeave={() => handleParkNumberMouseLeave()} onMouseOver={() => handleParkNumberMouseOver(potaQSO.POTAPark_ID)}>{potaQSO.POTAPark_ID}</td>
@@ -171,7 +184,8 @@ const Contacts = () => {
                                   ))}
                                 </tbody>
                               </table>
-                            </>
+                            </td>
+                            </tr>
                           )}
                         </React.Fragment>
                       ))}
@@ -183,12 +197,19 @@ const Contacts = () => {
           </div>
         </div>        
       </div>
-      <DeleteConfirmationModal isOpen={showModal} onClose={() => setShowModal(false)} onConfirm={handleUserChoice} />
-      <InsertContacts isOpen={showInsertContacts} onClose={() => setShowInsertContacts(false)} />
-      <QSOsForCallsign callSignToSearchFor={currentCallsign} isOpen={showQSOsForCallsign} />
-      <QSOsForParkNumber parkNumberToSearchFor={currentParkNumber} isOpen={showQSOsForParkNumber} />
+      <div id='ControlsDiv' className="flex items-center space-x-2">
+        <DeleteConfirmationModal isOpen={showModal} onClose={() => setShowModal(false)} onConfirm={handleUserChoice} />
+        <InsertContacts isOpen={showInsertContacts} onClose={() => setShowInsertContacts(false)} />
+        <QSOsForCallsign callSignToSearchFor={currentCallsign} isOpen={showQSOsForCallsign} />
+        <QSOsForParkNumber parkNumberToSearchFor={currentParkNumber} isOpen={showQSOsForParkNumber} />
+      </div>
     </>
   );
+
+
+
+
+  
 };
 
 export default Contacts;

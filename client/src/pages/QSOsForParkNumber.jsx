@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import config from '../config';
-const { TableHeading1, TableCell1 } = config;
+const { TableHeading1, TableCell1, TableStyle1, TableHeadStyle3, TableBodyStyle1 } = config;
 
 let dataEndpointLocation = "";
 let runCount = 0;
@@ -55,8 +55,8 @@ const QSOsForParkNumber = ({ parkNumberToSearchFor, isOpen }) => {
                         <div className="overflow-x-auto shadow-md sm:rounded-lg">
                         <div className="inline-block min-w-full align-middle">
                             <div className="overflow-hidden ">
-                            <table className="min-w-full divide-y divide-gray-200 table-fixed dark:divide-gray-700">
-                                <thead className="bg-blue-600 dark:bg-blue-900">
+                            <table className={TableStyle1}>
+                                <thead className={TableHeadStyle3}>
                                 <tr>
                                     <th scope="col" className={TableHeading1}>Date</th>
                                     <th scope="col" className={TableHeading1}>Mountain Time</th>
@@ -64,7 +64,7 @@ const QSOsForParkNumber = ({ parkNumberToSearchFor, isOpen }) => {
                                     <th scope="col" className={TableHeading1}>Frequency</th>
                                 </tr>
                                 </thead>
-                                <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                                <tbody className={TableBodyStyle1}>
                                 {conditions.map((condition, index) => (
                                     <React.Fragment key={index}>
                                     <tr className={`hover:bg-green-100 dark:hover:bg-green-700 ${index % 2 === 0 ? "bg-gray-100 dark:bg-gray-400" : "" } ${index % 2 === 1 ? "bg-gray-300 dark:bg-gray-600" : "" }`} >

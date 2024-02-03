@@ -8,6 +8,7 @@ import config from '../config';
 const { ButtonClassNameBlue, ButtonClassNameGreen, ButtonClassNameRed, TableHeading1, TableHeading2, TableCell1 } = config;
 const dataEndpointLocation = "http://localhost:7800/getContactsAndPOTAQSOs";
 const pageTitle = "A Less Shitty Logbook";
+let expandContractButtonLabel = '+';
 
 const Contacts = () => {
   const [conditions, setConditions] = useState([]);
@@ -122,7 +123,7 @@ const Contacts = () => {
                         <React.Fragment key={index}>
                           <tr className={`hover:bg-green-100 dark:hover:bg-green-700 ${index % 2 === 0 ? "bg-gray-100 dark:bg-gray-400" : "" } ${index % 2 === 1 ? "bg-gray-300 dark:bg-gray-600" : "" }`} >
                             <td className={TableCell1}>                                  
-                              <button onClick={() => toggleRow(index)} className={ButtonClassNameBlue}>+</button>
+                              <button onClick={() => toggleRow(index)} className={ButtonClassNameBlue}>{expandedRows[index] ? "-" : "+"}</button>
                             </td>
                             <td className={TableCell1}>{new Date(condition.QSO_Date).toLocaleDateString("en-US")}</td>
                             <td className={TableCell1}>{condition.QSO_MTZTime}</td>

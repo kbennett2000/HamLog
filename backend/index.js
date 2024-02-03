@@ -44,7 +44,6 @@ app.get("/Create_Contacts", async (req, res) => {
   const formatted_QSO_Date = formatDate(QSO_Date) + " 00:00:00";
   const query = `INSERT INTO HamLogDB.Contacts (\`QSO_Date\`, \`QSO_MTZTime\`, \`QSO_Callsign\`, \`QSO_Frequency\`, \`QSO_Notes\`, \`QSO_Received\`, \`QSO_Sent\`) `;  
   const queryValue = `VALUES (\'${formatted_QSO_Date}\', \'${QSO_MTZTime}\', \'${QSO_Callsign}\', \'${QSO_Frequency}\', \'${QSO_Notes}\', \'${QSO_Received}\', \'${QSO_Sent}\')`;
-  console.log(query + queryValue);
   const [rows, fields] = await promise.execute(query + queryValue);
   return res.status(200).json({ Contacts: rows });
 });

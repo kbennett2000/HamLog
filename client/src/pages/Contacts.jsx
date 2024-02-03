@@ -19,7 +19,7 @@ const {
   TableHeadStyle3,
 } = config;
 const dataEndpointLocation = "http://localhost:7800/getContactsAndPOTAQSOs";
-const pageTitle = "A Less Shitty Logbook";
+const pageTitle = "My Ham Log";
 let expandContractButtonLabel = '+';
 
 const Contacts = () => {
@@ -104,7 +104,7 @@ const Contacts = () => {
   const handleInsertContactsClosed = () => {
     fetchData();
   };
-  
+
   useEffect(() => {
     fetchData();
     const interval = setInterval(fetchData, 60000);

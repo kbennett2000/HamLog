@@ -7,7 +7,7 @@ import QSOsForParkNumber from "./QSOsForParkNumber";
 import config from '../config';
 const { ButtonClassNameBlue, ButtonClassNameGreen, ButtonClassNameRed } = config;
 const dataEndpointLocation = "http://localhost:7800/getContactsAndPOTAQSOs";
-const pageTitle = "React HamBook";
+const pageTitle = "A Less Shitty Logbook";
 
 const Contacts = () => {
   const [conditions, setConditions] = useState([]);

@@ -14,14 +14,7 @@ const QSOsForParkNumber = ({ parkNumberToSearchFor, isOpen }) => {
         console.log("QSOsForParkNumber.fetchData() - " + dataEndpointLocation);
       const res = await axios.get(dataEndpointLocation);
       // Check if the response is an array, otherwise set to an empty array
-      setConditions(Array.isArray(res.data.Contacts) ? res.data.Contacts : []);
-     
-      //console.log("CONDITIONS" + conditions[0].POTAPark_ID);
-      if (!conditions[0].POTAPark_ID) {
-        console.log('THERE IS NO POTA ID!!!');
-        //setConditions([]);
-      }
-
+      setConditions(Array.isArray(res.data.Contacts) ? res.data.Contacts : []);     
       cachedParkNumber = parkNumberToSearchFor;  
     } catch (err) {
       console.log(err);
@@ -35,7 +28,7 @@ const QSOsForParkNumber = ({ parkNumberToSearchFor, isOpen }) => {
       runCount++;
       fetchData();
     }
-    // Handles data fetch when callsign changes
+    // Handles data fetch when park number changes
     if (cachedParkNumber !== parkNumberToSearchFor) {
       cachedParkNumber = parkNumberToSearchFor;
       fetchData();
@@ -45,7 +38,7 @@ const QSOsForParkNumber = ({ parkNumberToSearchFor, isOpen }) => {
     return null;
   }
 
-  // If there are no QSOs for the current callsign, don't display the control
+  // If there are no QSOs for the current park number, don't display the control
   if (conditions.length === 0) {
     return null;
   }

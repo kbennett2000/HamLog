@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import config from '../config';
+const { TableHeading1, TableCell1 } = config;
 
 let dataEndpointLocation = "";
 let runCount = 0;
@@ -56,20 +58,20 @@ const QSOsForParkNumber = ({ parkNumberToSearchFor, isOpen }) => {
                             <table className="min-w-full divide-y divide-gray-200 table-fixed dark:divide-gray-700">
                                 <thead className="bg-blue-600 dark:bg-blue-900">
                                 <tr>
-                                    <th scope="col" className="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-300 uppercase dark:text-gray-100">Date</th>
-                                    <th scope="col" className="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-300 uppercase dark:text-gray-100">Mountain Time</th>
-                                    <th scope="col" className="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-300 uppercase dark:text-gray-100">Callsign</th>
-                                    <th scope="col" className="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-300 uppercase dark:text-gray-100">Frequency</th>
+                                    <th scope="col" className={TableHeading1}>Date</th>
+                                    <th scope="col" className={TableHeading1}>Mountain Time</th>
+                                    <th scope="col" className={TableHeading1}>Callsign</th>
+                                    <th scope="col" className={TableHeading1}>Frequency</th>
                                 </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                                 {conditions.map((condition, index) => (
                                     <React.Fragment key={index}>
                                     <tr className={`hover:bg-green-100 dark:hover:bg-green-700 ${index % 2 === 0 ? "bg-gray-100 dark:bg-gray-400" : "" } ${index % 2 === 1 ? "bg-gray-300 dark:bg-gray-600" : "" }`} >
-                                        <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">{new Date(condition.QSO_Date).toLocaleDateString("en-US")}</td>
-                                        <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">{condition.QSO_MTZTime}</td>                            
-                                        <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">{condition.QSO_Callsign}</td>        
-                                        <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">{condition.QSO_Frequency + ' MHz'}</td>
+                                        <td className={TableCell1}>{new Date(condition.QSO_Date).toLocaleDateString("en-US")}</td>
+                                        <td className={TableCell1}>{condition.QSO_MTZTime}</td>                            
+                                        <td className={TableCell1}>{condition.QSO_Callsign}</td>        
+                                        <td className={TableCell1}>{condition.QSO_Frequency + ' MHz'}</td>
                                     </tr>
                                     </React.Fragment>
                                 ))}

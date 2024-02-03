@@ -5,7 +5,7 @@ import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import QSOsForCallsign from "./QSOsForCallsign";
 import QSOsForParkNumber from "./QSOsForParkNumber";
 import config from '../config';
-const { ButtonClassNameBlue, ButtonClassNameGreen, ButtonClassNameRed } = config;
+const { ButtonClassNameBlue, ButtonClassNameGreen, ButtonClassNameRed, TableHeading1, TableHeading2, TableCell1 } = config;
 const dataEndpointLocation = "http://localhost:7800/getContactsAndPOTAQSOs";
 const pageTitle = "A Less Shitty Logbook";
 
@@ -109,68 +109,68 @@ const Contacts = () => {
                   <table className="min-w-full divide-y divide-gray-200 table-fixed dark:divide-gray-700">
                     <thead className="bg-blue-600 dark:bg-blue-900">
                       <tr>
-                          <th scope="col" className="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-300 uppercase dark:text-gray-100">EXPAND</th>
-                          <th scope="col" className="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-300 uppercase dark:text-gray-100">Date</th>
-                          <th scope="col" className="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-300 uppercase dark:text-gray-100">Mountain Time</th>
-                          <th scope="col" className="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-300 uppercase dark:text-gray-100">Callsign</th>
-                          <th scope="col" className="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-300 uppercase dark:text-gray-100">Frequency</th>
-                          <th scope="col" className="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-300 uppercase dark:text-gray-100">DELETE</th>
+                          <th scope="col" className={TableHeading1}>EXPAND</th>
+                          <th scope="col" className={TableHeading1}>Date</th>
+                          <th scope="col" className={TableHeading1}>Mountain Time</th>
+                          <th scope="col" className={TableHeading1}>Callsign</th>
+                          <th scope="col" className={TableHeading1}>Frequency</th>
+                          <th scope="col" className={TableHeading1}>DELETE</th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                       {conditions.map((condition, index) => (
                         <React.Fragment key={index}>
                           <tr className={`hover:bg-green-100 dark:hover:bg-green-700 ${index % 2 === 0 ? "bg-gray-100 dark:bg-gray-400" : "" } ${index % 2 === 1 ? "bg-gray-300 dark:bg-gray-600" : "" }`} >
-                            <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">                                  
+                            <td className={TableCell1}>                                  
                               <button onClick={() => toggleRow(index)} className={ButtonClassNameBlue}>+</button>
                             </td>
-                            <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">{new Date(condition.QSO_Date).toLocaleDateString("en-US")}</td>
-                            <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">{condition.QSO_MTZTime}</td>
-                            <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white" onMouseLeave={() => handleCallsignMouseLeave()} onMouseOver={() => handleCallsignMouseOver(condition.QSO_Callsign)}>{condition.QSO_Callsign}</td>                            
-                            <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">{condition.QSO_Frequency + ' MHz'}</td>                            
-                            <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                            <td className={TableCell1}>{new Date(condition.QSO_Date).toLocaleDateString("en-US")}</td>
+                            <td className={TableCell1}>{condition.QSO_MTZTime}</td>
+                            <td className={TableCell1} onMouseLeave={() => handleCallsignMouseLeave()} onMouseOver={() => handleCallsignMouseOver(condition.QSO_Callsign)}>{condition.QSO_Callsign}</td>                            
+                            <td className={TableCell1}>{condition.QSO_Frequency + ' MHz'}</td>                            
+                            <td className={TableCell1}>
                               <button onClick={() => HandleDelete(condition.QSO_ID)} className={ButtonClassNameRed}>X</button>
                             </td>
                           </tr>
-                          {expandedRows[index] && (
+                          {expandedRows[index] && (condition.QSO_Received || condition.QSO_Sent || condition.QSO_Notes) && (                            
                             <tr key={condition.QSO_ID}>
                               <td colSpan="12" className="p-4">
                                 <table className="min-w-full divide-y divide-gray-200 table-fixed dark:divide-gray-700">
                                   <thead className="bg-green-600 dark:bg-green-900">
                                     <tr>
-                                      <th scope="col" className="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-300 uppercase dark:text-gray-100">Received</th>
-                                      <th scope="col" className="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-300 uppercase dark:text-gray-100">Sent</th>
-                                      <th scope="col" className="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-300 uppercase dark:text-gray-100">Notes</th>
+                                      <th scope="col" className={TableHeading1}>Received</th>
+                                      <th scope="col" className={TableHeading1}>Sent</th>
+                                      <th scope="col" className={TableHeading1}>Notes</th>
                                     </tr>
                                   </thead>
                                   <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                                     <tr>
-                                      <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">{condition.QSO_Received}</td>
-                                      <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">{condition.QSO_Sent}</td>
-                                      <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white" style={{ whiteSpace: 'pre-wrap' }}>{condition.QSO_Notes}</td>
+                                      <td className={TableCell1}>{condition.QSO_Received}</td>
+                                      <td className={TableCell1}>{condition.QSO_Sent}</td>
+                                      <td className={TableCell1} style={{ whiteSpace: 'pre-wrap' }}>{condition.QSO_Notes}</td>
                                     </tr>
-                                      {condition.POTA_QSOs.length > 0 && (
-                                        <>
-                                          <table>
-                                            <thead className="bg-blue-500 dark:bg-blue-800">
-                                              <th scope="col" className="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-900 uppercase dark:text-gray-100">Park Number</th>
-                                              <th scope="col" className="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-900 uppercase dark:text-gray-100">QSO Type</th>
-                                            </thead>
-                                            <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                                              {condition.POTA_QSOs.map((potaQSO, index2) => (
-                                                <tr className={`hover:bg-blue-100 dark:hover:bg-blue-700 ${index2 % 2 === 0 ? "bg-gray-200 dark:bg-gray-500" : "" }`}>
-                                                  <td key={potaQSO.POTA_QSO_ID} className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white" onMouseLeave={() => handleParkNumberMouseLeave()} onMouseOver={() => handleParkNumberMouseOver(potaQSO.POTAPark_ID)}>{potaQSO.POTAPark_ID}</td>
-                                                  <td key={potaQSO.POTA_QSO_ID} className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">{potaQSO.QSO_Type === "1" ? "Hunter" : potaQSO.QSO_Type === "2" ? "Activator" : ""}</td>
-                                                </tr>
-                                              ))}
-                                            </tbody>
-                                          </table>
-                                        </>
-                                      )}           
                                   </tbody>
                                 </table>
                               </td>
                             </tr>
+                          )}
+                          {expandedRows[index] && condition.POTA_QSOs.length > 0 && (
+                            <>
+                              <table>
+                                <thead className="bg-blue-500 dark:bg-blue-800">
+                                  <th scope="col" className={TableHeading2}>Park Number</th>
+                                  <th scope="col" className={TableHeading2}>QSO Type</th>
+                                </thead>
+                                <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                                  {condition.POTA_QSOs.map((potaQSO, index2) => (
+                                    <tr className={`hover:bg-blue-100 dark:hover:bg-blue-700 ${index2 % 2 === 0 ? "bg-gray-200 dark:bg-gray-500" : "" }`}>
+                                      <td key={potaQSO.POTA_QSO_ID} className={TableCell1} onMouseLeave={() => handleParkNumberMouseLeave()} onMouseOver={() => handleParkNumberMouseOver(potaQSO.POTAPark_ID)}>{potaQSO.POTAPark_ID}</td>
+                                      <td key={potaQSO.POTA_QSO_ID} className={TableCell1}>{potaQSO.QSO_Type === "1" ? "Hunter" : potaQSO.QSO_Type === "2" ? "Activator" : ""}</td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </>
                           )}
                         </React.Fragment>
                       ))}

@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import QSOsForCallsign from './QSOsForCallsign';
 import QSOsForParkNumber from './QSOsForParkNumber';
 import config from '../config';
-const { InputBoxClassName, ButtonClassNameBlue, ButtonClassNameGreen } = config;
+const { InputBoxClassName, ButtonClassNameBlue, ButtonClassNameGreen, InputLabel1 } = config;
 
 // The number of Contest QSOs recorded for this Contact record 
 let contestQSOCounter = 0;
@@ -245,33 +245,33 @@ const InsertContacts = ({ isOpen, onClose }) => {
           <div className="mt-3 text-center">
             <form onSubmit={handleSubmit} className="max-w-md mx-auto mt-8 shadow-md p-6 bg-white rounded-md">
                 <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="QSO_Callsign">Callsign:</label>
+                    <label className={InputLabel1} htmlFor="QSO_Callsign">Callsign:</label>
                     <input type="text" name="QSO_Callsign" value={formData.QSO_Callsign} onChange={handleCallsignChange} className={InputBoxClassName} autoFocus onMouseLeave={() => handleCallsignMouseLeave()} onMouseOver={() => handleCallsignMouseOver(currentCallsign)}/>
                 </div>
                 <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="QSO_Frequency">Frequency:</label>
+                    <label className={InputLabel1} htmlFor="QSO_Frequency">Frequency:</label>
                     <input type="text" name="QSO_Frequency" value={formData.QSO_Frequency} onChange={handleChange} className={InputBoxClassName}/>
                 </div>
                 <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="QSO_Notes">Notes:</label>
+                    <label className={InputLabel1} htmlFor="QSO_Notes">Notes:</label>
                     <input type="text" name="QSO_Notes" value={formData.QSO_Notes} onChange={handleChange} className={InputBoxClassName}/>
                 </div>
                 <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="QSO_Received">Received:</label>
+                    <label className={InputLabel1} htmlFor="QSO_Received">Received:</label>
                     <input type="text" name="QSO_Received" value={formData.QSO_Received} onChange={handleChange} className={InputBoxClassName}/>
                 </div>
                 <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="QSO_Sent">Sent:</label>
+                    <label className={InputLabel1} htmlFor="QSO_Sent">Sent:</label>
                     <input type="text" name="QSO_Sent" value={formData.QSO_Sent} onChange={handleChange} className={InputBoxClassName}/>
                 </div>
                 {qsoRecords.map((qso, index) => (
                   <div key={index} className="flex space-x-4">
                     <div className="flex-1">
-                      <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={`POTAPark_ID_${index}`}>POTA Park ID:</label>
+                      <label className={InputLabel1} htmlFor={`POTAPark_ID_${index}`}>POTA Park ID:</label>
                       <input type="text" name="POTAPark_ID" id={`POTAPark_ID_${index}`} value={qso.POTAPark_ID} onChange={(e) => handleQSOPOTAIDChange(index, e)} className={InputBoxClassName} onMouseLeave={() => handleParkNumberMouseLeave()} onMouseOver={() => handleParkNumberMouseOver(currentParkNumber)}/>
                     </div>
                     <div className="flex-1">
-                      <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={`QSO_Type_${index}`}>QSO Type:</label>
+                      <label className={InputLabel1} htmlFor={`QSO_Type_${index}`}>QSO Type:</label>
                       <select name="QSO_Type" id={`QSO_Type_${index}`} value={qso.QSO_Type} onChange={(e) => handleQSOChange(index, e)} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500">
                         <option value="1">Hunter</option>
                         <option value="2">Activator</option>
@@ -282,15 +282,15 @@ const InsertContacts = ({ isOpen, onClose }) => {
                 {contestRecords.map((contest, index) => (
                   <div key={index} className="flex space-x-4">
                     <div className="flex-1">
-                      <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={`Contest_ID_${index}`}>Contest ID:</label>
+                      <label className={InputLabel1} htmlFor={`Contest_ID_${index}`}>Contest ID:</label>
                       <input type="text" name="Contest_ID" id={`Contest_ID_${index}`} value={contest.Contest_ID} onChange={(e) => handleContestChange(index, e)} className={InputBoxClassName} />
                     </div>
                     <div className="flex-1">
-                      <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={`Contest_QSO_Number_${index}`}>Contest QSO Number:</label>
+                      <label className={InputLabel1} htmlFor={`Contest_QSO_Number_${index}`}>Contest QSO Number:</label>
                       <input type="text" name="Contest_QSO_Number" id={`Contest_QSO_Number_${index}`} value={contest.Contest_QSO_Number} onChange={(e) => handleContestChange(index, e)} className={InputBoxClassName} />
                     </div>
                     <div className="flex-1">
-                      <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={`Contest_QSO_Exchange_Data_${index}`}>Contest QSO Exchange Data:</label>
+                      <label className={InputLabel1} htmlFor={`Contest_QSO_Exchange_Data_${index}`}>Contest QSO Exchange Data:</label>
                       <input type="text" name="Contest_QSO_Exchange_Data" id={`Contest_QSO_Exchange_Data_${index}`} value={contest.Contest_QSO_Exchange_Data} onChange={(e) => handleContestChange(index, e)} className={InputBoxClassName} />
                     </div>
                   </div>

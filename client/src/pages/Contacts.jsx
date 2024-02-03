@@ -36,7 +36,6 @@ const Contacts = () => {
     if (choice === "Yes") {
       // Delete the record
       try {        
-        toggleRow(index);
         // Constructing the request URL with query parameters for creating contact records.
         const requestURL = `http://localhost:7800/Delete_Contacts?QSO_ID=${currentQSOId}`;
         // Logging the request URL to the console.

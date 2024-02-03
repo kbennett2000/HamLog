@@ -77,13 +77,11 @@ const QSOsForCallsign = ({ callSignToSearchFor, isOpen, displayTime }) => {
                               {conditions.map((condition, index) => (
                                 <React.Fragment key={index}>
                                   <tr className={`hover:bg-green-100 dark:hover:bg-green-700 ${index % 2 === 0 ? "bg-gray-100 dark:bg-gray-400" : "" } ${index % 2 === 1 ? "bg-gray-300 dark:bg-gray-600" : "" }`} >
-                                      <td className={TableCell1}>{new Date(condition.QSO_Date).toLocaleDateString("en-US")}</td>
-                                      
+                                      <td className={TableCell1}>{new Date(condition.QSO_Date).toLocaleDateString("en-US")}</td>                                      
                                       {displayTime && (          
                                         <td className={TableCell1}>{condition.QSO_MTZTime.slice(0, 5)}</td>                            
-                                      )}
-                                      
-                                      <td className={TableCell1}>{condition.QSO_Frequency.slice(0, 7)}</td>
+                                      )}                                      
+                                      <td className={TableCell1}>{condition.QSO_Frequency.substring(0, condition.QSO_Frequency.lastIndexOf('.'))}</td>
                                   </tr>
                                 </React.Fragment>
                               ))}

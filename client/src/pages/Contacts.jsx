@@ -3,8 +3,9 @@ import axios from "axios";
 import InsertContacts from "./InsertContacts";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import QSOsForCallsign from "./QSOsForCallsign";
+import QSOsForParkNumber from "./QSOsForParkNumber";
 import config from '../config';
-const { InputBoxClassName, ButtonClassNameBlue, ButtonClassNameGreen, ButtonClassNameRed } = config;
+const { ButtonClassNameBlue, ButtonClassNameGreen, ButtonClassNameRed } = config;
 const dataEndpointLocation = "http://localhost:7800/getContactsAndPOTAQSOs";
 const pageTitle = "React HamBook";
 
@@ -16,6 +17,9 @@ const Contacts = () => {
   const [showQSOsForCallsign, setShowQSOsForCallsign] = useState(false);
   const [currentCallsign, setCurrentCallsign] = useState([]);
   const [currentQSOId, setCurrentQSOId] = useState(null);
+  const [showQSOsForParkNumber, setShowQSOsForParkNumber] = useState(false);
+  const [currentParkNumber, setCurrentParkNumber] = useState([]);
+
 
   const fetchData = async () => {
     try {
@@ -68,13 +72,22 @@ const Contacts = () => {
     setShowModal(false);
   };
 
-  const handleMouseOver = (qsoCallsign) => {
+  const handleCallsignMouseOver = (qsoCallsign) => {
     setCurrentCallsign(qsoCallsign);
     setShowQSOsForCallsign(true);
   }
 
-  const handleMouseLeave = () => {
+  const handleCallsignMouseLeave = () => {
     setShowQSOsForCallsign(false);
+  }
+
+  const handleParkNumberMouseOver = (parkNumber) => {
+    setCurrentParkNumber(parkNumber);
+    setShowQSOsForParkNumber(true);
+  }
+
+  const handleParkNumberMouseLeave = () => {
+    setShowQSOsForParkNumber(false);
   }
 
   useEffect(() => {
@@ -115,7 +128,7 @@ const Contacts = () => {
                             </td>
                             <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">{new Date(condition.QSO_Date).toLocaleDateString("en-US")}</td>
                             <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">{condition.QSO_MTZTime}</td>
-                            <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white" onMouseLeave={() => handleMouseLeave()} onMouseOver={() => handleMouseOver(condition.QSO_Callsign)}>{condition.QSO_Callsign}</td>                            
+                            <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white" onMouseLeave={() => handleCallsignMouseLeave()} onMouseOver={() => handleCallsignMouseOver(condition.QSO_Callsign)}>{condition.QSO_Callsign}</td>                            
                             <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">{condition.QSO_Frequency + ' MHz'}</td>                            
                             <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">
                               <button onClick={() => HandleDelete(condition.QSO_ID)} className={ButtonClassNameRed}>X</button>
@@ -148,7 +161,7 @@ const Contacts = () => {
                                             <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                                               {condition.POTA_QSOs.map((potaQSO, index2) => (
                                                 <tr className={`hover:bg-blue-100 dark:hover:bg-blue-700 ${index2 % 2 === 0 ? "bg-gray-200 dark:bg-gray-500" : "" }`}>
-                                                  <td key={potaQSO.POTA_QSO_ID} className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">{potaQSO.POTAPark_ID}</td>
+                                                  <td key={potaQSO.POTA_QSO_ID} className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white" onMouseLeave={() => handleParkNumberMouseLeave()} onMouseOver={() => handleParkNumberMouseOver(potaQSO.POTAPark_ID)}>{potaQSO.POTAPark_ID}</td>
                                                   <td key={potaQSO.POTA_QSO_ID} className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">{potaQSO.QSO_Type === "1" ? "Hunter" : potaQSO.QSO_Type === "2" ? "Activator" : ""}</td>
                                                 </tr>
                                               ))}
@@ -173,6 +186,7 @@ const Contacts = () => {
         <DeleteConfirmationModal isOpen={showModal} onClose={() => setShowModal(false)} onConfirm={handleUserChoice} />
         <InsertContacts isOpen={showInsertContacts} onClose={() => setShowInsertContacts(false)} />
         <QSOsForCallsign callSignToSearchFor={currentCallsign} isOpen={showQSOsForCallsign} />
+        <QSOsForParkNumber parkNumberToSearchFor={currentParkNumber} isOpen={showQSOsForParkNumber} />
       </div>
     </>
   );

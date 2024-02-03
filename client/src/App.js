@@ -1,13 +1,16 @@
-import React, { useState } from "react";
+//import React, { useState } from "react";
+import React from "react";
 import ContactsControl from "./controls/ContactsControl";
 import "./App.css";
 
 const App = () => {
+  /*
   const [activeTab, setActiveTab] = useState(1);
 
   const handleTabClick = (tabNumber) => {
     setActiveTab(tabNumber);
   };
+*/
 
   return (
     <ContactsControl />

@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import QSOsForCallsign from './QSOsForCallsign';
+import QSOsForParkNumber from './QSOsForParkNumber';
 import config from '../config';
 const { InputBoxClassName, ButtonClassNameBlue, ButtonClassNameGreen } = config;
 
@@ -15,6 +16,8 @@ let contestQSOLimit = 1;
 const InsertContacts = ({ isOpen, onClose }) => {
   const [showQSOsForCallsign, setShowQSOsForCallsign] = useState(false);
   const [currentCallsign, setCurrentCallsign] = useState([]);
+  const [showQSOsForParkNumber, setShowQSOsForParkNumber] = useState(false);
+  const [currentParkNumber, setCurrentParkNumber] = useState([]);
 
   // useDispatch hook from Redux is used to dispatch actions, mainly used here for updating the global state.
   const dispatch = useDispatch();
@@ -62,12 +65,21 @@ const InsertContacts = ({ isOpen, onClose }) => {
     const newQSORecords = [...qsoRecords];
     // Updating the specific QSO record at the given index.
     newQSORecords[index][e.target.name] = e.target.value;
-    // Logging the changed value to the console.
-    console.log("e.target.value is " + e.target.value);
     // Updating the 'qsoRecords' state with the modified records.
     setQSORecords(newQSORecords);
   };
 
+  // Function to handle changes in QSO records, updating 'qsoRecords' state.
+  const handleQSOPOTAIDChange = (index, e) => {
+    setCurrentParkNumber(e.target.value);
+    // Creating a new array from the existing QSO records.
+    const newQSORecords = [...qsoRecords];
+    // Updating the specific QSO record at the given index.
+    newQSORecords[index][e.target.name] = e.target.value;
+    // Updating the 'qsoRecords' state with the modified records.
+    setQSORecords(newQSORecords);
+  };
+    
   // Function to handle changes in Contest records, updating 'contestRecords' state.
   const handleContestChange = (index, e) => {
     // Creating a new array from the existing Contest records.
@@ -223,14 +235,30 @@ const InsertContacts = ({ isOpen, onClose }) => {
     }
   };
 
-  const handleMouseOver = (qsoCallsign) => {
+  const handleCallsignMouseOver = (qsoCallsign) => {
     setCurrentCallsign(qsoCallsign);
     setShowQSOsForCallsign(true);
   }
 
-  const handleMouseLeave = () => {
+  const handleCallsignMouseLeave = () => {
     setShowQSOsForCallsign(false);
   }
+
+
+
+
+  const handleParkNumberMouseOver = (parkNumber) => {
+    setCurrentParkNumber(parkNumber);
+    setShowQSOsForParkNumber(true);
+  }
+
+  const handleParkNumberMouseLeave = () => {
+    setShowQSOsForParkNumber(false);
+  }
+
+
+
+
 
   if (!isOpen) return null;
 
@@ -248,7 +276,7 @@ const InsertContacts = ({ isOpen, onClose }) => {
             <form onSubmit={handleSubmit} className="max-w-md mx-auto mt-8 shadow-md p-6 bg-white rounded-md">
                 <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="QSO_Callsign">Callsign:</label>
-                    <input type="text" name="QSO_Callsign" value={formData.QSO_Callsign} onChange={handleCallsignChange} className={InputBoxClassName} autoFocus onMouseLeave={() => handleMouseLeave()} onMouseOver={() => handleMouseOver(currentCallsign)}/>
+                    <input type="text" name="QSO_Callsign" value={formData.QSO_Callsign} onChange={handleCallsignChange} className={InputBoxClassName} autoFocus onMouseLeave={() => handleCallsignMouseLeave()} onMouseOver={() => handleCallsignMouseOver(currentCallsign)}/>
                 </div>
                 <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="QSO_Frequency">Frequency:</label>
@@ -270,7 +298,23 @@ const InsertContacts = ({ isOpen, onClose }) => {
                   <div key={index} className="flex space-x-4">
                     <div className="flex-1">
                       <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={`POTAPark_ID_${index}`}>POTA Park ID:</label>
-                      <input type="text" name="POTAPark_ID" id={`POTAPark_ID_${index}`} value={qso.POTAPark_ID} onChange={(e) => handleQSOChange(index, e)} className={InputBoxClassName} />
+
+
+
+
+
+
+
+                      <input type="text" name="POTAPark_ID" id={`POTAPark_ID_${index}`} value={qso.POTAPark_ID} onChange={(e) => handleQSOPOTAIDChange(index, e)} className={InputBoxClassName} onMouseLeave={() => handleParkNumberMouseLeave()} onMouseOver={() => handleParkNumberMouseOver(currentParkNumber)}/>
+
+                      
+
+
+
+
+
+
+
                     </div>
                     <div className="flex-1">
                       <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={`QSO_Type_${index}`}>QSO Type:</label>
@@ -307,6 +351,7 @@ const InsertContacts = ({ isOpen, onClose }) => {
           </div>
         </div>
         <QSOsForCallsign callSignToSearchFor={currentCallsign} isOpen={showQSOsForCallsign} />
+        <QSOsForParkNumber parkNumberToSearchFor={currentParkNumber} isOpen={showQSOsForParkNumber} />
       </div>
     );
 };

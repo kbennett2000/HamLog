@@ -1,20 +1,28 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 let dataEndpointLocation = "";
 let runCount = 0;
-let cachedCallsign = '';
+let cachedParkNumber = '';
 
-const QSOsForCallsign = ({ callSignToSearchFor, isOpen }) => {
+const QSOsForParkNumber = ({ parkNumberToSearchFor, isOpen }) => {
   const [conditions, setConditions] = useState([]);
-  dataEndpointLocation=`http://localhost:7800/Get_Contacts_for_Callsign?QSO_Callsign=${callSignToSearchFor}`;
-
+  dataEndpointLocation=`http://localhost:7800/Get_Contacts_for_ParkNumber?ParkNumber=${parkNumberToSearchFor}`;
+  
   const fetchData = async () => {
     try {
+        console.log("QSOsForParkNumber.fetchData() - " + dataEndpointLocation);
       const res = await axios.get(dataEndpointLocation);
       // Check if the response is an array, otherwise set to an empty array
-      setConditions(Array.isArray(res.data.Contacts) ? res.data.Contacts : []);    
-      cachedCallsign = callSignToSearchFor;  
+      setConditions(Array.isArray(res.data.Contacts) ? res.data.Contacts : []);
+     
+      //console.log("CONDITIONS" + conditions[0].POTAPark_ID);
+      if (!conditions[0].POTAPark_ID) {
+        console.log('THERE IS NO POTA ID!!!');
+        //setConditions([]);
+      }
+
+      cachedParkNumber = parkNumberToSearchFor;  
     } catch (err) {
       console.log(err);
       setConditions([]); // Set to an empty array in case of an error
@@ -28,8 +36,8 @@ const QSOsForCallsign = ({ callSignToSearchFor, isOpen }) => {
       fetchData();
     }
     // Handles data fetch when callsign changes
-    if (cachedCallsign !== callSignToSearchFor) {
-      cachedCallsign = callSignToSearchFor;
+    if (cachedParkNumber !== parkNumberToSearchFor) {
+      cachedParkNumber = parkNumberToSearchFor;
       fetchData();
     }    
   } else {
@@ -46,7 +54,7 @@ const QSOsForCallsign = ({ callSignToSearchFor, isOpen }) => {
     <>
         <div className="fixed top-0 right-0 mt-4 mr-4 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full md:w-auto" id="my-modal">
             <div className="relative p-5 border w-auto shadow-lg rounded-md bg-white">
-                <h1 className="text-3xl font-bold mb-4">QSOs with {callSignToSearchFor}</h1>
+                <h1 className="text-3xl font-bold mb-4">QSOs with {parkNumberToSearchFor}</h1>
                 <div className="mx-auto">
                     <div className="mx-auto">
                     <div className="flex flex-col">
@@ -58,6 +66,7 @@ const QSOsForCallsign = ({ callSignToSearchFor, isOpen }) => {
                                 <tr>
                                     <th scope="col" className="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-300 uppercase dark:text-gray-100">Date</th>
                                     <th scope="col" className="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-300 uppercase dark:text-gray-100">Mountain Time</th>
+                                    <th scope="col" className="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-300 uppercase dark:text-gray-100">Callsign</th>
                                     <th scope="col" className="py-3 px-6 text-xs font-medium tracking-wider text-left text-gray-300 uppercase dark:text-gray-100">Frequency</th>
                                 </tr>
                                 </thead>
@@ -67,6 +76,7 @@ const QSOsForCallsign = ({ callSignToSearchFor, isOpen }) => {
                                     <tr className={`hover:bg-green-100 dark:hover:bg-green-700 ${index % 2 === 0 ? "bg-gray-100 dark:bg-gray-400" : "" } ${index % 2 === 1 ? "bg-gray-300 dark:bg-gray-600" : "" }`} >
                                         <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">{new Date(condition.QSO_Date).toLocaleDateString("en-US")}</td>
                                         <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">{condition.QSO_MTZTime}</td>                            
+                                        <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">{condition.QSO_Callsign}</td>        
                                         <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">{condition.QSO_Frequency + ' MHz'}</td>
                                     </tr>
                                     </React.Fragment>
@@ -85,4 +95,4 @@ const QSOsForCallsign = ({ callSignToSearchFor, isOpen }) => {
   );
 };
 
-export default QSOsForCallsign;
+export default QSOsForParkNumber;

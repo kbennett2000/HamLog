@@ -135,6 +135,15 @@ app.get("/Get_Contacts_for_Callsign", async (req, res) => {
   return res.status(200).json({ Contacts: rows });
 });
 
+// Get_Contacts_for_ParkNumber
+app.get("/Get_Contacts_for_ParkNumber", async (req, res) => {
+  const { ParkNumber } = req.query;
+  const promise = dbHamLog.promise();
+  const query = `SELECT POTA_QSOs.*, Contacts.* FROM POTA_QSOs INNER JOIN Contacts ON POTA_QSOs.QSO_ID = Contacts.QSO_ID WHERE POTA_QSOs.POTAPark_ID = \'${ParkNumber}\' ORDER BY POTA_QSOs.POTA_QSO_ID DESC`;  
+  const [rows, fields] = await promise.execute(query);
+  return res.status(200).json({ Contacts: rows });
+});
+
 app.get("/Last_Insert_ID", async (req, res) => {
   const promise = dbHamLog.promise();
   const query = "SELECT LAST_INSERT_ID();";

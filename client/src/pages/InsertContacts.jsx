@@ -9,7 +9,7 @@ let contestQSOCounter = 0;
 let contestQSOLimit = 1;
 
 // Defining a React functional component named InsertContacts.
-const InsertContacts = ({ closeInsert }) => {
+const InsertContacts = ({ isOpen, onClose }) => {
 
   // useDispatch hook from Redux is used to dispatch actions, mainly used here for updating the global state.
   const dispatch = useDispatch();
@@ -123,7 +123,7 @@ const InsertContacts = ({ closeInsert }) => {
       // Returning early from the function to prevent form submission
       return;    
     }
-    
+
     // Variable to store the ID of the last inserted record.
     let lastInsertID = "";
 
@@ -204,76 +204,84 @@ const InsertContacts = ({ closeInsert }) => {
       setFormData(initialFormData);
       setQSORecords(initialPOTAQSOFormData);
       setContestRecords(initialContestQSOFormData);
-      closeInsert();
+      onClose();
     } catch (error) {
       // Logging any errors that occur during the form submission.
       console.error('Error inserting record:', error);
     }
   };
 
+  if (!isOpen) return null;
+
   return (
-        <form onSubmit={handleSubmit} className="max-w-md mx-auto mt-8 shadow-md p-6 bg-white rounded-md">
-            <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="QSO_Callsign">Callsign:</label>
-                <input type="text" name="QSO_Callsign" value={formData.QSO_Callsign} onChange={handleChange} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500" autoFocus />
-            </div>
-            <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="QSO_Frequency">Frequency:</label>
-                <input type="text" name="QSO_Frequency" value={formData.QSO_Frequency} onChange={handleChange} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500"/>
-            </div>
-            <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="QSO_Notes">Notes:</label>
-                <input type="text" name="QSO_Notes" value={formData.QSO_Notes} onChange={handleChange} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500"/>
-            </div>
-            <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="QSO_Received">Received:</label>
-                <input type="text" name="QSO_Received" value={formData.QSO_Received} onChange={handleChange} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500"/>
-            </div>
-            <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="QSO_Sent">Sent:</label>
-                <input type="text" name="QSO_Sent" value={formData.QSO_Sent} onChange={handleChange} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500"/>
-            </div>
-
-            <button type="button" onClick={addQSORecord} className="bg-green-500 text-white p-3 rounded-md focus:outline-none hover:bg-green-700">Add POTA Park(s)</button>
-
-            {qsoRecords.map((qso, index) => (
-              <div key={index} className="flex space-x-4">
-                <div className="flex-1">
-                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={`POTAPark_ID_${index}`}>POTA Park ID:</label>
-                  <input type="text" name="POTAPark_ID" id={`POTAPark_ID_${index}`} value={qso.POTAPark_ID} onChange={(e) => handleQSOChange(index, e)} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500" />
+      <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="my-modal">
+        <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+          <div className="mt-3 text-center">
+            <form onSubmit={handleSubmit} className="max-w-md mx-auto mt-8 shadow-md p-6 bg-white rounded-md">
+                <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="QSO_Callsign">Callsign:</label>
+                    <input type="text" name="QSO_Callsign" value={formData.QSO_Callsign} onChange={handleChange} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500" autoFocus />
                 </div>
-                <div className="flex-1">
-                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={`QSO_Type_${index}`}>QSO Type:</label>
-                  <select name="QSO_Type" id={`QSO_Type_${index}`} value={qso.QSO_Type} onChange={(e) => handleQSOChange(index, e)} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500">
-                    <option value="1">Hunter</option>
-                    <option value="2">Activator</option>
-                  </select>
+                <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="QSO_Frequency">Frequency:</label>
+                    <input type="text" name="QSO_Frequency" value={formData.QSO_Frequency} onChange={handleChange} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500"/>
                 </div>
-              </div>
-              ))}
+                <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="QSO_Notes">Notes:</label>
+                    <input type="text" name="QSO_Notes" value={formData.QSO_Notes} onChange={handleChange} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500"/>
+                </div>
+                <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="QSO_Received">Received:</label>
+                    <input type="text" name="QSO_Received" value={formData.QSO_Received} onChange={handleChange} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500"/>
+                </div>
+                <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="QSO_Sent">Sent:</label>
+                    <input type="text" name="QSO_Sent" value={formData.QSO_Sent} onChange={handleChange} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500"/>
+                </div>
 
-            <button type="button" onClick={addContestRecord} className="bg-green-500 text-white p-3 rounded-md focus:outline-none hover:bg-green-700">Add Contest QSO</button>
+                <button type="button" onClick={addQSORecord} className="bg-green-500 text-white p-3 rounded-md focus:outline-none hover:bg-green-700">Add POTA Park(s)</button>
 
-            {contestRecords.map((contest, index) => (
-              <div key={index} className="flex space-x-4">
-                <div className="flex-1">
-                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={`Contest_ID_${index}`}>Contest ID:</label>
-                  <input type="text" name="Contest_ID" id={`Contest_ID_${index}`} value={contest.Contest_ID} onChange={(e) => handleContestChange(index, e)} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500" />
-                </div>
-                <div className="flex-1">
-                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={`Contest_QSO_Number_${index}`}>Contest QSO Number:</label>
-                  <input type="text" name="Contest_QSO_Number" id={`Contest_QSO_Number_${index}`} value={contest.Contest_QSO_Number} onChange={(e) => handleContestChange(index, e)} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500" />
-                </div>
-                <div className="flex-1">
-                  <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={`Contest_QSO_Exchange_Data_${index}`}>Contest QSO Exchange Data:</label>
-                  <input type="text" name="Contest_QSO_Exchange_Data" id={`Contest_QSO_Exchange_Data_${index}`} value={contest.Contest_QSO_Exchange_Data} onChange={(e) => handleContestChange(index, e)} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500" />
-                </div>
-              </div>
-              ))}
+                {qsoRecords.map((qso, index) => (
+                  <div key={index} className="flex space-x-4">
+                    <div className="flex-1">
+                      <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={`POTAPark_ID_${index}`}>POTA Park ID:</label>
+                      <input type="text" name="POTAPark_ID" id={`POTAPark_ID_${index}`} value={qso.POTAPark_ID} onChange={(e) => handleQSOChange(index, e)} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500" />
+                    </div>
+                    <div className="flex-1">
+                      <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={`QSO_Type_${index}`}>QSO Type:</label>
+                      <select name="QSO_Type" id={`QSO_Type_${index}`} value={qso.QSO_Type} onChange={(e) => handleQSOChange(index, e)} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500">
+                        <option value="1">Hunter</option>
+                        <option value="2">Activator</option>
+                      </select>
+                    </div>
+                  </div>
+                  ))}
 
-            <button type="submit" className="w-full bg-blue-500 text-white p-3 rounded-md focus:outline-none hover:bg-blue-700">Insert Contact</button>
-            <button onClick={closeInsert} className="w-full bg-blue-500 text-white p-3 rounded-md focus:outline-none hover:bg-blue-700">Close</button>
-        </form>
+                <button type="button" onClick={addContestRecord} className="bg-green-500 text-white p-3 rounded-md focus:outline-none hover:bg-green-700">Add Contest QSO</button>
+
+                {contestRecords.map((contest, index) => (
+                  <div key={index} className="flex space-x-4">
+                    <div className="flex-1">
+                      <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={`Contest_ID_${index}`}>Contest ID:</label>
+                      <input type="text" name="Contest_ID" id={`Contest_ID_${index}`} value={contest.Contest_ID} onChange={(e) => handleContestChange(index, e)} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500" />
+                    </div>
+                    <div className="flex-1">
+                      <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={`Contest_QSO_Number_${index}`}>Contest QSO Number:</label>
+                      <input type="text" name="Contest_QSO_Number" id={`Contest_QSO_Number_${index}`} value={contest.Contest_QSO_Number} onChange={(e) => handleContestChange(index, e)} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500" />
+                    </div>
+                    <div className="flex-1">
+                      <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={`Contest_QSO_Exchange_Data_${index}`}>Contest QSO Exchange Data:</label>
+                      <input type="text" name="Contest_QSO_Exchange_Data" id={`Contest_QSO_Exchange_Data_${index}`} value={contest.Contest_QSO_Exchange_Data} onChange={(e) => handleContestChange(index, e)} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500" />
+                    </div>
+                  </div>
+                  ))}
+
+                <button type="submit" className="w-full bg-blue-500 text-white p-3 rounded-md focus:outline-none hover:bg-blue-700">Insert Contact</button>
+                <button onClick={onClose} className="w-full bg-blue-500 text-white p-3 rounded-md focus:outline-none hover:bg-blue-700">Close</button>
+            </form>
+          </div>
+        </div>
+      </div>
     );
 };
 

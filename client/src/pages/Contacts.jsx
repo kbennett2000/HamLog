@@ -165,16 +165,19 @@ const Contacts = () => {
         
         <DeleteConfirmationModal isOpen={showModal} onClose={() => setShowModal(false)} onConfirm={handleUserChoice} />
 
-        {/* Conditional rendering for InsertContacts */}
+        <InsertContacts isOpen={showInsertContacts} onClose={() => setShowInsertContacts(false)} />
+
+        {/* Conditional rendering for InsertContacts 
         {showInsertContacts && (
           <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="my-modal">
             <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
               <div className="mt-3 text-center">
-                <InsertContacts closeInsert={() => CloseInsert()}/>
+                <InsertContacts isOpen={showInsertContacts} onClose={() => CloseInsert()}/>
               </div>
             </div>
           </div>
         )}
+        */}
 
       </div>
     </>

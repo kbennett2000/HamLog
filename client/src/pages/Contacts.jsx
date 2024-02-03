@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import InsertContacts from "./InsertContacts";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
+import config from '../config';
+const { InputBoxClassName, ButtonClassNameBlue, ButtonClassNameGreen, ButtonClassNameRed } = config;
 const dataEndpointLocation = "http://localhost:7800/getContactsAndPOTAQSOs";
 const pageTitle = "React HamBook";
 
@@ -68,6 +70,10 @@ const Contacts = () => {
     setShowModal(false);
   };
 
+  const handleMouseOver = (qsoId) => {
+    console.log("QSO ID IS " + qsoId);
+  }
+
   useEffect(() => {
     fetchData();
     const interval = setInterval(fetchData, 60000);
@@ -78,8 +84,7 @@ const Contacts = () => {
     <>
       <h1 className="text-3xl font-bold mb-4">{pageTitle}</h1>
       <div class="flex items-center space-x-2">
-        <button onClick={() => HandleInsert()} class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">+</button>
-        <h3 class="m-0">Add Contact</h3> 
+        <button onClick={() => HandleInsert()} class={ButtonClassNameGreen}>Add Contact</button>
       </div>
       <div className="mx-auto">
         <div className="mx-auto">
@@ -103,14 +108,14 @@ const Contacts = () => {
                         <React.Fragment key={index}>
                           <tr className={`hover:bg-green-100 dark:hover:bg-green-700 ${index % 2 === 0 ? "bg-gray-100 dark:bg-gray-400" : "" } ${index % 2 === 1 ? "bg-gray-300 dark:bg-gray-600" : "" }`} >
                             <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">                                  
-                              <button onClick={() => toggleRow(index)} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">+</button>
+                              <button onClick={() => toggleRow(index)} class={ButtonClassNameBlue}>+</button>
                             </td>
                             <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">{new Date(condition.QSO_Date).toLocaleDateString("en-US")}</td>
-                            <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">{condition.QSO_MTZTime}</td>
-                            <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">{condition.QSO_Callsign}</td>
+                            <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">{condition.QSO_MTZTime}</td>                            
+                            <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white" onMouseOver={() => handleMouseOver(condition.QSO_ID)}>{condition.QSO_Callsign}</td>
                             <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">{condition.QSO_Frequency + ' MHz'}</td>
                             <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                              <button onClick={() => HandleDelete(condition.QSO_ID)} class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">X</button>
+                              <button onClick={() => HandleDelete(condition.QSO_ID)} class={ButtonClassNameRed}>X</button>
                             </td>
                           </tr>
                           {expandedRows[index] && (
@@ -161,24 +166,9 @@ const Contacts = () => {
               </div>
             </div>
           </div>
-        </div>
-        
+        </div>        
         <DeleteConfirmationModal isOpen={showModal} onClose={() => setShowModal(false)} onConfirm={handleUserChoice} />
-
         <InsertContacts isOpen={showInsertContacts} onClose={() => setShowInsertContacts(false)} />
-
-        {/* Conditional rendering for InsertContacts 
-        {showInsertContacts && (
-          <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="my-modal">
-            <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-              <div className="mt-3 text-center">
-                <InsertContacts isOpen={showInsertContacts} onClose={() => CloseInsert()}/>
-              </div>
-            </div>
-          </div>
-        )}
-        */}
-
       </div>
     </>
   );

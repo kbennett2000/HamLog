@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
+import config from '../config';
+const { InputBoxClassName, ButtonClassNameBlue, ButtonClassNameGreen } = config;
 
 // The number of Contest QSOs recorded for this Contact record 
 let contestQSOCounter = 0;
@@ -216,36 +218,41 @@ const InsertContacts = ({ isOpen, onClose }) => {
   return (
       <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="my-modal">
         <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+          {/* Close button positioned in the top right corner */}
+          <div className="flex justify-between items-start">
+            <h2 className="text-xl font-semibold">Insert Contact</h2>
+            <button onClick={onClose} className="text-xl rounded-full p-2 hover:bg-gray-200">
+              &times; {/* This is a simple way to create a close (×) button */}
+            </button>
+          </div>
           <div className="mt-3 text-center">
             <form onSubmit={handleSubmit} className="max-w-md mx-auto mt-8 shadow-md p-6 bg-white rounded-md">
                 <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="QSO_Callsign">Callsign:</label>
-                    <input type="text" name="QSO_Callsign" value={formData.QSO_Callsign} onChange={handleChange} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500" autoFocus />
+                    <input type="text" name="QSO_Callsign" value={formData.QSO_Callsign} onChange={handleChange} className={InputBoxClassName} autoFocus />
                 </div>
                 <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="QSO_Frequency">Frequency:</label>
-                    <input type="text" name="QSO_Frequency" value={formData.QSO_Frequency} onChange={handleChange} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500"/>
+                    <input type="text" name="QSO_Frequency" value={formData.QSO_Frequency} onChange={handleChange} className={InputBoxClassName}/>
                 </div>
                 <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="QSO_Notes">Notes:</label>
-                    <input type="text" name="QSO_Notes" value={formData.QSO_Notes} onChange={handleChange} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500"/>
+                    <input type="text" name="QSO_Notes" value={formData.QSO_Notes} onChange={handleChange} className={InputBoxClassName}/>
                 </div>
                 <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="QSO_Received">Received:</label>
-                    <input type="text" name="QSO_Received" value={formData.QSO_Received} onChange={handleChange} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500"/>
+                    <input type="text" name="QSO_Received" value={formData.QSO_Received} onChange={handleChange} className={InputBoxClassName}/>
                 </div>
                 <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="QSO_Sent">Sent:</label>
-                    <input type="text" name="QSO_Sent" value={formData.QSO_Sent} onChange={handleChange} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500"/>
+                    <input type="text" name="QSO_Sent" value={formData.QSO_Sent} onChange={handleChange} className={InputBoxClassName}/>
                 </div>
-
-                <button type="button" onClick={addQSORecord} className="bg-green-500 text-white p-3 rounded-md focus:outline-none hover:bg-green-700">Add POTA Park(s)</button>
 
                 {qsoRecords.map((qso, index) => (
                   <div key={index} className="flex space-x-4">
                     <div className="flex-1">
                       <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={`POTAPark_ID_${index}`}>POTA Park ID:</label>
-                      <input type="text" name="POTAPark_ID" id={`POTAPark_ID_${index}`} value={qso.POTAPark_ID} onChange={(e) => handleQSOChange(index, e)} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500" />
+                      <input type="text" name="POTAPark_ID" id={`POTAPark_ID_${index}`} value={qso.POTAPark_ID} onChange={(e) => handleQSOChange(index, e)} className={InputBoxClassName} />
                     </div>
                     <div className="flex-1">
                       <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={`QSO_Type_${index}`}>QSO Type:</label>
@@ -257,27 +264,32 @@ const InsertContacts = ({ isOpen, onClose }) => {
                   </div>
                   ))}
 
-                <button type="button" onClick={addContestRecord} className="bg-green-500 text-white p-3 rounded-md focus:outline-none hover:bg-green-700">Add Contest QSO</button>
-
                 {contestRecords.map((contest, index) => (
                   <div key={index} className="flex space-x-4">
                     <div className="flex-1">
                       <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={`Contest_ID_${index}`}>Contest ID:</label>
-                      <input type="text" name="Contest_ID" id={`Contest_ID_${index}`} value={contest.Contest_ID} onChange={(e) => handleContestChange(index, e)} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500" />
+                      <input type="text" name="Contest_ID" id={`Contest_ID_${index}`} value={contest.Contest_ID} onChange={(e) => handleContestChange(index, e)} className={InputBoxClassName} />
                     </div>
                     <div className="flex-1">
                       <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={`Contest_QSO_Number_${index}`}>Contest QSO Number:</label>
-                      <input type="text" name="Contest_QSO_Number" id={`Contest_QSO_Number_${index}`} value={contest.Contest_QSO_Number} onChange={(e) => handleContestChange(index, e)} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500" />
+                      <input type="text" name="Contest_QSO_Number" id={`Contest_QSO_Number_${index}`} value={contest.Contest_QSO_Number} onChange={(e) => handleContestChange(index, e)} className={InputBoxClassName} />
                     </div>
                     <div className="flex-1">
                       <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={`Contest_QSO_Exchange_Data_${index}`}>Contest QSO Exchange Data:</label>
-                      <input type="text" name="Contest_QSO_Exchange_Data" id={`Contest_QSO_Exchange_Data_${index}`} value={contest.Contest_QSO_Exchange_Data} onChange={(e) => handleContestChange(index, e)} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500" />
+                      <input type="text" name="Contest_QSO_Exchange_Data" id={`Contest_QSO_Exchange_Data_${index}`} value={contest.Contest_QSO_Exchange_Data} onChange={(e) => handleContestChange(index, e)} className={InputBoxClassName} />
                     </div>
                   </div>
                   ))}
 
-                <button type="submit" className="w-full bg-blue-500 text-white p-3 rounded-md focus:outline-none hover:bg-blue-700">Insert Contact</button>
-                <button onClick={onClose} className="w-full bg-blue-500 text-white p-3 rounded-md focus:outline-none hover:bg-blue-700">Close</button>
+
+              {/* Flex container for buttons */}
+              <div className="flex justify-center space-x-4 mb-4">
+                <button type="button" onClick={addQSORecord} className={ButtonClassNameGreen}>Add POTA Park(s)</button>
+                <button type="button" onClick={addContestRecord} className={ButtonClassNameGreen}>Add Contest QSO</button>
+              </div>
+
+              <button type="submit" className={ButtonClassNameBlue}>Insert Contact</button>
+
             </form>
           </div>
         </div>

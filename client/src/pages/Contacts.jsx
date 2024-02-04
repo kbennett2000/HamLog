@@ -16,7 +16,7 @@ const {
   TableBodyStyle1, 
   TableHeadStyle1, 
   TableHeadStyle2, 
-  TableHeadStyle3,
+  TableHeadStyle3, 
 } = config;
 const dataEndpointLocation = "http://localhost:7800/getContactsAndPOTAQSOs";
 const pageTitle = "My Ham Log";

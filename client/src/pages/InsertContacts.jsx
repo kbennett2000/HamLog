@@ -1,7 +1,6 @@
 // Importing necessary modules and hooks from React, axios for HTTP requests, and Redux for state management.
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useDispatch } from 'react-redux';
 import QSOsForCallsign from './QSOsForCallsign';
 import QSOsForParkNumber from './QSOsForParkNumber';
 import config from '../config';
@@ -17,9 +16,6 @@ const InsertContacts = ({ isOpen, onClose, onClosed }) => {
   const [currentCallsign, setCurrentCallsign] = useState([]);
   const [showQSOsForParkNumber, setShowQSOsForParkNumber] = useState(false);
   const [currentParkNumber, setCurrentParkNumber] = useState([]);
-
-  // useDispatch hook from Redux is used to dispatch actions, mainly used here for updating the global state.
-  const dispatch = useDispatch();
 
   // Defining the initial state for the form data with all fields initialized as empty strings.
   const initialFormData = {

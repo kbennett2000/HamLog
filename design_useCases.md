@@ -6,7 +6,8 @@
 
 - ~~[We are a group of operators making a single contact](https://github.com/kbennett2000/HamLog/issues/3)~~
 - ~~[We are a group of operators making multiple contacts](https://github.com/kbennett2000/HamLog/issues/4)~~
-
+- I am an operator who wants to import my logs from CSV
+- I am an operator who wants to import my logs from XML
 
 ## NON-CONTEST, POTA
 ### Hunting
@@ -21,6 +22,8 @@
 
 - ~~[We are a group of operators hunting multiple POTA activators in a single park](https://github.com/kbennett2000/HamLog/issues/11)~~
 - ~~[We are a group of operators hunting multiple POTA activators in multiple parks](https://github.com/kbennett2000/HamLog/issues/12)~~
+
+- I am an activator who needs to export my logs to POTA
 
 ### Activating
 - [I am a lone activator in a single park responding to a single contact](https://github.com/kbennett2000/HamLog/issues/13)

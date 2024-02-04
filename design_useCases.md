@@ -10,11 +10,11 @@
 
 ## NON-CONTEST, POTA
 ### Hunting
-- [I am a lone operator hunting a single POTA activator in a single park](https://github.com/kbennett2000/HamLog/issues/5)
-- [I am a lone operator hunting a single POTA activator in multiple parks](https://github.com/kbennett2000/HamLog/issues/6)
+- ~~[I am a lone operator hunting a single POTA activator in a single park](https://github.com/kbennett2000/HamLog/issues/5)~~
+- ~~[I am a lone operator hunting a single POTA activator in multiple parks](https://github.com/kbennett2000/HamLog/issues/6)~~
 
-- [I am a lone operator hunting a multiple POTA activators in a single park](https://github.com/kbennett2000/HamLog/issues/7)
-- [I am a lone operator hunting a multiple POTA activators in multiple parks](https://github.com/kbennett2000/HamLog/issues/8)
+- ~~[I am a lone operator hunting a multiple POTA activators in a single park](https://github.com/kbennett2000/HamLog/issues/7)~~
+- ~~[I am a lone operator hunting a multiple POTA activators in multiple parks](https://github.com/kbennett2000/HamLog/issues/8)~~
 
 - ~~[We are a group of operators hunting a single POTA activator in a single park](https://github.com/kbennett2000/HamLog/issues/9)~~
 - ~~[We are a group of operators hutning a single POTA activator in multiple parks](https://github.com/kbennett2000/HamLog/issues/10)~~

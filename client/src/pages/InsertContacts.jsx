@@ -129,7 +129,32 @@ const InsertContacts = ({ isOpen, onClose, onClosed }) => {
     const currentTime = `${hours}:${minutes}`;
     return currentTime;
   }
-  
+
+  const handleCallsignMouseOver = (qsoCallsign) => {
+    setCurrentCallsign(qsoCallsign);
+    setShowQSOsForCallsign(true);
+  }
+
+  const handleCallsignMouseLeave = () => {
+    setShowQSOsForCallsign(false);
+  }
+
+  const handleParkNumberMouseOver = (parkNumber) => {
+    setCurrentParkNumber(parkNumber);
+    setShowQSOsForParkNumber(true);
+  }
+
+  const handleParkNumberMouseLeave = () => {
+    setShowQSOsForParkNumber(false);
+  }
+
+  const handleClose = () => {
+    setFormData(initialFormData);
+    setQSORecords(initialPOTAQSOFormData);
+    setContestRecords(initialContestQSOFormData);
+    onClose();
+  }
+
   // Function to handle the form submission.
   const handleSubmit = async (e) => {
     // Preventing the default form submission behavior.
@@ -222,31 +247,6 @@ const InsertContacts = ({ isOpen, onClose, onClosed }) => {
     onClose();
     onClosed();
   };
-
-  const handleCallsignMouseOver = (qsoCallsign) => {
-    setCurrentCallsign(qsoCallsign);
-    setShowQSOsForCallsign(true);
-  }
-
-  const handleCallsignMouseLeave = () => {
-    setShowQSOsForCallsign(false);
-  }
-
-  const handleParkNumberMouseOver = (parkNumber) => {
-    setCurrentParkNumber(parkNumber);
-    setShowQSOsForParkNumber(true);
-  }
-
-  const handleParkNumberMouseLeave = () => {
-    setShowQSOsForParkNumber(false);
-  }
-
-  const handleClose = () => {
-    setFormData(initialFormData);
-    setQSORecords(initialPOTAQSOFormData);
-    setContestRecords(initialContestQSOFormData);
-    onClose();
-  }
 
   if (!isOpen) return null;
 

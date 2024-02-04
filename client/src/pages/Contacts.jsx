@@ -6,6 +6,7 @@ import QSOsForCallsign from './QSOsForCallsign';
 import QSOsForParkNumber from './QSOsForParkNumber';
 import config from '../config';
 const { 
+  AppTitle,
   ServerURL,
   ServerPort,  
   ButtonClassNameBlue, 
@@ -21,7 +22,6 @@ const {
   TableHeadStyle3, 
 } = config;
 const dataEndpointLocation = `${ServerURL}:${ServerPort}/getContactsAndPOTAQSOs`; 
-const pageTitle = 'My Ham Log';
 
 const Contacts = () => {
   const [conditions, setConditions] = useState([]);
@@ -112,7 +112,7 @@ const Contacts = () => {
 
   return (
     <>
-      <h1 className='text-3xl font-bold mb-4'>{pageTitle}</h1>
+      <h1 className='text-3xl font-bold mb-4'>{AppTitle}</h1>
       <div className='flex items-center space-x-2'>
         <button onClick={() => HandleInsert()} className={ButtonClassNameGreen}>+ QSO</button>
       </div>

@@ -159,13 +159,13 @@ const InsertContacts = ({ isOpen, onClose, onClosed }) => {
     // Check if Callsign and Frequency fields are blank
     if (!formData.QSO_Callsign.trim() || !formData.QSO_Frequency.trim()) {
       // Alerting the user that Callsign and Frequency fields cannot be blank
-      alert("Callsign and Frequency fields cannot be blank.");
+      alert('Callsign and Frequency fields cannot be blank.');
       // Returning early from the function to prevent form submission
       return;    
     }
     
     // Split the callsigns by commas
-    const callsignsToAdd = formData.QSO_Callsign.split(",");
+    const callsignsToAdd = formData.QSO_Callsign.split(',');
     // Array for Contacts Insert queries to run
     const insertQueries = [];
     // Array holding Last Insert IDs to be used for POTA and Contest records
@@ -247,78 +247,78 @@ const InsertContacts = ({ isOpen, onClose, onClosed }) => {
   if (!isOpen) return null;
 
   return (
-      <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="my-modal">
-        <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+      <div className='fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full' id='my-modal'>
+        <div className='relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white'>
           {/* Close button positioned in the top right corner */}
-          <div className="flex justify-between items-start">
-            <h2 className="text-xl font-semibold">Add QSO</h2>
-            <button onClick={handleClose} className="text-xl rounded-full p-2 hover:bg-gray-200">
+          <div className='flex justify-between items-start'>
+            <h2 className='text-xl font-semibold'>Add QSO</h2>
+            <button onClick={handleClose} className='text-xl rounded-full p-2 hover:bg-gray-200'>
               &times; {/* This is a simple way to create a close (×) button */}
             </button>
           </div>
-          <div className="mt-1 text-center">
-            <form onSubmit={handleSubmit} className="max-w-md mx-auto mt-2 shadow-md p-2 bg-white rounded-md">
-            <div className="flex space-x-2 mb-4">
+          <div className='mt-1 text-center'>
+            <form onSubmit={handleSubmit} className='max-w-md mx-auto mt-2 shadow-md p-2 bg-white rounded-md'>
+            <div className='flex space-x-2 mb-4'>
               <div>
-                <label className={InputLabel1} htmlFor="QSO_Callsign">Callsign:</label>
-                <input type="text" name="QSO_Callsign" value={formData.QSO_Callsign} onChange={handleCallsignChange} className={InputBoxClassName} autoFocus onMouseLeave={() => handleCallsignMouseLeave()} onMouseOver={(e) => handleCallsignMouseOver(e.target.value)}/>
+                <label className={InputLabel1} htmlFor='QSO_Callsign'>Callsign:</label>
+                <input type='text' name='QSO_Callsign' value={formData.QSO_Callsign} onChange={handleCallsignChange} className={InputBoxClassName} autoFocus onMouseLeave={() => handleCallsignMouseLeave()} onMouseOver={(e) => handleCallsignMouseOver(e.target.value)}/>
               </div>
               <div>
-                <label className={InputLabel1} htmlFor="QSO_Frequency">Frequency:</label>
-                <input type="text" name="QSO_Frequency" value={formData.QSO_Frequency} onChange={handleChange} className={InputBoxClassName}/>
+                <label className={InputLabel1} htmlFor='QSO_Frequency'>Frequency:</label>
+                <input type='text' name='QSO_Frequency' value={formData.QSO_Frequency} onChange={handleChange} className={InputBoxClassName}/>
               </div>
             </div>
-                <div className="flex space-x-2 mb-4">
+                <div className='flex space-x-2 mb-4'>
                   <div>
-                    <label className={InputLabel1} htmlFor="QSO_Received">Received:</label>
-                    <input type="text" name="QSO_Received" value={formData.QSO_Received} onChange={handleChange} className={InputBoxClassName}/>
+                    <label className={InputLabel1} htmlFor='QSO_Received'>Received:</label>
+                    <input type='text' name='QSO_Received' value={formData.QSO_Received} onChange={handleChange} className={InputBoxClassName}/>
                   </div>
                   <div>
-                    <label className={InputLabel1} htmlFor="QSO_Sent">Sent:</label>
-                    <input type="text" name="QSO_Sent" value={formData.QSO_Sent} onChange={handleChange} className={InputBoxClassName}/>
+                    <label className={InputLabel1} htmlFor='QSO_Sent'>Sent:</label>
+                    <input type='text' name='QSO_Sent' value={formData.QSO_Sent} onChange={handleChange} className={InputBoxClassName}/>
                   </div>
                 </div>
-                <div className="mb-4">
-                    <label className={InputLabel1} htmlFor="QSO_Notes">Notes:</label>
-                    <input type="text" name="QSO_Notes" value={formData.QSO_Notes} onChange={handleChange} className={InputBoxClassName}/>
+                <div className='mb-4'>
+                    <label className={InputLabel1} htmlFor='QSO_Notes'>Notes:</label>
+                    <input type='text' name='QSO_Notes' value={formData.QSO_Notes} onChange={handleChange} className={InputBoxClassName}/>
                 </div>                
                 {qsoRecords.map((qso, index) => (
-                  <div key={index} className="flex space-x-4">
-                    <div className="flex-1">
+                  <div key={index} className='flex space-x-4'>
+                    <div className='flex-1'>
                       <label className={InputLabel1} htmlFor={`POTAPark_ID_${index}`}>POTA Park ID:</label>
-                      <input type="text" name="POTAPark_ID" id={`POTAPark_ID_${index}`} value={qso.POTAPark_ID} onChange={(e) => handleQSOPOTAIDChange(index, e)} className={InputBoxClassName} onMouseLeave={() => handleParkNumberMouseLeave()} onMouseOver={(e) => handleParkNumberMouseOver(e.target.value)}/>
+                      <input type='text' name='POTAPark_ID' id={`POTAPark_ID_${index}`} value={qso.POTAPark_ID} onChange={(e) => handleQSOPOTAIDChange(index, e)} className={InputBoxClassName} onMouseLeave={() => handleParkNumberMouseLeave()} onMouseOver={(e) => handleParkNumberMouseOver(e.target.value)}/>
                     </div>
-                    <div className="flex-1">
+                    <div className='flex-1'>
                       <label className={InputLabel1} htmlFor={`QSO_Type_${index}`}>QSO Type:</label>
-                      <select name="QSO_Type" id={`QSO_Type_${index}`} value={qso.QSO_Type} onChange={(e) => handleQSOChange(index, e)} className="w-full p-2 border rounded-md focus:outline-none focus:border-blue-500">
-                        <option value="1">Hunter</option>
-                        <option value="2">Activator</option>
+                      <select name='QSO_Type' id={`QSO_Type_${index}`} value={qso.QSO_Type} onChange={(e) => handleQSOChange(index, e)} className='w-full p-2 border rounded-md focus:outline-none focus:border-blue-500'>
+                        <option value='1'>Hunter</option>
+                        <option value='2'>Activator</option>
                       </select>
                     </div>
                   </div>
                   ))}
                 {contestRecords.map((contest, index) => (
-                  <div key={index} className="flex space-x-4">
-                    <div className="flex-1">
+                  <div key={index} className='flex space-x-4'>
+                    <div className='flex-1'>
                       <label className={InputLabel1} htmlFor={`Contest_ID_${index}`}>Contest ID:</label>
-                      <input type="text" name="Contest_ID" id={`Contest_ID_${index}`} value={contest.Contest_ID} onChange={(e) => handleContestChange(index, e)} className={InputBoxClassName} />
+                      <input type='text' name='Contest_ID' id={`Contest_ID_${index}`} value={contest.Contest_ID} onChange={(e) => handleContestChange(index, e)} className={InputBoxClassName} />
                     </div>
-                    <div className="flex-1">
+                    <div className='flex-1'>
                       <label className={InputLabel1} htmlFor={`Contest_QSO_Number_${index}`}>QSO No:</label>
-                      <input type="text" name="Contest_QSO_Number" id={`Contest_QSO_Number_${index}`} value={contest.Contest_QSO_Number} onChange={(e) => handleContestChange(index, e)} className={InputBoxClassName} />
+                      <input type='text' name='Contest_QSO_Number' id={`Contest_QSO_Number_${index}`} value={contest.Contest_QSO_Number} onChange={(e) => handleContestChange(index, e)} className={InputBoxClassName} />
                     </div>
-                    <div className="flex-1">
+                    <div className='flex-1'>
                       <label className={InputLabel1} htmlFor={`Contest_QSO_Exchange_Data_${index}`}>Exchange:</label>
-                      <input type="text" name="Contest_QSO_Exchange_Data" id={`Contest_QSO_Exchange_Data_${index}`} value={contest.Contest_QSO_Exchange_Data} onChange={(e) => handleContestChange(index, e)} className={InputBoxClassName} />
+                      <input type='text' name='Contest_QSO_Exchange_Data' id={`Contest_QSO_Exchange_Data_${index}`} value={contest.Contest_QSO_Exchange_Data} onChange={(e) => handleContestChange(index, e)} className={InputBoxClassName} />
                     </div>
                   </div>
                   ))}
               {/* Flex container for buttons */}
-              <div className="flex justify-center space-x-4 mb-4">
-                <button type="button" onClick={addQSORecord} className={ButtonClassNameGreen}>+ POTA</button>
-                <button type="button" onClick={addContestRecord} className={ButtonClassNameGreen}>+ Contest</button>
+              <div className='flex justify-center space-x-4 mb-4'>
+                <button type='button' onClick={addQSORecord} className={ButtonClassNameGreen}>+ POTA</button>
+                <button type='button' onClick={addContestRecord} className={ButtonClassNameGreen}>+ Contest</button>
               </div>
-              <button type="submit" className={ButtonClassNameBlue}>Add QSO</button>
+              <button type='submit' className={ButtonClassNameBlue}>Add QSO</button>
             </form>
           </div>
         </div>

@@ -23,6 +23,23 @@ const QSOsForParkNumber = ({ parkNumberToSearchFor, isOpen, displayTime }) => {
     }
   };
 
+  // Truncate the hz component of the frequency, if it's there
+  function formatFrequency(inputFreq) {
+    const dotCount = (inputFreq.match(/\./g) || []).length;
+    
+    if (dotCount === 1) {
+        // The frequency has one '.' inside it
+        // Return the entire string
+        return inputFreq;
+    } else if (dotCount === 2) {
+        // The frequency has two '.' inside it
+        // Return everything up to the second '.'
+        return inputFreq.substring(0, inputFreq.lastIndexOf('.'));
+    } else {
+        return "";
+    }
+}
+  
   if (isOpen) {
     // Handles data fetch when control initially loads
     if (runCount === 0) {
@@ -75,7 +92,7 @@ const QSOsForParkNumber = ({ parkNumberToSearchFor, isOpen, displayTime }) => {
                                         <td className={TableCell1}>{condition.QSO_MTZTime.slice(0, 5)}</td>                            
                                       )}
                                       <td className={TableCell1}>{condition.QSO_Callsign}</td>        
-                                      <td className={TableCell1}>{condition.QSO_Frequency.substring(0, condition.QSO_Frequency.lastIndexOf('.'))}</td>
+                                      <td className={TableCell1}>{formatFrequency(condition.QSO_Frequency)}</td>
                                   </tr>
                                   </React.Fragment>
                               ))}

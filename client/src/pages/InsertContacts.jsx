@@ -4,7 +4,7 @@ import axios from 'axios';
 import QSOsForCallsign from './QSOsForCallsign';
 import QSOsForParkNumber from './QSOsForParkNumber';
 import config from '../config';
-const { InputBoxClassName, ButtonClassNameBlue, ButtonClassNameGreen, InputLabel1 } = config;
+const { ServerURL, ServerPort, InputBoxClassName, ButtonClassNameBlue, ButtonClassNameGreen, InputLabel1 } = config;
 // The number of Contest QSOs recorded for this Contact record 
 let contestQSOCounter = 0;
 // The maximum number of Contest QSOs that can be recorded for this Contact record
@@ -174,7 +174,7 @@ const InsertContacts = ({ isOpen, onClose, onClosed }) => {
     // For each callsign
     callsignsToAdd.map(callsign => {
       // Populate query array for new Contacts records
-      insertQueries.push(`http://localhost:7800/Create_Contacts?QSO_Date=${formatDateToMMDDYYYY(new Date())}&QSO_MTZTime=${getCurrentTime()}&QSO_Callsign=${callsign.trim()}&QSO_Frequency=${formData.QSO_Frequency}&QSO_Notes=${formData.QSO_Notes}&QSO_Received=${formData.QSO_Received}&QSO_Sent=${formData.QSO_Sent}`);
+      insertQueries.push(`${ServerURL}:${ServerPort}/Create_Contacts?QSO_Date=${formatDateToMMDDYYYY(new Date())}&QSO_MTZTime=${getCurrentTime()}&QSO_Callsign=${callsign.trim()}&QSO_Frequency=${formData.QSO_Frequency}&QSO_Notes=${formData.QSO_Notes}&QSO_Received=${formData.QSO_Received}&QSO_Sent=${formData.QSO_Sent}`);
       return callsign; // The map function expects a return value for each element.
     });
 
@@ -186,7 +186,7 @@ const InsertContacts = ({ isOpen, onClose, onClosed }) => {
       // Get Last Insert ID
       try {
         // Making an HTTP GET request to get the ID of the last inserted record.
-        const res = await axios.get("http://localhost:7800/Last_Insert_ID");
+        const res = await axios.get(`${ServerURL}:${ServerPort}/Last_Insert_ID`);
         // Add Last Insert ID to ID array
         // Extracting the last insert ID from the response.        
         qsosToAdd.push(res.data.LastInsertID[0]['LAST_INSERT_ID()']);
@@ -204,7 +204,7 @@ const InsertContacts = ({ isOpen, onClose, onClosed }) => {
           // Checking if the QSO record has necessary data before making a request.
           if (qsoRecord.POTAPark_ID && qsoRecord.QSO_Type) {
             // Constructing the request URL for creating POTA QSOs.
-            const requestURL2 = `http://localhost:7800/Create_POTA_QSOs?QSO_ID=${qsoID}&POTAPark_ID=${qsoRecord.POTAPark_ID}&QSO_Type=${qsoRecord.QSO_Type}`;
+            const requestURL2 = `${ServerURL}:${ServerPort}/Create_POTA_QSOs?QSO_ID=${qsoID}&POTAPark_ID=${qsoRecord.POTAPark_ID}&QSO_Type=${qsoRecord.QSO_Type}`;
             // Making an HTTP GET request to the constructed URL.
             await axios.get(requestURL2);
           }
@@ -224,7 +224,7 @@ const InsertContacts = ({ isOpen, onClose, onClosed }) => {
           // Checking if the Contest record has necessary data before making a request.
           if (contestRecord.Contest_ID) {
             // Constructing the request URL for creating Contest QSOs.
-            const requestURL3 = `http://localhost:7800/Create_Contest_QSOs?QSO_ID=${qsoID}&Contest_ID=${contestRecord.Contest_ID}&Contest_QSO_Number=${contestRecord.Contest_QSO_Number}&Contest_QSO_Exchange_Data=${contestRecord.Contest_QSO_Exchange_Data}`;
+            const requestURL3 = `${ServerURL}:${ServerPort}/Create_Contest_QSOs?QSO_ID=${qsoID}&Contest_ID=${contestRecord.Contest_ID}&Contest_QSO_Number=${contestRecord.Contest_QSO_Number}&Contest_QSO_Exchange_Data=${contestRecord.Contest_QSO_Exchange_Data}`;
             // Making an HTTP GET request to the constructed URL.              
             await axios.get(requestURL3);
           }

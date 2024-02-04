@@ -6,6 +6,8 @@ import QSOsForCallsign from "./QSOsForCallsign";
 import QSOsForParkNumber from "./QSOsForParkNumber";
 import config from '../config';
 const { 
+  ServerURL,
+  ServerPort,  
   ButtonClassNameBlue, 
   ButtonClassNameGreen, 
   ButtonClassNameRed, 
@@ -18,9 +20,8 @@ const {
   TableHeadStyle2, 
   TableHeadStyle3, 
 } = config;
-const dataEndpointLocation = "http://localhost:7800/getContactsAndPOTAQSOs";
+const dataEndpointLocation = `${ServerURL}:${ServerPort}/getContactsAndPOTAQSOs`; 
 const pageTitle = "My Ham Log";
-let expandContractButtonLabel = '+';
 
 const Contacts = () => {
   const [conditions, setConditions] = useState([]);

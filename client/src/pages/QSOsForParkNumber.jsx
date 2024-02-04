@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import config from '../config';
 const { TableHeading1, TableCell1, TableStyle1, TableHeadStyle3, TableBodyStyle1 } = config;

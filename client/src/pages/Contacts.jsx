@@ -21,7 +21,7 @@ const {
   TableHeadStyle2, 
   TableHeadStyle3, 
 } = config;
-const dataEndpointLocation = `${ServerURL}:${ServerPort}/getContactsAndPOTAQSOs`; 
+const dataEndpointLocation = `http://${ServerURL}:${ServerPort}/getContactsAndPOTAQSOs`; 
 
 const Contacts = () => {
   const [conditions, setConditions] = useState([]);

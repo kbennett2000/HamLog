@@ -1,11 +1,10 @@
 module.exports = {
-    apps: [{
-      name: "HamLog",
+    apps : [{
+      name: "client",
       script: "npm",
       args: "start",
       env: {
-        PORT: 4000, // Set your desired port here
-        NODE_ENV: "development",
+        PORT: 4000,
       }
     }]
   };

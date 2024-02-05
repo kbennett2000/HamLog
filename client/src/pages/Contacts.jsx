@@ -66,7 +66,7 @@ const Contacts = () => {
       // Delete the record
       try {        
         // Constructing the request URL with query parameters for creating contact records.
-        const requestURL = `http://localhost:7800/Delete_Contacts?QSO_ID=${currentQSOId}`;
+        const requestURL = `http://${ServerURL}:${ServerPort}/Delete_Contacts?QSO_ID=${currentQSOId}`;
         // Making an HTTP GET request to the constructed URL.
         await axios.get(requestURL);
         fetchData();

@@ -1,8 +1,9 @@
 // config.js
 const config = {
-  AppTitle: 'My QSO Log',
   MyCallsign: 'XXX', // To be used for POTA activations
-  ServerURL: 'http://localhost',
+  AppTitle: 'My Hamlog',  
+  ServerURL: 'http://192.168.1.85',
+  //ServerURL: 'http://localhost',
   ServerPort: '7800',
   InputBoxClassName: 'w-full p-2 border rounded-md focus:outline-none focus:border-blue-500 shadow focus:shadow-md',
   ButtonClassNameBlue: 'bg-blue-500 text-white p-2 rounded-md focus:outline-none hover:bg-blue-700 shadow hover:shadow-md',

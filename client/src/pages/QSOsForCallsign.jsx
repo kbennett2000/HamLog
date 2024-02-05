@@ -17,7 +17,7 @@ let cachedCallsign = '';
 
 const QSOsForCallsign = ({ callSignToSearchFor, isOpen, displayTime }) => {
   const [conditions, setConditions] = useState([]);
-  dataEndpointLocation=`http://${ServerURL}:${ServerPort}/Get_Contacts_for_Callsign?QSO_Callsign=${callSignToSearchFor}`;
+  dataEndpointLocation=`${ServerURL}:${ServerPort}/Get_Contacts_for_Callsign?QSO_Callsign=${callSignToSearchFor}`;
 
   const fetchData = async () => {
     try {

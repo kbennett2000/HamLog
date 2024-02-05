@@ -9,7 +9,7 @@ let cachedParkNumber = '';
 
 const QSOsForParkNumber = ({ parkNumberToSearchFor, isOpen, displayTime }) => {
   const [conditions, setConditions] = useState([]);
-  dataEndpointLocation=`http://${ServerURL}:${ServerPort}/Get_Contacts_for_ParkNumber?ParkNumber=${parkNumberToSearchFor}`;
+  dataEndpointLocation=`${ServerURL}:${ServerPort}/Get_Contacts_for_ParkNumber?ParkNumber=${parkNumberToSearchFor}`;
   
   const fetchData = async () => {
     try {

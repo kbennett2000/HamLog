@@ -21,7 +21,7 @@ const {
   TableHeadStyle2, 
   TableHeadStyle3, 
 } = config;
-const dataEndpointLocation = `http://${ServerURL}:${ServerPort}/getContactsAndPOTAQSOs`; 
+const dataEndpointLocation = `${ServerURL}:${ServerPort}/getContactsAndPOTAQSOs`; 
 
 const Contacts = () => {
   const [conditions, setConditions] = useState([]);
@@ -66,7 +66,7 @@ const Contacts = () => {
       // Delete the record
       try {        
         // Constructing the request URL with query parameters for creating contact records.
-        const requestURL = `http://${ServerURL}:${ServerPort}/Delete_Contacts?QSO_ID=${currentQSOId}`;
+        const requestURL = `${ServerURL}:${ServerPort}/Delete_Contacts?QSO_ID=${currentQSOId}`;
         // Making an HTTP GET request to the constructed URL.
         await axios.get(requestURL);
         fetchData();

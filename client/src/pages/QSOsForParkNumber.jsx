@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import config from '../config';
-const { TableHeading1, TableCell1, TableStyle1, TableHeadStyle3, TableBodyStyle1 } = config;
+const { ServerURL, ServerPort, TableHeading1, TableCell1, TableStyle1, TableHeadStyle3, TableBodyStyle1 } = config;
 
 let dataEndpointLocation = '';
 let runCount = 0;
@@ -9,7 +9,7 @@ let cachedParkNumber = '';
 
 const QSOsForParkNumber = ({ parkNumberToSearchFor, isOpen, displayTime }) => {
   const [conditions, setConditions] = useState([]);
-  dataEndpointLocation=`http://localhost:7800/Get_Contacts_for_ParkNumber?ParkNumber=${parkNumberToSearchFor}`;
+  dataEndpointLocation=`http://${ServerURL}:${ServerPort}/Get_Contacts_for_ParkNumber?ParkNumber=${parkNumberToSearchFor}`;
   
   const fetchData = async () => {
     try {

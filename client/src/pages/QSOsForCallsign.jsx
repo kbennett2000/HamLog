@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import config from '../config';
 const { 
+  ServerURL,
+  ServerPort,
   TableHeading1, 
   TableCell1, 
   TableStyle1, 
@@ -15,7 +17,7 @@ let cachedCallsign = '';
 
 const QSOsForCallsign = ({ callSignToSearchFor, isOpen, displayTime }) => {
   const [conditions, setConditions] = useState([]);
-  dataEndpointLocation=`http://localhost:7800/Get_Contacts_for_Callsign?QSO_Callsign=${callSignToSearchFor}`;
+  dataEndpointLocation=`http://${ServerURL}:${ServerPort}/Get_Contacts_for_Callsign?QSO_Callsign=${callSignToSearchFor}`;
 
   const fetchData = async () => {
     try {

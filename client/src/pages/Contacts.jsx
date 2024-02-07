@@ -4,6 +4,7 @@ import InsertContacts from './InsertContacts';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
 import QSOsForCallsign from './QSOsForCallsign';
 import QSOsForParkNumber from './QSOsForParkNumber';
+import CallsignInfo from './CallsignInfo';
 import config from '../config';
 const { 
   AppTitle,
@@ -33,6 +34,7 @@ const Contacts = () => {
   const [currentQSOId, setCurrentQSOId] = useState(null);
   const [showQSOsForParkNumber, setShowQSOsForParkNumber] = useState(false);
   const [currentParkNumber, setCurrentParkNumber] = useState([]);
+  const [showCallsignInfo, setShowCallsignInfo] = useState(false);
 
 
   const fetchData = async () => {
@@ -84,10 +86,12 @@ const Contacts = () => {
 
   const handleCallsignMouseOver = (qsoCallsign) => {
     setCurrentCallsign(qsoCallsign);
+    setShowCallsignInfo(true);
     setShowQSOsForCallsign(true);
   }
 
   const handleCallsignMouseLeave = () => {
+    setShowCallsignInfo(false);
     setShowQSOsForCallsign(false);
   }
 
@@ -201,6 +205,7 @@ const Contacts = () => {
       <div id='ControlsDiv' className='flex items-center space-x-2'>
         <DeleteConfirmationModal isOpen={showModal} onClose={() => setShowModal(false)} onConfirm={handleUserChoice} />
         <InsertContacts isOpen={showInsertContacts} onClose={() => setShowInsertContacts(false)} onClosed={handleInsertContactsClosed} />
+        <CallsignInfo callSignToSearchFor={currentCallsign} isOpen={showCallsignInfo} />
         <QSOsForCallsign callSignToSearchFor={currentCallsign} isOpen={showQSOsForCallsign} displayTime={false} />
         <QSOsForParkNumber parkNumberToSearchFor={currentParkNumber} isOpen={showQSOsForParkNumber} displayTime={false} />
       </div>

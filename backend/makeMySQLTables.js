@@ -29,6 +29,14 @@ async function CreateTables() {
   );
   console.log("Contest_QSOs table created.");
 
+  await connection.execute(
+    "CREATE TABLE `HamLogDB`.`ContactInfo` (`ContactInfo_ID` INT NOT NULL, `ContactInfo_Callsign` VARCHAR(10) NOT NULL, `ContactInfo_Name` VARCHAR(100) NULL, `ContactInfo_Street` VARCHAR(100) NULL, `ContactInfo_City` VARCHAR(100) NULL, `ContactInfo_AddressCountry` VARCHAR(100) NULL, `ContactInfo_Latitude` VARCHAR(100) NULL, `ContactInfo_Longitude` VARCHAR(100) NULL, `ContactInfo_ITUZone` VARCHAR(100) NULL, `ContactInfo_GridSquare` VARCHAR(100) NULL, `ContactInfo_QTH` VARCHAR(100) NULL, `ContactInfo_Country` VARCHAR(100) NULL, PRIMARY KEY (`ContactInfo_ID`), UNIQUE INDEX `ContactInfo_Callsigh_UNIQUE` (`ContactInfo_Callsign` ASC) VISIBLE);"
+  );
+  await connection.execute(
+    "ALTER TABLE `HamLogDB`.`ContactInfo` CHANGE COLUMN `ContactInfo_ID` `ContactInfo_ID` INT NOT NULL AUTO_INCREMENT;"
+  );
+  console.log("ContactInfo table created.");
+
   // Close the MySQL connection
   await connection.end();
 }

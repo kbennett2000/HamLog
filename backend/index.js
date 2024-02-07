@@ -170,6 +170,16 @@ function formatDate(inputString) {
   }
 }
 
+// Get Callsign Info
+app.get("/Get_Callsign_Info", async (req, res) => {
+  const { Callsign } = req.query;
+  const promise = dbHamLog.promise();
+  const query = `SELECT * FROM ContactInfo WHERE ContactInfo_Callsign = '${Callsign}'`;  
+  const [rows, fields] = await promise.execute(query);
+  return res.status(200).json({ Contacts: rows });
+});
+
+
 app.listen(7800, "0.0.0.0", () => {
   console.log("Connected to backend");
 });

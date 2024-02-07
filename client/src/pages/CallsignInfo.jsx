@@ -68,28 +68,30 @@ const CallsignInfo = ({ callSignToSearchFor, isOpen, displayTime }) => {
                         <div className='inline-block min-w-full align-middle'>
                             <div className='overflow-hidden '>
                                 <table className={TableStyle1}>
+
+                                    <thead className={TableHeadStyle2}>
+                                        <tr>
+                                            <th scope='col' className={TableHeading1}>{conditions[0].ContactInfo_Name}</th>
+                                        </tr>
+                                    </thead>
+
                                     <tbody className={TableBodyStyle1}>
-                                    {conditions.map((condition, index) => (
-                                        <React.Fragment key={index}>
+                                        {conditions.map((condition, index) => (
+                                            <React.Fragment key={index}>
 
+                                            <tr className={`hover:bg-green-100 dark:hover:bg-green-700 ${index % 2 === 0 ? 'bg-gray-100 dark:bg-gray-400' : '' } ${index % 2 === 1 ? 'bg-gray-300 dark:bg-gray-600' : '' }`} >
+                                                <td className={TableCell1}>
+                                                    {condition.ContactInfo_City}
+                                                    {condition.ContactInfo_usState.length > 0 && ", " + condition.ContactInfo_usState}
+                                                </td>                            
+                                            </tr>
 
+                                            <tr className={`hover:bg-green-100 dark:hover:bg-green-700 ${index % 2 === 0 ? 'bg-gray-100 dark:bg-gray-400' : '' } ${index % 2 === 1 ? 'bg-gray-300 dark:bg-gray-600' : '' }`} >
+                                                <td className={TableCell1}>{condition.ContactInfo_AddressCountry}</td>
+                                            </tr>
 
-
-
-                                        <tr className={`hover:bg-green-100 dark:hover:bg-green-700 ${index % 2 === 0 ? 'bg-gray-100 dark:bg-gray-400' : '' } ${index % 2 === 1 ? 'bg-gray-300 dark:bg-gray-600' : '' }`} >
-                                            <td className={TableCell1}>{condition.ContactInfo_Name}</td>                                      
-                                        </tr>
-
-                                        <tr className={`hover:bg-green-100 dark:hover:bg-green-700 ${index % 2 === 0 ? 'bg-gray-100 dark:bg-gray-400' : '' } ${index % 2 === 1 ? 'bg-gray-300 dark:bg-gray-600' : '' }`} >
-                                            <td className={TableCell1}>{condition.ContactInfo_City}</td>                            
-                                        </tr>
-
-                                        <tr className={`hover:bg-green-100 dark:hover:bg-green-700 ${index % 2 === 0 ? 'bg-gray-100 dark:bg-gray-400' : '' } ${index % 2 === 1 ? 'bg-gray-300 dark:bg-gray-600' : '' }`} >
-                                            <td className={TableCell1}>{condition.ContactInfo_AddressCountry}</td>
-                                        </tr>
-
-                                        </React.Fragment>
-                                    ))}
+                                            </React.Fragment>
+                                        ))}
                                     </tbody>
                                 </table>
                             </div>

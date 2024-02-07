@@ -1,12 +1,8 @@
 import { parseStringPromise } from 'xml2js';
 import mysql from 'mysql2/promise';
 
-const username = 'AE9S';
-const password = 'qweQWE123%21%40%23';
-
-//const callsignToLookup = 'ae9s';
-//const callsignToLookup = 've3rjb';
-
+const username = 'userName';
+const password = 'urlEncodedPassword';
 
 const callsignsToLookup = [ 'XXX', 'YYY', 'ZZZ' ];
 
@@ -58,6 +54,7 @@ async function loginAndGetCallsignInfo() {
       const adrCountry = callsignInfo?.adr_country?.[0] || "unknown";
       const latitude = callsignInfo?.latitude?.[0] || "";
       const longitude = callsignInfo?.longitude?.[0] || "";
+      const us_state = callsignInfo?.us_state?.[0] || "";
   
       /*
       console.log('Callsign: ', callsignToLookup);
@@ -83,14 +80,15 @@ async function loginAndGetCallsignInfo() {
       } else {
         // Assuming auto_increment is enabled for ContactInfo_ID, it's omitted from the INSERT statement
         const insertSql = `
-          INSERT INTO ContactInfo (ContactInfo_Callsign, ContactInfo_Name, ContactInfo_Street, ContactInfo_City, ContactInfo_AddressCountry, ContactInfo_Latitude, ContactInfo_Longitude, ContactInfo_ITUZone, ContactInfo_GridSquare, ContactInfo_QTH, ContactInfo_Country)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          INSERT INTO ContactInfo (ContactInfo_Callsign, ContactInfo_Name, ContactInfo_Street, ContactInfo_City, ContactInfo_usState, ContactInfo_AddressCountry, ContactInfo_Latitude, ContactInfo_Longitude, ContactInfo_ITUZone, ContactInfo_GridSquare, ContactInfo_QTH, ContactInfo_Country)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
         const insertValues = [
           callsignToLookup.toUpperCase(),
           adrName,
           adrStreet1,
           adrCity,
+          us_state, 
           adrCountry,
           latitude,
           longitude,

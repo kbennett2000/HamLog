@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import QSOsForCallsign from './QSOsForCallsign';
 import config from '../config';
 const { 
   ServerURL,
@@ -56,7 +57,7 @@ const CallsignInfo = ({ callSignToSearchFor, isOpen, displayTime }) => {
   }
 
   return (
-    <>
+    <>      
       <div className='fixed top-0 right-0 mt-4 mr-4 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full md:w-auto' id='my-modal'>
           <div className='relative p-5 border w-auto shadow-lg rounded-md bg-white'>
               <h1 className='text-3xl font-bold mb-4'>{callSignToSearchFor}</h1>
@@ -64,31 +65,46 @@ const CallsignInfo = ({ callSignToSearchFor, isOpen, displayTime }) => {
                   <div className='mx-auto'>
                   <div className='flex flex-col'>
                       <div className='overflow-x-auto shadow-md sm:rounded-lg'>
-                      <div className='inline-block min-w-full align-middle'>
-                          <div className='overflow-hidden '>
-                          <table className={TableStyle1}>
-                              <thead className={TableHeadStyle2}>
-                              <tr>
-                                <th scope='col' className={TableHeading1}>Name</th>                                
-                                <th scope='col' className={TableHeading1}>City</th>
-                                <th scope='col' className={TableHeading1}>Country</th>
-                              </tr>
-                              </thead>
-                              <tbody className={TableBodyStyle1}>
-                              {conditions.map((condition, index) => (
-                                <React.Fragment key={index}>
-                                  <tr className={`hover:bg-green-100 dark:hover:bg-green-700 ${index % 2 === 0 ? 'bg-gray-100 dark:bg-gray-400' : '' } ${index % 2 === 1 ? 'bg-gray-300 dark:bg-gray-600' : '' }`} >
-                                      <td className={TableCell1}>condition.ContactInfo_Name</td>                                      
-                                      <td className={TableCell1}>condition.ContactInfo_City</td>                            
-                                      <td className={TableCell1}>condition.ContactInfo_AddressCountry</td>
-                                  </tr>
-                                </React.Fragment>
-                              ))}
-                              </tbody>
-                          </table>
-                          </div>
+                        <div className='inline-block min-w-full align-middle'>
+                            <div className='overflow-hidden '>
+                                <table className={TableStyle1}>
+                                    <tbody className={TableBodyStyle1}>
+                                    {conditions.map((condition, index) => (
+                                        <React.Fragment key={index}>
+
+
+
+
+
+                                        <tr className={`hover:bg-green-100 dark:hover:bg-green-700 ${index % 2 === 0 ? 'bg-gray-100 dark:bg-gray-400' : '' } ${index % 2 === 1 ? 'bg-gray-300 dark:bg-gray-600' : '' }`} >
+                                            <td className={TableCell1}>{condition.ContactInfo_Name}</td>                                      
+                                        </tr>
+
+                                        <tr className={`hover:bg-green-100 dark:hover:bg-green-700 ${index % 2 === 0 ? 'bg-gray-100 dark:bg-gray-400' : '' } ${index % 2 === 1 ? 'bg-gray-300 dark:bg-gray-600' : '' }`} >
+                                            <td className={TableCell1}>{condition.ContactInfo_City}</td>                            
+                                        </tr>
+
+                                        <tr className={`hover:bg-green-100 dark:hover:bg-green-700 ${index % 2 === 0 ? 'bg-gray-100 dark:bg-gray-400' : '' } ${index % 2 === 1 ? 'bg-gray-300 dark:bg-gray-600' : '' }`} >
+                                            <td className={TableCell1}>{condition.ContactInfo_AddressCountry}</td>
+                                        </tr>
+
+                                        </React.Fragment>
+                                    ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                  
+                        </div>
                       </div>
-                      </div>
+                  
+                        <div className='overflow-x-auto shadow-md sm:rounded-lg'>
+                            <div className='inline-block min-w-full align-middle'>
+                                <div className='overflow-hidden '>
+                                  <QSOsForCallsign callSignToSearchFor={callSignToSearchFor} isOpen={isOpen} displayTime={false} />
+                                </div>
+                            </div>
+                        </div>
+                  
                   </div>
                   </div>        
               </div>

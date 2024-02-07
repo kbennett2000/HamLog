@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import InsertContacts from './InsertContacts';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
-import QSOsForCallsign from './QSOsForCallsign';
+// import QSOsForCallsign from './QSOsForCallsign';
 import QSOsForParkNumber from './QSOsForParkNumber';
 import CallsignInfo from './CallsignInfo';
 import config from '../config';
@@ -29,7 +29,7 @@ const Contacts = () => {
   const [expandedRows, setExpandedRows] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [showInsertContacts, setShowInsertContacts] = useState(false);
-  const [showQSOsForCallsign, setShowQSOsForCallsign] = useState(false);
+//  const [showQSOsForCallsign, setShowQSOsForCallsign] = useState(false);
   const [currentCallsign, setCurrentCallsign] = useState([]);
   const [currentQSOId, setCurrentQSOId] = useState(null);
   const [showQSOsForParkNumber, setShowQSOsForParkNumber] = useState(false);
@@ -87,12 +87,12 @@ const Contacts = () => {
   const handleCallsignMouseOver = (qsoCallsign) => {
     setCurrentCallsign(qsoCallsign);
     setShowCallsignInfo(true);
-    setShowQSOsForCallsign(true);
+//    setShowQSOsForCallsign(true);
   }
 
   const handleCallsignMouseLeave = () => {
     setShowCallsignInfo(false);
-    setShowQSOsForCallsign(false);
+//    setShowQSOsForCallsign(false);
   }
 
   const handleParkNumberMouseOver = (parkNumber) => {
@@ -202,12 +202,17 @@ const Contacts = () => {
           </div>
         </div>        
       </div>
-      <div id='ControlsDiv' className='flex items-center space-x-2'>
+      <div id='ControlsDiv' className='flex flex-col items-center space-x-2'>
         <DeleteConfirmationModal isOpen={showModal} onClose={() => setShowModal(false)} onConfirm={handleUserChoice} />
         <InsertContacts isOpen={showInsertContacts} onClose={() => setShowInsertContacts(false)} onClosed={handleInsertContactsClosed} />
+        
         <CallsignInfo callSignToSearchFor={currentCallsign} isOpen={showCallsignInfo} />
+        {/*
         <QSOsForCallsign callSignToSearchFor={currentCallsign} isOpen={showQSOsForCallsign} displayTime={false} />
+                          */}
+                          
         <QSOsForParkNumber parkNumberToSearchFor={currentParkNumber} isOpen={showQSOsForParkNumber} displayTime={false} />
+
       </div>
     </>
   );  

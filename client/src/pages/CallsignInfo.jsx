@@ -9,7 +9,7 @@ const {
   TableCell1, 
   TableStyle1, 
   TableBodyStyle1, 
-  TableHeadStyle2, 
+  TableHeadStyle1, 
 } = config;
 
 let dataEndpointLocation = '';
@@ -23,7 +23,6 @@ const CallsignInfo = ({ callSignToSearchFor, isOpen, displayTime }) => {
   const fetchData = async () => {
     try {
       const res = await axios.get(dataEndpointLocation);
-      console.log ("CALLSIGNINFO - " + dataEndpointLocation);
       // Check if the response is an array, otherwise set to an empty array
       setConditions(Array.isArray(res.data.Contacts) ? res.data.Contacts : []);    
       cachedCallsign = callSignToSearchFor;  
@@ -52,7 +51,6 @@ const CallsignInfo = ({ callSignToSearchFor, isOpen, displayTime }) => {
 
   // If there is no record for the current callsign, don't display the control
   if (conditions.length === 0) {
-    console.log ("CALLSIGNINFO - " + "NO RECORD FOUND FOR " + callSignToSearchFor);
     return null;
   }
 
@@ -68,45 +66,41 @@ const CallsignInfo = ({ callSignToSearchFor, isOpen, displayTime }) => {
                         <div className='inline-block min-w-full align-middle'>
                             <div className='overflow-hidden '>
                                 <table className={TableStyle1}>
-
-                                    <thead className={TableHeadStyle2}>
+                                    <thead className={TableHeadStyle1}>
                                         <tr>
                                             <th scope='col' className={TableHeading1}>{conditions[0].ContactInfo_Name}</th>
                                         </tr>
                                     </thead>
-
                                     <tbody className={TableBodyStyle1}>
                                         {conditions.map((condition, index) => (
                                             <React.Fragment key={index}>
-
-                                            <tr className={`hover:bg-green-100 dark:hover:bg-green-700 ${index % 2 === 0 ? 'bg-gray-100 dark:bg-gray-400' : '' } ${index % 2 === 1 ? 'bg-gray-300 dark:bg-gray-600' : '' }`} >
-                                                <td className={TableCell1}>
-                                                    {condition.ContactInfo_City}
-                                                    {condition.ContactInfo_usState.length > 0 && ", " + condition.ContactInfo_usState}
-                                                </td>                            
-                                            </tr>
-
-                                            <tr className={`hover:bg-green-100 dark:hover:bg-green-700 ${index % 2 === 0 ? 'bg-gray-100 dark:bg-gray-400' : '' } ${index % 2 === 1 ? 'bg-gray-300 dark:bg-gray-600' : '' }`} >
-                                                <td className={TableCell1}>{condition.ContactInfo_AddressCountry}</td>
-                                            </tr>
-
+                                                <tr className={`${index % 2 === 0 ? 'bg-gray-100 dark:bg-gray-400' : '' } ${index % 2 === 1 ? 'bg-gray-300 dark:bg-gray-600' : '' }`} >
+                                                    <td className={TableCell1}>
+                                                        {condition.ContactInfo_City}
+                                                        {condition.ContactInfo_usState.length > 0 && ", " + condition.ContactInfo_usState}
+                                                    </td>                            
+                                                </tr>
+                                                <tr className={`${index % 2 === 0 ? 'bg-gray-100 dark:bg-gray-400' : '' } ${index % 2 === 1 ? 'bg-gray-300 dark:bg-gray-600' : '' }`} >
+                                                    <td className={TableCell1}>{condition.ContactInfo_AddressCountry}</td>
+                                                </tr>
+                                                <tr className={`${index % 2 === 0 ? 'bg-gray-100 dark:bg-gray-400' : '' } ${index % 2 === 1 ? 'bg-gray-300 dark:bg-gray-600' : '' }`} >
+                                                    <td className={TableCell1}>
+                                                        <div className='overflow-x-auto shadow-md sm:rounded-lg'>
+                                                            <div className='inline-block min-w-full align-middle'>
+                                                                <div className='overflow-hidden'>
+                                                                    <QSOsForCallsign callSignToSearchFor={callSignToSearchFor} isOpen={isOpen} displayTime={false} />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
                                             </React.Fragment>
                                         ))}
                                     </tbody>
                                 </table>
-                            </div>
-                  
+                            </div>                  
                         </div>
                       </div>
-                  
-                        <div className='overflow-x-auto shadow-md sm:rounded-lg'>
-                            <div className='inline-block min-w-full align-middle'>
-                                <div className='overflow-hidden '>
-                                  <QSOsForCallsign callSignToSearchFor={callSignToSearchFor} isOpen={isOpen} displayTime={false} />
-                                </div>
-                            </div>
-                        </div>
-                  
                   </div>
                   </div>        
               </div>

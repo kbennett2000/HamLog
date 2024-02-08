@@ -1,7 +1,7 @@
 // Importing necessary modules and hooks from React, axios for HTTP requests, and Redux for state management.
 import React, { useState } from 'react';
 import axios from 'axios';
-import QSOsForCallsign from './QSOsForCallsign';
+import CallsignInfo from './CallsignInfo';
 import QSOsForParkNumber from './QSOsForParkNumber';
 import config from '../config';
 const { ServerURL, ServerPort, InputBoxClassName, ButtonClassNameBlue, ButtonClassNameGreen, InputLabel1 } = config;
@@ -12,7 +12,7 @@ let contestQSOLimit = 1;
 
 // Defining a React functional component named InsertContacts.
 const InsertContacts = ({ isOpen, onClose, onClosed }) => {
-  const [showQSOsForCallsign, setShowQSOsForCallsign] = useState(false);
+  const [showCallsignInfo, setShowCallsignInfo] = useState(false);
   const [currentCallsign, setCurrentCallsign] = useState([]);
   const [showQSOsForParkNumber, setShowQSOsForParkNumber] = useState(false);
   const [currentParkNumber, setCurrentParkNumber] = useState([]);
@@ -128,11 +128,11 @@ const InsertContacts = ({ isOpen, onClose, onClosed }) => {
 
   const handleCallsignMouseOver = (qsoCallsign) => {
     setCurrentCallsign(qsoCallsign);
-    setShowQSOsForCallsign(true);
+    setShowCallsignInfo(true);
   }
 
   const handleCallsignMouseLeave = () => {
-    setShowQSOsForCallsign(false);
+    setShowCallsignInfo(false);
   }
 
   const handleParkNumberMouseOver = (parkNumber) => {
@@ -322,7 +322,7 @@ const InsertContacts = ({ isOpen, onClose, onClosed }) => {
             </form>
           </div>
         </div>
-        <QSOsForCallsign callSignToSearchFor={currentCallsign} isOpen={showQSOsForCallsign} />
+        <CallsignInfo callSignToSearchFor={currentCallsign} isOpen={showCallsignInfo} />        
         <QSOsForParkNumber parkNumberToSearchFor={currentParkNumber} isOpen={showQSOsForParkNumber} />
       </div>
     );

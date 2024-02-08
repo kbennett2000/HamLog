@@ -17,13 +17,14 @@ let dataEndpointLocation = '';
 let runCount = 0;
 let cachedCallsign = '';
 
-const CallsignInfo = ({ callSignToSearchFor, isOpen, displayTime }) => {
+const CallsignInfo = ({ callSignToSearchFor, isOpen, displayTime }) => {    
   const [conditions, setConditions] = useState([]);
   dataEndpointLocation=`${ServerURL}:${ServerPort}/Get_Callsign_Info?Callsign=${callSignToSearchFor}`;
 
   const fetchData = async () => {
     try {
       const res = await axios.get(dataEndpointLocation);
+      console.log(dataEndpointLocation);
       // Check if the response is an array, otherwise set to an empty array
       setConditions(Array.isArray(res.data.Contacts) ? res.data.Contacts : []);    
       cachedCallsign = callSignToSearchFor;  
@@ -52,8 +53,8 @@ const CallsignInfo = ({ callSignToSearchFor, isOpen, displayTime }) => {
   // If there is no record for the current callsign, don't display the control
   if (conditions.length === 0) {
     // Add the callsign to the database
-    console.log('AddCallsignInfo: ' + callSignToSearchFor);
     AddCallsignInfo([callSignToSearchFor]);
+    fetchData();
     return null;
   }
 

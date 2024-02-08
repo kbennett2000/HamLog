@@ -8,7 +8,6 @@ const {
   HamQTHPassword,
 } = config;
 
-
 export async function AddCallsignInfo(CallsignsToLookup) {
   try {
     const loginUrl = `https://www.hamqth.com/xml.php?u=${HamQTHUsername}&p=${HamQTHPassword}`;
@@ -18,8 +17,6 @@ export async function AddCallsignInfo(CallsignsToLookup) {
     // Parse the XML response to get the session ID
     const loginDataParsed = await parseStringPromise(loginData);
     const sessionId = loginDataParsed?.HamQTH?.session?.[0]?.session_id?.[0];
-
-    console.log('AddCallsignInfo:sessionId - ' + sessionId);
 
     if (!sessionId) {
       console.log('No session ID found. Check login credentials.');
@@ -50,14 +47,12 @@ export async function AddCallsignInfo(CallsignsToLookup) {
   
       //   callsignToLookup
       const queryString = `${ServerURL}:${ServerPort}/Get_ContactInfo_Count?callsignToLookup=${callsignToLookup.toUpperCase()}`;      
-      console.log('AddCallsignInfo:queryString 1 - ' + queryString);
       const res = await axios.get(queryString);
-      
-      if (res.data[0].count > 0) {
-        console.log(`Callsign ${callsignToLookup} already exists in the database.`);        
+
+      if (res.data.Contacts[0].count > 0) {
+        // console.log(`Callsign ${callsignToLookup} already exists in the database.`);        
       } else {
         const queryString = `${ServerURL}:${ServerPort}/Create_ContactInfo?callsignToLookup=${callsignToLookup.toUpperCase()}&adrName=${adrName}&adrStreet1=${adrStreet1}&adrCity=${adrCity}&us_state=${us_state}&adrCountry=${adrCountry}&latitude=${latitude}&longitude=${longitude}&itu=${itu}&grid=${grid}&qth=${qth}&country=${country}`;
-        console.log('AddCallsignInfo:queryString 2 - ' + queryString);
         await axios.get(queryString);
       }
     }

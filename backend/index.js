@@ -184,16 +184,27 @@ app.get("/Create_ContactInfo", async (req, res) => {
   const { callsignToLookup, adrName, adrStreet1, adrCity, us_state, adrCountry, latitude, longitude, itu, grid, qth, country } = req.query;
   const promise = dbHamLog.promise();  
   const query = `INSERT INTO ContactInfo (ContactInfo_Callsign, ContactInfo_Name, ContactInfo_Street, ContactInfo_City, ContactInfo_usState, ContactInfo_AddressCountry, ContactInfo_Latitude, ContactInfo_Longitude, ContactInfo_ITUZone, ContactInfo_GridSquare, ContactInfo_QTH, ContactInfo_Country) `;  
-  const queryValue = `VALUES (${callsignToLookup.toUpperCase()}, ${adrName}, ${adrStreet1}, ${adrCity}, ${us_state}, ${adrCountry}, ${latitude}, ${longitude}, ${itu}, ${grid}, ${qth}, ${country})`;
-  const [rows, fields] = await promise.execute(query + queryValue);
-  return res.status(200).json({ Contacts: rows });
+  const queryValue = `VALUES (\'${callsignToLookup.toUpperCase()}\', \'${adrName}\', \'${adrStreet1}\', \'${adrCity}\', \'${us_state}\', \'${adrCountry}\', \'${latitude}\', \'${longitude}\', \'${itu}\', \'${grid}\', \'${qth}\', \'${country}\');`;
+  const query2 = `SELECT COUNT(*) as count FROM HamLogDB.ContactInfo WHERE ContactInfo_Callsign = \"${callsignToLookup}\";`;
+  const [rows2, fields2] = await promise.execute(query2);
+  if (rows2[0].count > 0) {
+    return res.status(200).json();  
+  } else {
+    console.log(callsignToLookup, callsignToLookup.length);
+    if (callsignToLookup.length > 3) {
+      const [rows, fields] = await promise.execute(query + queryValue);
+      return res.status(200).json({ Contacts: rows });      
+    } else {
+      return res.status(200).json();  
+    }    
+  }
 });
 
 // Get the count of a callsign in the ContactInfo table
 app.get("/Get_ContactInfo_Count", async (req, res) => {
   const { callsignToLookup } = req.query;
   const promise = dbHamLog.promise();  
-  const query = `SELECT COUNT(*) AS count FROM ContactInfo WHERE ContactInfo_Callsign = ${callsignToLookup}`;  
+  const query = `SELECT COUNT(*) as count FROM HamLogDB.ContactInfo WHERE ContactInfo_Callsign = \"${callsignToLookup}\";`;    
   const [rows, fields] = await promise.execute(query);
   return res.status(200).json({ Contacts: rows });
 });

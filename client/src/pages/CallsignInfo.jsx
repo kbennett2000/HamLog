@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import QSOsForCallsign from './QSOsForCallsign';
+import { AddCallsignInfo } from '../services/CallsignLookup';
 import config from '../config';
 const { 
   ServerURL,
@@ -32,7 +33,6 @@ const CallsignInfo = ({ callSignToSearchFor, isOpen, displayTime }) => {
     }
   };
 
-
   if (isOpen) {
     // Handles data fetch when control initially loads
     if (runCount === 0) {
@@ -51,6 +51,9 @@ const CallsignInfo = ({ callSignToSearchFor, isOpen, displayTime }) => {
 
   // If there is no record for the current callsign, don't display the control
   if (conditions.length === 0) {
+    // Add the callsign to the database
+    console.log('AddCallsignInfo: ' + callSignToSearchFor);
+    AddCallsignInfo([callSignToSearchFor]);
     return null;
   }
 

@@ -1,31 +1,25 @@
 import { parseStringPromise } from 'xml2js';
-import mysql from 'mysql2/promise';
+import axios from 'axios';
+import config from '../config';
+const { 
+  ServerURL,
+  ServerPort,
+  HamQTHUsername,
+  HamQTHPassword,
+} = config;
 
-const username = 'AE9S';
-const password = 'qweQWE123%21%40%23';
 
-const callsignsToLookup = [ 'XXX', 'YYY', 'ZZZ' ];
-
-const dbConfig = {
-  host: '192.168.1.85',
-  user: 'testUser',
-  password: 'password1',
-  database: 'HamLogDB'
-};
-
-async function loginAndGetCallsignInfo(CallsignsToLookup) {
-  let connection;
-
+export async function AddCallsignInfo(CallsignsToLookup) {
   try {
-    connection = await mysql.createConnection(dbConfig);
-
-    const loginUrl = `https://www.hamqth.com/xml.php?u=${username}&p=${password}`;
+    const loginUrl = `https://www.hamqth.com/xml.php?u=${HamQTHUsername}&p=${HamQTHPassword}`;
     const loginResponse = await fetch(loginUrl);
     const loginData = await loginResponse.text();
 
     // Parse the XML response to get the session ID
     const loginDataParsed = await parseStringPromise(loginData);
     const sessionId = loginDataParsed?.HamQTH?.session?.[0]?.session_id?.[0];
+
+    console.log('AddCallsignInfo:sessionId - ' + sessionId);
 
     if (!sessionId) {
       console.log('No session ID found. Check login credentials.');
@@ -53,42 +47,21 @@ async function loginAndGetCallsignInfo(CallsignsToLookup) {
       const latitude = callsignInfo?.latitude?.[0] || "";
       const longitude = callsignInfo?.longitude?.[0] || "";
       const us_state = callsignInfo?.us_state?.[0] || "";
-
-      // Check if the callsign is already in the database
-      const checkSql = `SELECT COUNT(*) AS count FROM ContactInfo WHERE ContactInfo_Callsign = ?`;
-      const [checkResults] = await connection.execute(checkSql, [callsignToLookup]);
   
-      if (checkResults[0].count > 0) {
+      //   callsignToLookup
+      const queryString = `${ServerURL}:${ServerPort}/Get_ContactInfo_Count?callsignToLookup=${callsignToLookup.toUpperCase()}`;      
+      console.log('AddCallsignInfo:queryString 1 - ' + queryString);
+      const res = await axios.get(queryString);
+      
+      if (res.data[0].count > 0) {
         console.log(`Callsign ${callsignToLookup} already exists in the database.`);        
       } else {
-        const insertSql = `
-          INSERT INTO ContactInfo (ContactInfo_Callsign, ContactInfo_Name, ContactInfo_Street, ContactInfo_City, ContactInfo_usState, ContactInfo_AddressCountry, ContactInfo_Latitude, ContactInfo_Longitude, ContactInfo_ITUZone, ContactInfo_GridSquare, ContactInfo_QTH, ContactInfo_Country)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `;
-        const insertValues = [
-          callsignToLookup.toUpperCase(),
-          adrName,
-          adrStreet1,
-          adrCity,
-          us_state, 
-          adrCountry,
-          latitude,
-          longitude,
-          itu,
-          grid,
-          qth,
-          country
-        ];  
-        await connection.execute(insertSql, insertValues);
+        const queryString = `${ServerURL}:${ServerPort}/Create_ContactInfo?callsignToLookup=${callsignToLookup.toUpperCase()}&adrName=${adrName}&adrStreet1=${adrStreet1}&adrCity=${adrCity}&us_state=${us_state}&adrCountry=${adrCountry}&latitude=${latitude}&longitude=${longitude}&itu=${itu}&grid=${grid}&qth=${qth}&country=${country}`;
+        console.log('AddCallsignInfo:queryString 2 - ' + queryString);
+        await axios.get(queryString);
       }
     }
   } catch (error) {
     console.error('Error during HamQTH callsign lookup:', error);
-  } finally {
-    if (connection) {
-      await connection.end();
-    }
-  }
+  } 
 }
-
-loginAndGetCallsignInfo(callsignsToLookup);

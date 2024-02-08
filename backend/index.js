@@ -179,6 +179,24 @@ app.get("/Get_Callsign_Info", async (req, res) => {
   return res.status(200).json({ Contacts: rows });
 });
 
+// Create new ContactInfo record 
+app.get("/Create_ContactInfo", async (req, res) => {
+  const { callsignToLookup, adrName, adrStreet1, adrCity, us_state, adrCountry, latitude, longitude, itu, grid, qth, country } = req.query;
+  const promise = dbHamLog.promise();  
+  const query = `INSERT INTO ContactInfo (ContactInfo_Callsign, ContactInfo_Name, ContactInfo_Street, ContactInfo_City, ContactInfo_usState, ContactInfo_AddressCountry, ContactInfo_Latitude, ContactInfo_Longitude, ContactInfo_ITUZone, ContactInfo_GridSquare, ContactInfo_QTH, ContactInfo_Country) `;  
+  const queryValue = `VALUES (${callsignToLookup.toUpperCase()}, ${adrName}, ${adrStreet1}, ${adrCity}, ${us_state}, ${adrCountry}, ${latitude}, ${longitude}, ${itu}, ${grid}, ${qth}, ${country})`;
+  const [rows, fields] = await promise.execute(query + queryValue);
+  return res.status(200).json({ Contacts: rows });
+});
+
+// Get the count of a callsign in the ContactInfo table
+app.get("/Get_ContactInfo_Count", async (req, res) => {
+  const { callsignToLookup } = req.query;
+  const promise = dbHamLog.promise();  
+  const query = `SELECT COUNT(*) AS count FROM ContactInfo WHERE ContactInfo_Callsign = ${callsignToLookup}`;  
+  const [rows, fields] = await promise.execute(query);
+  return res.status(200).json({ Contacts: rows });
+});
 
 app.listen(7800, "0.0.0.0", () => {
   console.log("Connected to backend");

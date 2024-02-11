@@ -5,7 +5,6 @@
 
 const fs = require('fs');
 const path = require('path');
-const sqlQueries = [];
 
 // Specify the path to the qrzData directory
 const dirPath = path.join(__dirname, 'qrzData');
@@ -74,7 +73,5 @@ fs.readdir(dirPath, (err, files) => {
       }
     });
   });
-
-  //console.log(sqlQueries);
 
 });

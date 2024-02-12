@@ -2,7 +2,7 @@
 const config = {
   MyCallsign: 'XXX', // To be used for POTA activations
   AppTitle: 'My Hamlog',  
-  ServerURL: 'http://localhost', //'http://192.168.1.85',
+  ServerURL: 'http://192.168.1.85', // 'http://localhost', 
   ServerPort: '7800',
   HamQTHUsername: 'AE9S',
   HamQTHPassword: 'qweQWE123%21%40%23',

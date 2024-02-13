@@ -19,12 +19,12 @@ const QSOsForCallsign = ({ callSignToSearchFor, isOpen, displayTime }) => {
   const [conditions, setConditions] = useState([]);
   dataEndpointLocation=`${ServerURL}:${ServerPort}/Get_Contacts_for_Callsign?QSO_Callsign=${callSignToSearchFor}`;
 
-  const fetchData = async () => {
+  const fetchData = async () => {    
     try {
       const res = await axios.get(dataEndpointLocation);
       // Check if the response is an array, otherwise set to an empty array
       setConditions(Array.isArray(res.data.Contacts) ? res.data.Contacts : []);    
-      cachedCallsign = callSignToSearchFor;  
+      cachedCallsign = callSignToSearchFor;        
     } catch (err) {
       console.log(err);
       setConditions([]); // Set to an empty array in case of an error
@@ -50,23 +50,29 @@ const QSOsForCallsign = ({ callSignToSearchFor, isOpen, displayTime }) => {
 
   if (isOpen) {
     // Handles data fetch when control initially loads
-    if (runCount === 0) {
+    if (runCount === 0) {      
       runCount++;
       fetchData();
-    }
+    }    
     // Handles data fetch when callsign changes
-    if (cachedCallsign !== callSignToSearchFor) {
+    if (cachedCallsign !== callSignToSearchFor) {      
       cachedCallsign = callSignToSearchFor;
       fetchData();
-    }    
+    }
   } else {
-    // Control is not open, do not display 
+    // Control is not open, do not display     
+    cachedCallsign = '';
+    runCount = 0;
     return null;
   }
-
+  
   // If there are no QSOs for the current callsign, don't display the control
-  if (conditions.length === 0) {
-    return null;
+  if (conditions.length === 0) {        
+    fetchData();
+    if(conditions.length === 0)
+    {
+      return null;
+    }
   }
 
   return (

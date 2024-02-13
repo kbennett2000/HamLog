@@ -24,7 +24,6 @@ const CallsignInfo = ({ callSignToSearchFor, isOpen, displayTime }) => {
   const fetchData = async () => {
     try {
       const res = await axios.get(dataEndpointLocation);
-      console.log(dataEndpointLocation);
       // Check if the response is an array, otherwise set to an empty array
       setConditions(Array.isArray(res.data.Contacts) ? res.data.Contacts : []);    
       cachedCallsign = callSignToSearchFor;  

@@ -24,6 +24,17 @@ export async function AddCallsignInfo(CallsignsToLookup) {
     }
 
     for (const callsignToLookup of CallsignsToLookup) {
+
+      /*
+      *************************************************************************
+      2/18/24:
+        HamQTH data is often wrong. 
+        Commenting out lookup to HamQTH.
+        Insert "unknown" in the DB to be used as a flag for QRZ lookups later
+        TODO: Find better lookup service to replace HamQTH
+      *************************************************************************
+
+
       const lookupUrl = `https://www.hamqth.com/xml.php?id=${sessionId}&callsign=${callsignToLookup}&prg=your_program_name`;
       const lookupResponse = await fetch(lookupUrl);
       const lookupData = await lookupResponse.text();
@@ -43,14 +54,27 @@ export async function AddCallsignInfo(CallsignsToLookup) {
       const adrCountry = callsignInfo?.adr_country?.[0] || "unknown";
       const latitude = callsignInfo?.latitude?.[0] || "";
       const longitude = callsignInfo?.longitude?.[0] || "";
-      const us_state = callsignInfo?.us_state?.[0] || "";
-  
+      const us_state = callsignInfo?.us_state?.[0] || "";  
+      */
+
+      const qth = "unknown";
+      const country =  "unknown";
+      const itu =  "unknown";
+      const grid =  "unknown";
+      const adrName =  "unknown";
+      const adrStreet1 =  "unknown";
+      const adrCity =  "unknown";
+      const adrCountry =  "unknown";
+      const latitude =  "";
+      const longitude =  "";
+      const us_state = "";
+
       //   callsignToLookup
       const queryString = `${ServerURL}:${ServerPort}/Get_ContactInfo_Count?callsignToLookup=${callsignToLookup.toUpperCase()}`;      
       const res = await axios.get(queryString);
 
       if (res.data.Contacts[0].count > 0) {
-        // console.log(`Callsign ${callsignToLookup} already exists in the database.`);        
+        // console.log(`Callsign ${callsignToLookup} already exists in the database.`);
       } else {
         const queryString = `${ServerURL}:${ServerPort}/Create_ContactInfo?callsignToLookup=${callsignToLookup.toUpperCase()}&adrName=${adrName}&adrStreet1=${adrStreet1}&adrCity=${adrCity}&us_state=${us_state}&adrCountry=${adrCountry}&latitude=${latitude}&longitude=${longitude}&itu=${itu}&grid=${grid}&qth=${qth}&country=${country}`;
         await axios.get(queryString);

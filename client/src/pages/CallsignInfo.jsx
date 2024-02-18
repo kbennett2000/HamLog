@@ -51,8 +51,8 @@ const CallsignInfo = ({ callSignToSearchFor, isOpen, displayTime }) => {
 
   // If there is no record for the current callsign, don't display the control
   if (conditions.length === 0) {
-    // Add the callsign to the database
-    AddCallsignInfo([callSignToSearchFor]);
+    // Add the callsign to the database    
+    AddCallsignInfo([callSignToSearchFor]);    
     fetchData();
     return null;
   }

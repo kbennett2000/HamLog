@@ -10,6 +10,16 @@ const {
 
 export async function AddCallsignInfo(CallsignsToLookup) {
   try {
+
+    /*
+    *************************************************************************
+    2/18/24:
+      HamQTH data is often wrong. 
+      Commenting out lookup to HamQTH.
+      Insert "unknown" in the DB to be used as a flag for QRZ lookups later
+      TODO: Find better lookup service to replace HamQTH
+    *************************************************************************
+
     const loginUrl = `https://www.hamqth.com/xml.php?u=${HamQTHUsername}&p=${HamQTHPassword}`;
     const loginResponse = await fetch(loginUrl);
     const loginData = await loginResponse.text();
@@ -22,6 +32,8 @@ export async function AddCallsignInfo(CallsignsToLookup) {
       console.log('No session ID found. Check login credentials.');
       return;
     }
+
+    */
 
     for (const callsignToLookup of CallsignsToLookup) {
 
@@ -77,6 +89,8 @@ export async function AddCallsignInfo(CallsignsToLookup) {
         // console.log(`Callsign ${callsignToLookup} already exists in the database.`);
       } else {
         const queryString = `${ServerURL}:${ServerPort}/Create_ContactInfo?callsignToLookup=${callsignToLookup.toUpperCase()}&adrName=${adrName}&adrStreet1=${adrStreet1}&adrCity=${adrCity}&us_state=${us_state}&adrCountry=${adrCountry}&latitude=${latitude}&longitude=${longitude}&itu=${itu}&grid=${grid}&qth=${qth}&country=${country}`;
+        console.log("CallsignLookup:");
+        console.log(queryString);
         await axios.get(queryString);
       }
     }

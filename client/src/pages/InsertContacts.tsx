@@ -20,13 +20,14 @@ const InsertContacts: React.FC<InsertContactsProps> = ({ isOpen, onClose, onClos
   const [showQSOsForParkNumber, setShowQSOsForParkNumber] = useState(false);
   const [currentParkNumber, setCurrentParkNumber] = useState('');
 
-  // Defining the initial state for the form data with all fields initialized as empty strings.
   const initialFormData = {
     QSO_Callsign: '',
     QSO_Frequency: '',
     QSO_Notes: '',
     QSO_Received: '',
     QSO_Sent: '',
+    QSO_Mode: '',
+    QSO_Band: '',
   };
   
   const initialPOTAQSOFormData: Record<string, string>[] = [];
@@ -160,6 +161,8 @@ const InsertContacts: React.FC<InsertContactsProps> = ({ isOpen, onClose, onClos
           notes: formData.QSO_Notes,
           received: formData.QSO_Received,
           sent: formData.QSO_Sent,
+          mode: formData.QSO_Mode,
+          band: formData.QSO_Band,
         });
         createdIds.push(result.id);
       } catch (err) {
@@ -233,7 +236,17 @@ const InsertContacts: React.FC<InsertContactsProps> = ({ isOpen, onClose, onClos
                 <div className='mb-4'>
                     <label className={InputLabel1} htmlFor='QSO_Notes'>Notes:</label>
                     <input type='text' name='QSO_Notes' value={formData.QSO_Notes} onChange={handleChange} className={InputBoxClassName}/>
-                </div>                
+                </div>
+                <div className='flex space-x-2 mb-4'>
+                  <div>
+                    <label className={InputLabel1} htmlFor='QSO_Mode'>Mode:</label>
+                    <input type='text' name='QSO_Mode' value={formData.QSO_Mode} onChange={handleChange} className={InputBoxClassName} placeholder='SSB, CW, FT8...'/>
+                  </div>
+                  <div>
+                    <label className={InputLabel1} htmlFor='QSO_Band'>Band:</label>
+                    <input type='text' name='QSO_Band' value={formData.QSO_Band} onChange={handleChange} className={InputBoxClassName} placeholder='20m, 40m...'/>
+                  </div>
+                </div>
                 {qsoRecords.map((qso, index) => (
                   <div key={index} className='flex space-x-4'>
                     <div className='flex-1'>

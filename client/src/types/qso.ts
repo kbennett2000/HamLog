@@ -14,6 +14,10 @@ export interface Contact {
   QSO_Notes: string;
   QSO_Received: string;
   QSO_Sent: string;
+  qso_datetime_utc: string | null;
+  frequency_mhz: number | null;
+  mode: string | null;
+  band: string | null;
   POTA_QSOs: PotaQso[];
 }
 

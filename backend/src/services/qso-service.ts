@@ -4,9 +4,17 @@ import type { CreateQsoInput } from '../schemas/qso.schema.js';
 
 export async function createContact(input: CreateQsoInput): Promise<number> {
   const formatted = formatDate(input.date) + ' 00:00:00';
+  const timeStr = input.time || '00:00';
+  const utcDatetime = toUtcDatetime(input.date, timeStr);
+  const freqDecimal = parseFrequency(input.frequency);
+
   const [result] = await db.execute<ResultSetHeader>(
-    'INSERT INTO Contacts (QSO_Date, QSO_MTZTime, QSO_Callsign, QSO_Frequency, QSO_Notes, QSO_Received, QSO_Sent) VALUES (?, ?, ?, ?, ?, ?, ?)',
-    [formatted, input.time, input.callsign, input.frequency, input.notes, input.received, input.sent]
+    `INSERT INTO Contacts
+      (QSO_Date, QSO_MTZTime, QSO_Callsign, QSO_Frequency, QSO_Notes, QSO_Received, QSO_Sent,
+       qso_datetime_utc, frequency_mhz, mode, band)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [formatted, timeStr, input.callsign, input.frequency, input.notes, input.received, input.sent,
+     utcDatetime, freqDecimal, input.mode || null, input.band || null]
   );
   return result.insertId;
 }
@@ -86,4 +94,20 @@ function formatDate(inputString: string): string {
   const month = String(inputDate.getMonth() + 1).padStart(2, '0');
   const day = String(inputDate.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
+}
+
+function toUtcDatetime(dateStr: string, timeStr: string): string {
+  const date = formatDate(dateStr);
+  const time = timeStr.length === 5 ? `${timeStr}:00` : timeStr;
+  return `${date} ${time}`;
+}
+
+function parseFrequency(freq: string): number | null {
+  if (!freq) return null;
+  const dotCount = (freq.match(/\./g) || []).length;
+  const cleaned = dotCount >= 2
+    ? freq.substring(0, freq.indexOf('.', freq.indexOf('.') + 1))
+    : freq;
+  const val = parseFloat(cleaned);
+  return isNaN(val) ? null : val;
 }

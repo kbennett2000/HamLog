@@ -18,6 +18,8 @@ interface CreateQsoData {
   notes: string;
   received: string;
   sent: string;
+  mode?: string;
+  band?: string;
 }
 
 interface CreateContactInfoData {

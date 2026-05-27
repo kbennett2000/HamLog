@@ -124,6 +124,8 @@ const Contacts = () => {
                           <th scope='col' className={TableHeading1}>Time</th>
                           <th scope='col' className={TableHeading1}>Callsign</th>
                           <th scope='col' className={TableHeading1}>Frequency</th>
+                          <th scope='col' className={TableHeading1}>Mode</th>
+                          <th scope='col' className={TableHeading1}>Band</th>
                           <th scope='col' className={TableHeading1}>Delete</th>
                       </tr>
                     </thead>
@@ -137,7 +139,9 @@ const Contacts = () => {
                             <td className={TableCell1}>{new Date(condition.QSO_Date).toLocaleDateString('en-US')}</td>
                             <td className={TableCell1}>{condition.QSO_MTZTime.slice(0, 5)}</td>
                             <td className={TableCell1} onMouseLeave={() => handleCallsignMouseLeave()} onMouseOver={() => handleCallsignMouseOver(condition.QSO_Callsign)}>{condition.QSO_Callsign}</td>                            
-                            <td className={TableCell1}>{condition.QSO_Frequency}</td>                            
+                            <td className={TableCell1}>{condition.QSO_Frequency}</td>
+                            <td className={TableCell1}>{condition.mode || ''}</td>
+                            <td className={TableCell1}>{condition.band || ''}</td>
                             <td className={TableCell1}>
                               <button onClick={() => HandleDelete(condition.QSO_ID)} className={ButtonClassNameRed}>X</button>
                             </td>

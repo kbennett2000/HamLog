@@ -8,6 +8,8 @@ export const createQsoSchema = z.object({
   notes: z.string().default(''),
   received: z.string().default(''),
   sent: z.string().default(''),
+  mode: z.string().default(''),
+  band: z.string().default(''),
 });
 
 export const createPotaQsoSchema = z.object({

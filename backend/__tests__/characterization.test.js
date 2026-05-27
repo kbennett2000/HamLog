@@ -234,8 +234,9 @@ describe('Characterization: ContactInfo lifecycle', () => {
     });
     const res = await get(`/Create_ContactInfo?${params}`);
     expect(res.status).toBe(200);
-    const body = await res.json();
-    expect(body).not.toHaveProperty('Contacts');
+    // When callsign exists, endpoint calls res.json() with no args — empty body
+    const text = await res.text();
+    expect(text === '' || text === 'null' || text === 'undefined').toBe(true);
   });
 
   afterAll(async () => {

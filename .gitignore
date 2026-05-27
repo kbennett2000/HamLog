@@ -4,7 +4,7 @@ node_modules/
 # NEVER commit.
 backups/
 *.sql
-!backend/init-db/*.sql
+!backend/init-db/01-schema.sql
 .env
 .env.*
 !.env.example

@@ -12,6 +12,7 @@ services:
     volumes:
       - hamlog_data:/var/lib/mysql
       - ./backend/init-db:/docker-entrypoint-initdb.d
+      - ./backups:/backups
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s

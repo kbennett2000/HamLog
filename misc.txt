@@ -1,0 +1,16 @@
+This repo should be able to be run over a home LAN on a Ubuntu server with an easily configurable port number (default to 9000)
+
+-------------------------
+
+The documentation in this repo needs to be world class. Any non-technical ham should be able to get this solution up and running with no problems by following the included instructions.
+
+Documentation should take two paths:
+- Installing and configuring the app
+- Using the app once it's installed
+
+------------------------------------------------
+
+Log backups should be easy to run, easy to automate, and should produce a single file as output for backup.
+
+-------------------------------
+

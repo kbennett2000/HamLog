@@ -2,7 +2,7 @@ import axios from 'axios';
 import config from '../config';
 const { ApiBaseUrl, ApiKey } = config;
 
-export async function AddCallsignInfo(CallsignsToLookup) {
+export async function AddCallsignInfo(CallsignsToLookup: string[]) {
   try {
     for (const callsignToLookup of CallsignsToLookup) {
       // HamQTH lookup disabled (2/18/24) — insert "unknown" as placeholder

@@ -4,6 +4,7 @@ import DeleteConfirmationModal from './DeleteConfirmationModal';
 import QSOsForParkNumber from './QSOsForParkNumber';
 import CallsignInfo from './CallsignInfo';
 import { getQsos, deleteQso } from '../api/hamlog-api';
+import type { Contact } from '../types/qso';
 import config from '../config';
 const {
   AppTitle,
@@ -21,14 +22,14 @@ const {
 } = config;
 
 const Contacts = () => {
-  const [conditions, setConditions] = useState([]);
-  const [expandedRows, setExpandedRows] = useState([]);
+  const [conditions, setConditions] = useState<Contact[]>([]);
+  const [expandedRows, setExpandedRows] = useState<boolean[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [showInsertContacts, setShowInsertContacts] = useState(false);
-  const [currentCallsign, setCurrentCallsign] = useState([]);
-  const [currentQSOId, setCurrentQSOId] = useState(null);
+  const [currentCallsign, setCurrentCallsign] = useState('');
+  const [currentQSOId, setCurrentQSOId] = useState<number | null>(null);
   const [showQSOsForParkNumber, setShowQSOsForParkNumber] = useState(false);
-  const [currentParkNumber, setCurrentParkNumber] = useState([]);
+  const [currentParkNumber, setCurrentParkNumber] = useState('');
   const [showCallsignInfo, setShowCallsignInfo] = useState(false);
 
 
@@ -41,7 +42,7 @@ const Contacts = () => {
     }
   };
 
-  const toggleRow = (index) => {
+  const toggleRow = (index: number) => {
     setExpandedRows((prevRows) => {
       const newRows = [...prevRows];
       newRows[index] = !newRows[index];
@@ -49,7 +50,7 @@ const Contacts = () => {
     });
   };
 
-  const HandleDelete = (qsoId) => {
+  const HandleDelete = (qsoId: number) => {
     setShowModal(true);
     setCurrentQSOId(qsoId);
   };
@@ -58,9 +59,8 @@ const Contacts = () => {
     setShowInsertContacts(true);
   };
 
-  const handleUserChoice = async (choice) => {
-    if (choice === 'Yes') {
-      // Delete the record
+  const handleUserChoice = async (choice: string) => {
+    if (choice === 'Yes' && currentQSOId !== null) {
       try {
         await deleteQso(currentQSOId);
         fetchData();
@@ -76,7 +76,7 @@ const Contacts = () => {
     setShowModal(false);
   };
 
-  const handleCallsignMouseOver = (qsoCallsign) => {
+  const handleCallsignMouseOver = (qsoCallsign: string) => {
     setCurrentCallsign(qsoCallsign);
     setShowCallsignInfo(true);
   }
@@ -85,7 +85,7 @@ const Contacts = () => {
     setShowCallsignInfo(false);
   }
 
-  const handleParkNumberMouseOver = (parkNumber) => {
+  const handleParkNumberMouseOver = (parkNumber: string) => {
     setCurrentParkNumber(parkNumber);
     setShowQSOsForParkNumber(true);
   }
@@ -144,7 +144,7 @@ const Contacts = () => {
                           </tr>
                           <tr>
                           {expandedRows[index] && condition.POTA_QSOs.length > 0 && (
-                            <td colspan='3'>
+                            <td colSpan={3}>
                               <table>
                                 <thead className={TableHeadStyle3}>
                                   <th scope='col' className={TableHeading2}>Park Number</th>
@@ -162,7 +162,7 @@ const Contacts = () => {
                             </td>
                           )}                            
                           {expandedRows[index] && (condition.QSO_Received || condition.QSO_Sent || condition.QSO_Notes) && (          
-                            <td colspan='3'>
+                            <td colSpan={3}>
                               <table id='ExpandedRowsTable' className={TableStyle1}>
                                 <thead className={TableHeadStyle2}>
                                   <tr>

@@ -7,12 +7,18 @@ const { InputBoxClassName, ButtonClassNameBlue, ButtonClassNameGreen, InputLabel
 
 const CONTEST_QSO_LIMIT = 1;
 
-const InsertContacts = ({ isOpen, onClose, onClosed }) => {
+interface InsertContactsProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onClosed: () => void;
+}
+
+const InsertContacts: React.FC<InsertContactsProps> = ({ isOpen, onClose, onClosed }) => {
   const contestQSOCounterRef = useRef(0);
   const [showCallsignInfo, setShowCallsignInfo] = useState(false);
-  const [currentCallsign, setCurrentCallsign] = useState([]);
+  const [currentCallsign, setCurrentCallsign] = useState('');
   const [showQSOsForParkNumber, setShowQSOsForParkNumber] = useState(false);
-  const [currentParkNumber, setCurrentParkNumber] = useState([]);
+  const [currentParkNumber, setCurrentParkNumber] = useState('');
 
   // Defining the initial state for the form data with all fields initialized as empty strings.
   const initialFormData = {
@@ -23,11 +29,8 @@ const InsertContacts = ({ isOpen, onClose, onClosed }) => {
     QSO_Sent: '',
   };
   
-  // Initializing an array to hold POTA QSO form data, initially empty.
-  const initialPOTAQSOFormData = [];
-
-  // Initializing an array to hold Contest QSO form data, initially empty.
-  const initialContestQSOFormData = [];
+  const initialPOTAQSOFormData: Record<string, string>[] = [];
+  const initialContestQSOFormData: Record<string, string>[] = [];
 
   // useState hook is used to create 'formData' state variable and its updater function 'setFormData'.
   const [formData, setFormData] = useState(initialFormData);
@@ -39,40 +42,33 @@ const InsertContacts = ({ isOpen, onClose, onClosed }) => {
   const [contestRecords, setContestRecords] = useState(initialContestQSOFormData);
 
   // Function to handle changes in the form input fields, updating 'formData' state.
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Merging previous formData with the new value from the changed input field.
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   // Function to handle changes in the form Callsign input field, updating 'formData' state and setting the currentCallsign value.
-  const handleCallsignChange = (e) => {
+  const handleCallsignChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // Merging previous formData with the new value from the changed input field.
     setFormData({ ...formData, [e.target.name]: e.target.value.toUpperCase() });
   };
   
   // Function to handle changes in QSO records, updating 'qsoRecords' state.
-  const handleQSOChange = (index, e) => {
-    // Creating a new array from the existing QSO records.
+  const handleQSOChange = (index: number, e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const newQSORecords = [...qsoRecords];
-    // Updating the specific QSO record at the given index.
-    newQSORecords[index][e.target.name] = e.target.value;
-    // Updating the 'qsoRecords' state with the modified records.
+    (newQSORecords[index] as any)[e.target.name] = e.target.value;
     setQSORecords(newQSORecords);
   };
 
-  // Function to handle changes in QSO records, updating 'qsoRecords' state.
-  const handleQSOPOTAIDChange = (index, e) => {
-    // Creating a new array from the existing QSO records.
+  const handleQSOPOTAIDChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
     const newQSORecords = [...qsoRecords];
-    // Updating the specific QSO record at the given index.
-    newQSORecords[index][e.target.name] = e.target.value.toUpperCase();
-    // Updating the 'qsoRecords' state with the modified records.
+    (newQSORecords[index] as any)[e.target.name] = e.target.value.toUpperCase();
     setQSORecords(newQSORecords);
   };
-    
-  const handleContestChange = (index, e) => {
+
+  const handleContestChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
     const newContestRecords = [...contestRecords];
-    newContestRecords[index][e.target.name] = e.target.value;
+    (newContestRecords[index] as any)[e.target.name] = e.target.value;
     setContestRecords(newContestRecords);
   };
 
@@ -91,7 +87,7 @@ const InsertContacts = ({ isOpen, onClose, onClosed }) => {
   };
   
   // Function to format a JavaScript Date object into a string in MM/DD/YYYY format.
-  function formatDateToMMDDYYYY(date) {
+  function formatDateToMMDDYYYY(date: Date): string {
     // Getting the month, adding 1 as JavaScript Date months are 0-based, and formatting with a leading zero if needed.
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     // Getting the day and formatting with a leading zero if needed.
@@ -117,7 +113,7 @@ const InsertContacts = ({ isOpen, onClose, onClosed }) => {
     return currentTime;
   }
 
-  const handleCallsignMouseOver = (qsoCallsign) => {
+  const handleCallsignMouseOver = (qsoCallsign: string) => {
     setCurrentCallsign(qsoCallsign);
     setShowCallsignInfo(true);
   }
@@ -126,7 +122,7 @@ const InsertContacts = ({ isOpen, onClose, onClosed }) => {
     setShowCallsignInfo(false);
   }
 
-  const handleParkNumberMouseOver = (parkNumber) => {
+  const handleParkNumberMouseOver = (parkNumber: string) => {
     setCurrentParkNumber(parkNumber);
     setShowQSOsForParkNumber(true);
   }
@@ -143,7 +139,7 @@ const InsertContacts = ({ isOpen, onClose, onClosed }) => {
     onClose();
   }
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.QSO_Callsign.trim() || !formData.QSO_Frequency.trim()) {
@@ -217,7 +213,7 @@ const InsertContacts = ({ isOpen, onClose, onClosed }) => {
             <div className='flex space-x-2 mb-4'>
               <div>
                 <label className={InputLabel1} htmlFor='QSO_Callsign'>Callsign:</label>
-                <input type='text' name='QSO_Callsign' value={formData.QSO_Callsign} onChange={handleCallsignChange} className={InputBoxClassName} autoFocus onMouseLeave={() => handleCallsignMouseLeave()} onMouseOver={(e) => handleCallsignMouseOver(e.target.value)}/>
+                <input type='text' name='QSO_Callsign' value={formData.QSO_Callsign} onChange={handleCallsignChange} className={InputBoxClassName} autoFocus onMouseLeave={() => handleCallsignMouseLeave()} onMouseOver={(e) => handleCallsignMouseOver((e.target as HTMLInputElement).value)}/>
               </div>
               <div>
                 <label className={InputLabel1} htmlFor='QSO_Frequency'>Frequency:</label>
@@ -242,7 +238,7 @@ const InsertContacts = ({ isOpen, onClose, onClosed }) => {
                   <div key={index} className='flex space-x-4'>
                     <div className='flex-1'>
                       <label className={InputLabel1} htmlFor={`POTAPark_ID_${index}`}>POTA Park ID:</label>
-                      <input type='text' name='POTAPark_ID' id={`POTAPark_ID_${index}`} value={qso.POTAPark_ID} onChange={(e) => handleQSOPOTAIDChange(index, e)} className={InputBoxClassName} onMouseLeave={() => handleParkNumberMouseLeave()} onMouseOver={(e) => handleParkNumberMouseOver(e.target.value)}/>
+                      <input type='text' name='POTAPark_ID' id={`POTAPark_ID_${index}`} value={qso.POTAPark_ID} onChange={(e) => handleQSOPOTAIDChange(index, e)} className={InputBoxClassName} onMouseLeave={() => handleParkNumberMouseLeave()} onMouseOver={(e) => handleParkNumberMouseOver((e.target as HTMLInputElement).value)}/>
                     </div>
                     <div className='flex-1'>
                       <label className={InputLabel1} htmlFor={`QSO_Type_${index}`}>QSO Type:</label>

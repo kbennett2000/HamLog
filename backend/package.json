@@ -2,11 +2,13 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "src/server.js",
+  "main": "src/server.ts",
   "type": "module",
   "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
     "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --forceExit --detectOpenHandles",
-    "start": "nodemon src/server.js"
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [],
   "author": "",
@@ -16,11 +18,18 @@
     "dotenv": "^17.4.2",
     "express": "^4.18.2",
     "mysql2": "^3.7.0",
-    "nodemon": "^3.0.2",
-    "xml2js": "^0.6.2"
+    "xml2js": "^0.6.2",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@jest/globals": "^30.4.1",
-    "jest": "^30.4.2"
+    "@swc/core": "^1.15.40",
+    "@swc/jest": "^0.2.39",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.9.1",
+    "jest": "^30.4.2",
+    "tsx": "^4.22.3",
+    "typescript": "^6.0.3"
   }
 }

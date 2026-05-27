@@ -9,15 +9,21 @@ const {
   TableHeadStyle2,
 } = config;
 
-function formatFrequency(inputFreq) {
+function formatFrequency(inputFreq: string): string {
   const dotCount = (inputFreq.match(/\./g) || []).length;
   if (dotCount === 1) return inputFreq;
   if (dotCount === 2) return inputFreq.substring(0, inputFreq.lastIndexOf('.'));
   return '';
 }
 
-const QSOsForCallsign = ({ callSignToSearchFor, isOpen, displayTime }) => {
-  const [conditions, setConditions] = useState([]);
+interface QSOsForCallsignProps {
+  callSignToSearchFor: string;
+  isOpen: boolean;
+  displayTime?: boolean;
+}
+
+const QSOsForCallsign: React.FC<QSOsForCallsignProps> = ({ callSignToSearchFor, isOpen, displayTime }) => {
+  const [conditions, setConditions] = useState<any[]>([]);
   const prevCallsignRef = useRef('');
 
   useEffect(() => {

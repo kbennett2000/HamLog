@@ -1,6 +1,12 @@
 import React from 'react';
 
-const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm }) => {
+interface DeleteConfirmationModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: (choice: string) => void;
+}
+
+const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({ isOpen, onClose, onConfirm }) => {
   if (!isOpen) return null;
 
   return (

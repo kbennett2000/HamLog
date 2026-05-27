@@ -3,15 +3,21 @@ import { getQsosByPark } from '../api/hamlog-api';
 import config from '../config';
 const { TableHeading1, TableCell1, TableStyle1, TableHeadStyle3, TableBodyStyle1 } = config;
 
-function formatFrequency(inputFreq) {
+function formatFrequency(inputFreq: string): string {
   const dotCount = (inputFreq.match(/\./g) || []).length;
   if (dotCount === 1) return inputFreq;
   if (dotCount === 2) return inputFreq.substring(0, inputFreq.lastIndexOf('.'));
   return '';
 }
 
-const QSOsForParkNumber = ({ parkNumberToSearchFor, isOpen, displayTime }) => {
-  const [conditions, setConditions] = useState([]);
+interface QSOsForParkNumberProps {
+  parkNumberToSearchFor: string;
+  isOpen: boolean;
+  displayTime?: boolean;
+}
+
+const QSOsForParkNumber: React.FC<QSOsForParkNumberProps> = ({ parkNumberToSearchFor, isOpen, displayTime }) => {
+  const [conditions, setConditions] = useState<any[]>([]);
   const prevParkRef = useRef('');
 
   useEffect(() => {

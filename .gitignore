@@ -9,3 +9,4 @@ backups/
 .env.*
 !.env.example
 backend/results.txt
+client/build/

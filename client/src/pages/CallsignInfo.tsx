@@ -11,8 +11,14 @@ const {
   TableHeadStyle1,
 } = config;
 
-const CallsignInfo = ({ callSignToSearchFor, isOpen, displayTime }) => {
-  const [conditions, setConditions] = useState([]);
+interface CallsignInfoProps {
+  callSignToSearchFor: string;
+  isOpen: boolean;
+  displayTime?: boolean;
+}
+
+const CallsignInfo: React.FC<CallsignInfoProps> = ({ callSignToSearchFor, isOpen }) => {
+  const [conditions, setConditions] = useState<any[]>([]);
   const prevCallsignRef = useRef('');
 
   useEffect(() => {

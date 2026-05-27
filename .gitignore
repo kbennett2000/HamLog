@@ -5,6 +5,7 @@ node_modules/
 backups/
 *.sql
 !backend/init-db/01-schema.sql
+!backend/src/migrations/*.sql
 .env
 .env.*
 !.env.example

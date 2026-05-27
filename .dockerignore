@@ -1,0 +1,14 @@
+node_modules
+backend/node_modules
+client/node_modules
+client/build
+.env
+.env.*
+!.env.example
+backups/
+*.sql
+!backend/init-db/*.sql
+!backend/src/migrations/*.sql
+.git
+.claude
+docs

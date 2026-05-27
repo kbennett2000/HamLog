@@ -3,8 +3,9 @@ import InsertContacts from './InsertContacts';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
 import QSOsForParkNumber from './QSOsForParkNumber';
 import CallsignInfo from './CallsignInfo';
-import { getQsos, deleteQso, getExportUrl, importAdif } from '../api/hamlog-api';
+import { getQsos, deleteQso, exportAdif, importAdif } from '../api/hamlog-api';
 import type { Contact } from '../types/qso';
+import { useAuth } from '../contexts/AuthContext';
 import config from '../config';
 const {
   AppTitle,
@@ -22,6 +23,7 @@ const {
 } = config;
 
 const Contacts = () => {
+  const { user, logout } = useAuth();
   const [conditions, setConditions] = useState<Contact[]>([]);
   const [expandedRows, setExpandedRows] = useState<boolean[]>([]);
   const [showModal, setShowModal] = useState(false);
@@ -100,8 +102,13 @@ const Contacts = () => {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleExport = () => {
-    window.open(getExportUrl(), '_blank');
+  const handleExport = async () => {
+    try {
+      await exportAdif();
+    } catch (err) {
+      console.error('Export failed:', err);
+      alert('Export failed. Check console for details.');
+    }
   };
 
   const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -126,7 +133,13 @@ const Contacts = () => {
 
   return (
     <>
-      <h1 className='text-3xl font-bold mb-4'>{AppTitle}</h1>
+      <div className='flex items-center justify-between mb-4'>
+        <h1 className='text-3xl font-bold'>{AppTitle}</h1>
+        <div className='flex items-center space-x-3'>
+          <span className='text-sm text-gray-600 dark:text-gray-300 font-mono'>{user?.callsign}</span>
+          <button onClick={logout} className={ButtonClassNameRed}>Logout</button>
+        </div>
+      </div>
       <div className='flex items-center space-x-2'>
         <button onClick={() => HandleInsert()} className={ButtonClassNameGreen}>+ QSO</button>
         <button onClick={handleExport} className={ButtonClassNameBlue}>Export ADIF</button>

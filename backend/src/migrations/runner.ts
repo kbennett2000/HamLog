@@ -22,6 +22,8 @@ const MIGRATIONS = [
   '001-add-utc-datetime.sql',
   '002-add-frequency-decimal.sql',
   '003-add-mode-band.sql',
+  '004-add-users-table.sql',
+  '005-add-user-id-to-contacts.sql',
 ];
 
 async function ensureMigrationsTable(): Promise<void> {

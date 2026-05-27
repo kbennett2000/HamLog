@@ -3,9 +3,9 @@
 ## Project Overview
 
 HamLog is a self-hosted amateur radio QSO (contact) logging application with
-support for POTA (Parks on the Air), contest logging, and (planned) SOTA. It is
-designed for an individual licensed amateur radio operator running it on their
-own network — not a multi-tenant SaaS.
+support for POTA (Parks on the Air), contest logging, and (planned) SOTA. It
+runs on a home LAN and supports multiple users, each with their own callsign
+and private QSO log. Deployed via Docker Compose on a Ubuntu server.
 
 ## Tech Stack
 
@@ -17,8 +17,8 @@ own network — not a multi-tenant SaaS.
 - **Validation:** Zod for all request/response schemas.
 - **Testing:** Jest + React Testing Library (frontend), Jest (backend).
 - **Logging:** pino with structured JSON output.
-- **Auth:** Session-based with a single configured operator credential. No
-  signup, no multi-user.
+- **Auth:** JWT-based multi-user. Open registration (any LAN user can create
+  an account with username, password, callsign). 24h token TTL.
 - **Secrets:** loaded from `.env` via dotenv. `.env` is gitignored. A
   committed `.env.example` documents required variables.
 
@@ -30,7 +30,10 @@ own network — not a multi-tenant SaaS.
 - `/backend/src/services/` — Logic spanning multiple tables (e.g. creating a
   Contact + POTA QSO in a single transaction).
 - `/backend/src/migrations/` — Numbered, forward-only SQL migrations.
-- `/client/src/pages/` — Top-level views.
+- `/backend/src/middleware/` — Express middleware (JWT auth, validation,
+  error handling).
+- `/client/src/pages/` — Top-level views (Login, Register, Contacts).
+- `/client/src/contexts/` — React contexts (AuthContext for JWT state).
 - `/client/src/components/` — Reusable UI components.
 - `/client/src/api/` — Typed wrappers around backend endpoints.
 - `/client/src/types/` — Shared TypeScript types mirroring backend schemas.
@@ -66,7 +69,6 @@ own network — not a multi-tenant SaaS.
 
 ## Out of Scope for v1
 
-- Multi-user accounts or any auth beyond a single operator login.
 - Cloud or public deployment.
 - Real-time spotting integration (RBN, DX clusters).
 - Rig control (CAT/CI-V) or audio interfacing.
@@ -77,7 +79,6 @@ own network — not a multi-tenant SaaS.
 
 ## Data Preservation
 
-This repo has a live production database with the maintainer's QSO history.
 **All refactors must preserve existing data.** This rule overrides everything
 else in this file when they conflict.
 

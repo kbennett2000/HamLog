@@ -1,8 +1,21 @@
 -- HamLog database schema
 -- This runs automatically on first Docker container startup.
 
+CREATE TABLE IF NOT EXISTS `Users` (
+  `id` INT AUTO_INCREMENT,
+  `username` VARCHAR(50) NOT NULL,
+  `password_hash` VARCHAR(255) NOT NULL,
+  `callsign` VARCHAR(12) NOT NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `users_username_unique` (`username`),
+  UNIQUE INDEX `users_callsign_unique` (`callsign`)
+);
+
 CREATE TABLE IF NOT EXISTS `Contacts` (
   `QSO_ID` INT AUTO_INCREMENT,
+  `user_id` INT NOT NULL,
   `QSO_Date` DATETIME NULL,
   `QSO_MTZTime` VARCHAR(12) NULL,
   `QSO_Callsign` VARCHAR(12) NULL,
@@ -10,7 +23,13 @@ CREATE TABLE IF NOT EXISTS `Contacts` (
   `QSO_Notes` VARCHAR(4096) NULL,
   `QSO_Received` VARCHAR(10) NULL,
   `QSO_Sent` VARCHAR(10) NULL,
-  PRIMARY KEY (`QSO_ID`)
+  `qso_datetime_utc` DATETIME NULL,
+  `frequency_mhz` DECIMAL(10,6) NULL,
+  `mode` VARCHAR(20) NULL,
+  `band` VARCHAR(10) NULL,
+  PRIMARY KEY (`QSO_ID`),
+  INDEX `idx_contacts_user_id` (`user_id`),
+  CONSTRAINT `fk_contacts_user_id` FOREIGN KEY (`user_id`) REFERENCES `Users`(`id`) ON DELETE RESTRICT
 );
 
 CREATE TABLE IF NOT EXISTS `POTA_QSOs` (

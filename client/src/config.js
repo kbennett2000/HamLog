@@ -1,11 +1,9 @@
 // config.js
 const config = {
-  MyCallsign: 'XXX', // To be used for POTA activations
-  AppTitle: 'My Hamlog',  
-  ServerURL: 'http://192.168.1.85', // 'http://localhost', 
-  ServerPort: '7800',
-  //HamQTHUsername: 'myUsername',
-  //HamQTHPassword: 'myPassword',
+  MyCallsign: 'AE9S',
+  AppTitle: 'My Hamlog',
+  ApiBaseUrl: 'http://localhost:7800/api',
+  ApiKey: 'hamlog-dev-key',
   InputBoxClassName: 'w-full p-2 border rounded-md focus:outline-none focus:border-blue-500 shadow focus:shadow-md',
   ButtonClassNameBlue: 'bg-blue-500 text-white p-2 rounded-md focus:outline-none hover:bg-blue-700 shadow hover:shadow-md',
   ButtonClassNameGreen: 'bg-green-500 text-white p-2 rounded-md focus:outline-none hover:bg-green-700 shadow hover:shadow-md',

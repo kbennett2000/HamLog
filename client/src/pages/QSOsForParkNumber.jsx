@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import config from '../config';
-const { ServerURL, ServerPort, TableHeading1, TableCell1, TableStyle1, TableHeadStyle3, TableBodyStyle1 } = config;
+const { ApiBaseUrl, TableHeading1, TableCell1, TableStyle1, TableHeadStyle3, TableBodyStyle1 } = config;
 
 let dataEndpointLocation = '';
 let runCount = 0;
@@ -9,17 +9,16 @@ let cachedParkNumber = '';
 
 const QSOsForParkNumber = ({ parkNumberToSearchFor, isOpen, displayTime }) => {
   const [conditions, setConditions] = useState([]);
-  dataEndpointLocation=`${ServerURL}:${ServerPort}/Get_Contacts_for_ParkNumber?ParkNumber=${parkNumberToSearchFor}`;
-  
+  dataEndpointLocation = `${ApiBaseUrl}/qsos?park=${parkNumberToSearchFor}`;
+
   const fetchData = async () => {
     try {
       const res = await axios.get(dataEndpointLocation);
-      // Check if the response is an array, otherwise set to an empty array
-      setConditions(Array.isArray(res.data.Contacts) ? res.data.Contacts : []);     
-      cachedParkNumber = parkNumberToSearchFor;  
+      setConditions(Array.isArray(res.data.Contacts) ? res.data.Contacts : []);
+      cachedParkNumber = parkNumberToSearchFor;
     } catch (err) {
       console.log(err);
-      setConditions([]); // Set to an empty array in case of an error
+      setConditions([]);
     }
   };
 

@@ -3,56 +3,49 @@ import axios from 'axios';
 import QSOsForCallsign from './QSOsForCallsign';
 import { AddCallsignInfo } from '../services/CallsignLookup';
 import config from '../config';
-const { 
-  ServerURL,
-  ServerPort,
-  TableHeading1, 
-  TableCell1, 
-  TableStyle1, 
-  TableBodyStyle1, 
-  TableHeadStyle1, 
+const {
+  ApiBaseUrl,
+  TableHeading1,
+  TableCell1,
+  TableStyle1,
+  TableBodyStyle1,
+  TableHeadStyle1,
 } = config;
 
 let dataEndpointLocation = '';
 let runCount = 0;
 let cachedCallsign = '';
 
-const CallsignInfo = ({ callSignToSearchFor, isOpen, displayTime }) => {    
+const CallsignInfo = ({ callSignToSearchFor, isOpen, displayTime }) => {
   const [conditions, setConditions] = useState([]);
-  dataEndpointLocation=`${ServerURL}:${ServerPort}/Get_Callsign_Info?Callsign=${callSignToSearchFor}`;
+  dataEndpointLocation = `${ApiBaseUrl}/contact-info/${callSignToSearchFor}`;
 
   const fetchData = async () => {
     try {
       const res = await axios.get(dataEndpointLocation);
-      // Check if the response is an array, otherwise set to an empty array
-      setConditions(Array.isArray(res.data.Contacts) ? res.data.Contacts : []);    
-      cachedCallsign = callSignToSearchFor;  
+      setConditions(Array.isArray(res.data.Contacts) ? res.data.Contacts : []);
+      cachedCallsign = callSignToSearchFor;
     } catch (err) {
       console.log(err);
-      setConditions([]); // Set to an empty array in case of an error
+      setConditions([]);
     }
   };
 
   if (isOpen) {
-    // Handles data fetch when control initially loads
     if (runCount === 0) {
       runCount++;
       fetchData();
     }
-    // Handles data fetch when callsign changes
     if (cachedCallsign !== callSignToSearchFor) {
       cachedCallsign = callSignToSearchFor;
       fetchData();
-    }    
+    }
   } else {
-    // Control is not open, do not display 
     return null;
   }
 
-  // If there is no record for the current callsign, don't display the control
   if (conditions.length === 0) {
-    // Add the callsign to the database    
-    AddCallsignInfo([callSignToSearchFor]);    
+    AddCallsignInfo([callSignToSearchFor]);
     fetchData();
     return null;
   }

@@ -1,42 +1,62 @@
 import { jest, describe, it, expect, beforeAll, afterAll } from '@jest/globals';
 
 /**
- * Characterization tests — pin the current API behavior so Phase 1
- * restructuring can't silently break anything. These tests intentionally
- * use the existing (broken) GET-for-writes interface.
+ * Characterization tests for the REST API (Phase 1).
+ * Tests proper HTTP methods, parameterized queries, auth, and transactions.
  *
- * Requires: MySQL running (docker compose up -d) with the HamLogDB schema.
+ * Requires: MySQL running (docker compose up -d).
  * Skips gracefully if the database is unreachable.
  */
 
 let server;
 let baseUrl;
-let pool;
+let dbPool;
 let dbAvailable = false;
 
-function get(path) {
-  return fetch(`${baseUrl}${path}`);
+const API_KEY = 'hamlog-dev-key';
+const authHeaders = { Authorization: `Bearer ${API_KEY}` };
+
+function api(path, options = {}) {
+  return fetch(`${baseUrl}${path}`, options);
+}
+
+function post(path, body) {
+  return api(path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeaders },
+    body: JSON.stringify(body),
+  });
+}
+
+function del(path) {
+  return api(path, { method: 'DELETE', headers: authHeaders });
 }
 
 beforeAll(async () => {
-  process.env.NODE_ENV = 'test';
-  const mod = await import('../index.js');
-  const app = mod.app;
-  pool = mod.dbHamLog.promise();
+  // Load .env before anything else
+  const dotenv = await import('dotenv');
+  dotenv.config();
 
-  // Check DB connectivity before running tests
+  process.env.NODE_ENV = 'test';
+  process.env.API_KEY = API_KEY;
+  process.env.CORS_ORIGIN = '*';
+
+  const { default: pool } = await import('../src/db/pool.js');
+  dbPool = pool.promise();
+
   try {
-    await pool.execute('SELECT 1');
+    await dbPool.execute('SELECT 1');
     dbAvailable = true;
   } catch {
-    console.warn('MySQL not reachable — skipping characterization tests. Run: docker compose up -d');
+    console.warn('MySQL not reachable — skipping tests. Run: docker compose up -d');
     return;
   }
 
+  const { default: app } = await import('../src/app.js');
   await new Promise((resolve, reject) => {
     server = app.listen(0, '127.0.0.1', () => {
       const { port } = server.address();
-      baseUrl = `http://127.0.0.1:${port}`;
+      baseUrl = `http://127.0.0.1:${port}/api`;
       resolve();
     });
     server.on('error', reject);
@@ -44,159 +64,196 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  if (server) {
-    await new Promise(resolve => server.close(resolve));
-  }
-  if (pool) {
-    try { await pool.end(); } catch { /* already closed */ }
+  if (server) await new Promise(resolve => server.close(resolve));
+  if (dbPool) {
+    try { await dbPool.end(); } catch { /* already closed */ }
   }
 });
 
 function skipIfNoDb() {
-  if (!dbAvailable) {
-    return true;
-  }
-  return false;
+  return !dbAvailable;
 }
 
-describe('Characterization: read endpoints', () => {
-  it('GET /getContactsAndPOTAQSOs returns 200 with an array', async () => {
+describe('Read endpoints', () => {
+  it('GET /api/qsos returns 200 with an array', async () => {
     if (skipIfNoDb()) return;
-    const res = await get('/getContactsAndPOTAQSOs');
+    const res = await api('/qsos');
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(Array.isArray(body)).toBe(true);
   });
 
-  it('GET /Get_Contacts_for_Callsign returns 200 with Contacts key', async () => {
+  it('GET /api/qsos?callsign= returns filtered results', async () => {
     if (skipIfNoDb()) return;
-    const res = await get('/Get_Contacts_for_Callsign?QSO_Callsign=TESTCALL');
+    const res = await api('/qsos?callsign=NONEXISTENT');
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body).toHaveProperty('Contacts');
     expect(Array.isArray(body.Contacts)).toBe(true);
   });
 
-  it('GET /Get_Contacts_for_ParkNumber returns 200 with Contacts key', async () => {
+  it('GET /api/qsos?park= returns filtered results', async () => {
     if (skipIfNoDb()) return;
-    const res = await get('/Get_Contacts_for_ParkNumber?ParkNumber=K-0000');
-    expect(res.status).toBe(200);
-    const body = await res.json();
-    expect(body).toHaveProperty('Contacts');
-    expect(Array.isArray(body.Contacts)).toBe(true);
-  });
-
-  it('GET /Last_Insert_ID returns 200 with LastInsertID key', async () => {
-    if (skipIfNoDb()) return;
-    const res = await get('/Last_Insert_ID');
-    expect(res.status).toBe(200);
-    const body = await res.json();
-    expect(body).toHaveProperty('LastInsertID');
-    expect(Array.isArray(body.LastInsertID)).toBe(true);
-  });
-
-  it('GET /Get_Callsign_Info returns 200 with Contacts key', async () => {
-    if (skipIfNoDb()) return;
-    const res = await get('/Get_Callsign_Info?Callsign=TESTCALL');
+    const res = await api('/qsos?park=K-0000');
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body).toHaveProperty('Contacts');
   });
 
-  it('GET /Get_ContactInfo_Count returns 200 with count', async () => {
+  it('GET /api/contact-info/:callsign returns contact info', async () => {
     if (skipIfNoDb()) return;
-    const res = await get('/Get_ContactInfo_Count?callsignToLookup=TESTCALL');
+    const res = await api('/contact-info/NONEXISTENT');
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body).toHaveProperty('Contacts');
-    expect(body.Contacts[0]).toHaveProperty('count');
+  });
+
+  it('GET /api/contact-info/:callsign/exists returns exists flag', async () => {
+    if (skipIfNoDb()) return;
+    const res = await api('/contact-info/NONEXISTENT/exists');
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body).toHaveProperty('exists');
+    expect(body).toHaveProperty('count');
   });
 });
 
-describe('Characterization: write endpoints (create + delete lifecycle)', () => {
-  let createdQsoId;
-
-  it('GET /Create_Contacts creates a contact and returns 200', async () => {
+describe('Auth enforcement', () => {
+  it('POST /api/qsos without API key returns 401', async () => {
     if (skipIfNoDb()) return;
-    const params = new URLSearchParams({
-      QSO_Date: '01/01/2025',
-      QSO_MTZTime: '12:00',
-      QSO_Callsign: 'TEST0CHR',
-      QSO_Frequency: '14.074',
-      QSO_Notes: 'characterization test',
-      QSO_Received: '599',
-      QSO_Sent: '599',
+    const res = await api('/qsos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ callsign: 'TEST', frequency: '14.074' }),
     });
-    const res = await get(`/Create_Contacts?${params}`);
-    expect(res.status).toBe(200);
-    const body = await res.json();
-    expect(body).toHaveProperty('Contacts');
-    expect(body.Contacts).toHaveProperty('insertId');
-    createdQsoId = body.Contacts.insertId;
-    expect(typeof createdQsoId).toBe('number');
-    expect(createdQsoId).toBeGreaterThan(0);
+    expect(res.status).toBe(401);
   });
 
-  it('GET /Create_POTA_QSOs creates a POTA QSO and returns 200', async () => {
-    if (skipIfNoDb() || !createdQsoId) return;
-    const params = new URLSearchParams({
-      QSO_ID: String(createdQsoId),
-      POTAPark_ID: 'K-0000',
-      QSO_Type: '1',
-    });
-    const res = await get(`/Create_POTA_QSOs?${params}`);
-    expect(res.status).toBe(200);
-    const body = await res.json();
-    expect(body).toHaveProperty('POTA_QSOs');
+  it('DELETE /api/qsos/999999 without API key returns 401', async () => {
+    if (skipIfNoDb()) return;
+    const res = await api('/qsos/999999', { method: 'DELETE' });
+    expect(res.status).toBe(401);
   });
 
-  it('GET /Create_Contest_QSOs creates a Contest QSO and returns 200', async () => {
-    if (skipIfNoDb() || !createdQsoId) return;
-    // Need a Contest record first for the FK
-    await pool.execute(
+  it('GET /api/qsos without API key returns 200 (reads are public)', async () => {
+    if (skipIfNoDb()) return;
+    const res = await api('/qsos');
+    expect(res.status).toBe(200);
+  });
+});
+
+describe('Write lifecycle (create + delete)', () => {
+  let createdId;
+
+  it('POST /api/qsos creates a contact and returns insertId', async () => {
+    if (skipIfNoDb()) return;
+    const res = await post('/qsos', {
+      date: '01/01/2025',
+      time: '12:00',
+      callsign: 'TEST0PH1',
+      frequency: '14.074',
+      notes: 'phase 1 characterization test',
+      received: '599',
+      sent: '599',
+    });
+    expect(res.status).toBe(201);
+    const body = await res.json();
+    expect(body).toHaveProperty('id');
+    expect(typeof body.id).toBe('number');
+    createdId = body.id;
+  });
+
+  it('POST /api/qsos/:id/pota creates a POTA record', async () => {
+    if (skipIfNoDb() || !createdId) return;
+    const res = await post(`/qsos/${createdId}/pota`, {
+      parkId: 'K-0000',
+      qsoType: '1',
+    });
+    expect(res.status).toBe(201);
+    const body = await res.json();
+    expect(body).toHaveProperty('id');
+  });
+
+  it('POST /api/qsos/:id/contest creates a Contest record', async () => {
+    if (skipIfNoDb() || !createdId) return;
+    await dbPool.execute(
       "INSERT IGNORE INTO Contests (CONTEST_ID, CONTEST_NAME) VALUES (1, 'Test Contest')"
     );
-    const params = new URLSearchParams({
-      QSO_ID: String(createdQsoId),
-      Contest_ID: '1',
-      Contest_QSO_Number: '001',
-      Contest_QSO_Exchange_Data: 'CO',
+    const res = await post(`/qsos/${createdId}/contest`, {
+      contestId: '1',
+      qsoNumber: '001',
+      exchangeData: 'CO',
     });
-    const res = await get(`/Create_Contest_QSOs?${params}`);
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(201);
     const body = await res.json();
-    // index.js returns { POTA_QSOs: rows } here due to a copy-paste bug — pinning intentionally
-    expect(body).toHaveProperty('POTA_QSOs');
+    expect(body).toHaveProperty('id');
   });
 
-  it('GET /Delete_Contacts deletes the contact and related records', async () => {
-    if (skipIfNoDb() || !createdQsoId) return;
-    const res = await get(`/Delete_Contacts?QSO_ID=${createdQsoId}`);
+  it('DELETE /api/qsos/:id deletes contact and related records (transactional)', async () => {
+    if (skipIfNoDb() || !createdId) return;
+    const res = await del(`/qsos/${createdId}`);
     expect(res.status).toBe(200);
     const body = await res.json();
-    expect(body).toHaveProperty('Contacts');
+    expect(body).toEqual({ deleted: true });
 
-    // Verify the contact is gone
-    const verifyRes = await get('/Get_Contacts_for_Callsign?QSO_Callsign=TEST0CHR');
+    // Verify contact is gone
+    const verifyRes = await api('/qsos?callsign=TEST0PH1');
     const verifyBody = await verifyRes.json();
-    const remaining = verifyBody.Contacts.filter(c => c.QSO_ID === createdQsoId);
+    const remaining = verifyBody.Contacts.filter(c => c.QSO_ID === createdId);
     expect(remaining).toHaveLength(0);
+
+    // Verify POTA records are gone
+    const [potaRows] = await dbPool.execute('SELECT * FROM POTA_QSOs WHERE QSO_ID = ?', [createdId]);
+    expect(potaRows).toHaveLength(0);
+
+    // Verify Contest records are gone
+    const [contestRows] = await dbPool.execute('SELECT * FROM Contest_QSOs WHERE QSO_ID = ?', [createdId]);
+    expect(contestRows).toHaveLength(0);
+  });
+
+  it('POST /api/qsos returns 400 if callsign is missing', async () => {
+    if (skipIfNoDb()) return;
+    const res = await post('/qsos', { frequency: '14.074' });
+    expect(res.status).toBe(400);
   });
 });
 
-describe('Characterization: ContactInfo lifecycle', () => {
-  it('GET /Create_ContactInfo inserts when callsign is new', async () => {
+describe('SQL injection prevention', () => {
+  it('callsign with SQL injection is safely handled', async () => {
     if (skipIfNoDb()) return;
-    // Clean up first in case a previous test run left data
-    await pool.execute('DELETE FROM ContactInfo WHERE ContactInfo_Callsign = ?', ['TEST0CHR']);
+    const res = await post('/qsos', {
+      date: '01/01/2025',
+      time: '12:00',
+      callsign: "';DROP T--",
+      frequency: '14.074',
+      notes: '',
+      received: '',
+      sent: '',
+    });
+    expect(res.status).toBe(201);
+    const id = (await res.json()).id;
 
-    const params = new URLSearchParams({
-      callsignToLookup: 'TEST0CHR',
-      adrName: 'Test User',
-      adrStreet1: '123 Test St',
-      adrCity: 'Denver',
-      us_state: 'CO',
-      adrCountry: 'US',
+    // Verify the Contacts table still exists and the malicious callsign was stored literally
+    const [rows] = await dbPool.execute('SELECT * FROM Contacts WHERE QSO_ID = ?', [id]);
+    expect(rows[0].QSO_Callsign).toBe("';DROP T--");
+
+    // Cleanup
+    await del(`/qsos/${id}`);
+  });
+});
+
+describe('ContactInfo lifecycle', () => {
+  it('POST /api/contact-info creates a record for a new callsign', async () => {
+    if (skipIfNoDb()) return;
+    await dbPool.execute('DELETE FROM ContactInfo WHERE ContactInfo_Callsign = ?', ['TEST0PH1']);
+
+    const res = await post('/contact-info', {
+      callsign: 'TEST0PH1',
+      name: 'Test User',
+      street: '123 Test St',
+      city: 'Denver',
+      state: 'CO',
+      addressCountry: 'US',
       latitude: '39.7392',
       longitude: '-104.9903',
       itu: '7',
@@ -204,44 +261,35 @@ describe('Characterization: ContactInfo lifecycle', () => {
       qth: 'Denver',
       country: 'United States',
     });
-    const res = await get(`/Create_ContactInfo?${params}`);
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(201);
+    const body = await res.json();
+    expect(body).toHaveProperty('id');
   });
 
-  it('GET /Get_ContactInfo_Count shows count > 0 after insert', async () => {
+  it('GET /api/contact-info/:callsign/exists returns true after insert', async () => {
     if (skipIfNoDb()) return;
-    const res = await get('/Get_ContactInfo_Count?callsignToLookup=TEST0CHR');
+    const res = await api('/contact-info/TEST0PH1/exists');
+    const body = await res.json();
+    expect(body.exists).toBe(true);
+  });
+
+  it('POST /api/contact-info skips when callsign already exists', async () => {
+    if (skipIfNoDb()) return;
+    const res = await post('/contact-info', {
+      callsign: 'TEST0PH1',
+      name: 'Duplicate',
+      street: '', city: '', state: '',
+      addressCountry: '', latitude: '', longitude: '',
+      itu: '', grid: '', qth: '', country: '',
+    });
     expect(res.status).toBe(200);
     const body = await res.json();
-    expect(Number(body.Contacts[0].count)).toBeGreaterThan(0);
-  });
-
-  it('GET /Create_ContactInfo skips when callsign already exists', async () => {
-    if (skipIfNoDb()) return;
-    const params = new URLSearchParams({
-      callsignToLookup: 'TEST0CHR',
-      adrName: 'Duplicate',
-      adrStreet1: '',
-      adrCity: '',
-      us_state: '',
-      adrCountry: '',
-      latitude: '',
-      longitude: '',
-      itu: '',
-      grid: '',
-      qth: '',
-      country: '',
-    });
-    const res = await get(`/Create_ContactInfo?${params}`);
-    expect(res.status).toBe(200);
-    // When callsign exists, endpoint calls res.json() with no args — empty body
-    const text = await res.text();
-    expect(text === '' || text === 'null' || text === 'undefined').toBe(true);
+    expect(body).toEqual({ skipped: true });
   });
 
   afterAll(async () => {
-    if (dbAvailable && pool) {
-      await pool.execute('DELETE FROM ContactInfo WHERE ContactInfo_Callsign = ?', ['TEST0CHR']);
+    if (dbAvailable && dbPool) {
+      await dbPool.execute('DELETE FROM ContactInfo WHERE ContactInfo_Callsign = ?', ['TEST0PH1']);
     }
   });
 });

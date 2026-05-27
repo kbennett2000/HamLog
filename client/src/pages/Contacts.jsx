@@ -5,23 +5,22 @@ import DeleteConfirmationModal from './DeleteConfirmationModal';
 import QSOsForParkNumber from './QSOsForParkNumber';
 import CallsignInfo from './CallsignInfo';
 import config from '../config';
-const { 
+const {
   AppTitle,
-  ServerURL,
-  ServerPort,  
-  ButtonClassNameBlue, 
-  ButtonClassNameGreen, 
-  ButtonClassNameRed, 
-  TableHeading1, 
-  TableHeading2, 
-  TableCell1, 
-  TableStyle1, 
-  TableBodyStyle1, 
-  TableHeadStyle1, 
-  TableHeadStyle2, 
-  TableHeadStyle3, 
+  ApiBaseUrl,
+  ApiKey,
+  ButtonClassNameBlue,
+  ButtonClassNameGreen,
+  ButtonClassNameRed,
+  TableHeading1,
+  TableHeading2,
+  TableCell1,
+  TableStyle1,
+  TableBodyStyle1,
+  TableHeadStyle1,
+  TableHeadStyle2,
+  TableHeadStyle3,
 } = config;
-const dataEndpointLocation = `${ServerURL}:${ServerPort}/getContactsAndPOTAQSOs`; 
 
 const Contacts = () => {
   const [conditions, setConditions] = useState([]);
@@ -37,7 +36,7 @@ const Contacts = () => {
 
   const fetchData = async () => {
     try {
-      const res = await axios.get(dataEndpointLocation);
+      const res = await axios.get(`${ApiBaseUrl}/qsos`);
       setConditions(res.data);
     } catch (err) {
       console.log(err);
@@ -64,11 +63,10 @@ const Contacts = () => {
   const handleUserChoice = async (choice) => {
     if (choice === 'Yes') {
       // Delete the record
-      try {        
-        // Constructing the request URL with query parameters for creating contact records.
-        const requestURL = `${ServerURL}:${ServerPort}/Delete_Contacts?QSO_ID=${currentQSOId}`;
-        // Making an HTTP GET request to the constructed URL.
-        await axios.get(requestURL);
+      try {
+        await axios.delete(`${ApiBaseUrl}/qsos/${currentQSOId}`, {
+          headers: { Authorization: `Bearer ${ApiKey}` },
+        });
         fetchData();
       } catch (error) {
         // Logging any errors that occur during the form submission.

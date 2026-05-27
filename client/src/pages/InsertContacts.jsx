@@ -4,7 +4,7 @@ import axios from 'axios';
 import CallsignInfo from './CallsignInfo';
 import QSOsForParkNumber from './QSOsForParkNumber';
 import config from '../config';
-const { ServerURL, ServerPort, InputBoxClassName, ButtonClassNameBlue, ButtonClassNameGreen, InputLabel1 } = config;
+const { ApiBaseUrl, ApiKey, InputBoxClassName, ButtonClassNameBlue, ButtonClassNameGreen, InputLabel1 } = config;
 // The number of Contest QSOs recorded for this Contact record 
 let contestQSOCounter = 0;
 // The maximum number of Contest QSOs that can be recorded for this Contact record
@@ -73,14 +73,10 @@ const InsertContacts = ({ isOpen, onClose, onClosed }) => {
     setQSORecords(newQSORecords);
   };
     
-  // Function to handle changes in Contest records, updating 'contestRecords' state.
   const handleContestChange = (index, e) => {
-    // Creating a new array from the existing Contest records.
     const newContestRecords = [...contestRecords];
-    // Updating the specific Contest record at the given index.
     newContestRecords[index][e.target.name] = e.target.value;
-    // Updating the 'contestRecords' state with the modified records.
-    setQSORecords(newContestRecords);
+    setContestRecords(newContestRecords);
   };
 
   // Function to add a new QSO record to the 'qsoRecords' state.
@@ -151,92 +147,65 @@ const InsertContacts = ({ isOpen, onClose, onClosed }) => {
     onClose();
   }
 
-  // Function to handle the form submission.
+  const authHeaders = { Authorization: `Bearer ${ApiKey}` };
+
   const handleSubmit = async (e) => {
-    // Preventing the default form submission behavior.
     e.preventDefault();
 
-    // Check if Callsign and Frequency fields are blank
     if (!formData.QSO_Callsign.trim() || !formData.QSO_Frequency.trim()) {
-      // Alerting the user that Callsign and Frequency fields cannot be blank
       alert('Callsign and Frequency fields cannot be blank.');
-      // Returning early from the function to prevent form submission
-      return;    
+      return;
     }
-    
-    // Split the callsigns by commas
+
     const callsignsToAdd = formData.QSO_Callsign.split(',');
-    // Array for Contacts Insert queries to run
-    const insertQueries = [];
-    // Array holding Last Insert IDs to be used for POTA and Contest records
-    const qsosToAdd = [];
+    const createdIds = [];
 
-    // For each callsign
-    callsignsToAdd.map(callsign => {
-      // Populate query array for new Contacts records
-      insertQueries.push(`${ServerURL}:${ServerPort}/Create_Contacts?QSO_Date=${formatDateToMMDDYYYY(new Date())}&QSO_MTZTime=${getCurrentTime()}&QSO_Callsign=${callsign.trim()}&QSO_Frequency=${formData.QSO_Frequency}&QSO_Notes=${formData.QSO_Notes}&QSO_Received=${formData.QSO_Received}&QSO_Sent=${formData.QSO_Sent}`);
-      return callsign; // The map function expects a return value for each element.
-    });
-
-    // For each Contacts record to insert
-    for(const insertQuery of insertQueries) {
-      // Execute Contacts Insert query
-      // Making an HTTP GET request to the constructed URL.
-      await axios.get(insertQuery);  
-      // Get Last Insert ID
+    for (const callsign of callsignsToAdd) {
       try {
-        // Making an HTTP GET request to get the ID of the last inserted record.
-        const res = await axios.get(`${ServerURL}:${ServerPort}/Last_Insert_ID`);
-        // Add Last Insert ID to ID array
-        // Extracting the last insert ID from the response.        
-        qsosToAdd.push(res.data.LastInsertID[0]['LAST_INSERT_ID()']);
+        const res = await axios.post(`${ApiBaseUrl}/qsos`, {
+          date: formatDateToMMDDYYYY(new Date()),
+          time: getCurrentTime(),
+          callsign: callsign.trim(),
+          frequency: formData.QSO_Frequency,
+          notes: formData.QSO_Notes,
+          received: formData.QSO_Received,
+          sent: formData.QSO_Sent,
+        }, { headers: authHeaders });
+        createdIds.push(res.data.id);
       } catch (err) {
-        // Logging any errors that occur during the request.
         console.log(err);
       }
     }
 
-    // Add POTA QSOs
-    for(const qsoID of qsosToAdd) {
-      // Looping through each QSO record in the state.
+    for (const qsoId of createdIds) {
       for (const qsoRecord of qsoRecords) {
-        try {
-          // Checking if the QSO record has necessary data before making a request.
-          if (qsoRecord.POTAPark_ID && qsoRecord.QSO_Type) {
-            // Constructing the request URL for creating POTA QSOs.
-            const requestURL2 = `${ServerURL}:${ServerPort}/Create_POTA_QSOs?QSO_ID=${qsoID}&POTAPark_ID=${qsoRecord.POTAPark_ID}&QSO_Type=${qsoRecord.QSO_Type}`;
-            // Making an HTTP GET request to the constructed URL.
-            await axios.get(requestURL2);
+        if (qsoRecord.POTAPark_ID && qsoRecord.QSO_Type) {
+          try {
+            await axios.post(`${ApiBaseUrl}/qsos/${qsoId}/pota`, {
+              parkId: qsoRecord.POTAPark_ID,
+              qsoType: qsoRecord.QSO_Type,
+            }, { headers: authHeaders });
+          } catch (err) {
+            console.log(err);
           }
-        } catch (err) {
-          // Logging any errors that occur during the request.
-          console.log(err);
         }
-      }  
-    }
+      }
 
-    // Add Contest QSOs
-    for(const qsoID of qsosToAdd) {
-      // Looping through each QSO record in the state.
       for (const contestRecord of contestRecords) {
-
-        try {
-          // Checking if the Contest record has necessary data before making a request.
-          if (contestRecord.Contest_ID) {
-            // Constructing the request URL for creating Contest QSOs.
-            const requestURL3 = `${ServerURL}:${ServerPort}/Create_Contest_QSOs?QSO_ID=${qsoID}&Contest_ID=${contestRecord.Contest_ID}&Contest_QSO_Number=${contestRecord.Contest_QSO_Number}&Contest_QSO_Exchange_Data=${contestRecord.Contest_QSO_Exchange_Data}`;
-            // Making an HTTP GET request to the constructed URL.              
-            await axios.get(requestURL3);
+        if (contestRecord.Contest_ID) {
+          try {
+            await axios.post(`${ApiBaseUrl}/qsos/${qsoId}/contest`, {
+              contestId: contestRecord.Contest_ID,
+              qsoNumber: contestRecord.Contest_QSO_Number,
+              exchangeData: contestRecord.Contest_QSO_Exchange_Data,
+            }, { headers: authHeaders });
+          } catch (err) {
+            console.log(err);
           }
-        } catch (err) {
-          // Logging any errors that occur during the request.
-          console.log(err);
-        }        
-        
-      }  
+        }
+      }
     }
 
-    // Clearing the form data after successful submission by resetting to initial state.
     setFormData(initialFormData);
     setQSORecords(initialPOTAQSOFormData);
     setContestRecords(initialContestQSOFormData);

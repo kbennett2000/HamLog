@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import config from '../config';
-const { 
-  ServerURL,
-  ServerPort,
-  TableHeading1, 
-  TableCell1, 
-  TableStyle1, 
-  TableBodyStyle1, 
-  TableHeadStyle2, 
+const {
+  ApiBaseUrl,
+  TableHeading1,
+  TableCell1,
+  TableStyle1,
+  TableBodyStyle1,
+  TableHeadStyle2,
 } = config;
 
 let dataEndpointLocation = '';
@@ -17,17 +16,16 @@ let cachedCallsign = '';
 
 const QSOsForCallsign = ({ callSignToSearchFor, isOpen, displayTime }) => {
   const [conditions, setConditions] = useState([]);
-  dataEndpointLocation=`${ServerURL}:${ServerPort}/Get_Contacts_for_Callsign?QSO_Callsign=${callSignToSearchFor}`;
+  dataEndpointLocation = `${ApiBaseUrl}/qsos?callsign=${callSignToSearchFor}`;
 
-  const fetchData = async () => {    
+  const fetchData = async () => {
     try {
       const res = await axios.get(dataEndpointLocation);
-      // Check if the response is an array, otherwise set to an empty array
-      setConditions(Array.isArray(res.data.Contacts) ? res.data.Contacts : []);    
-      cachedCallsign = callSignToSearchFor;        
+      setConditions(Array.isArray(res.data.Contacts) ? res.data.Contacts : []);
+      cachedCallsign = callSignToSearchFor;
     } catch (err) {
       console.log(err);
-      setConditions([]); // Set to an empty array in case of an error
+      setConditions([]);
     }
   };
 

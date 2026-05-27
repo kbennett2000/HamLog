@@ -1,17 +1,14 @@
-// Importing necessary modules and hooks from React, axios for HTTP requests, and Redux for state management.
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState, useRef } from 'react';
 import CallsignInfo from './CallsignInfo';
 import QSOsForParkNumber from './QSOsForParkNumber';
+import { createQso, createPotaQso, createContestQso } from '../api/hamlog-api';
 import config from '../config';
-const { ApiBaseUrl, ApiKey, InputBoxClassName, ButtonClassNameBlue, ButtonClassNameGreen, InputLabel1 } = config;
-// The number of Contest QSOs recorded for this Contact record 
-let contestQSOCounter = 0;
-// The maximum number of Contest QSOs that can be recorded for this Contact record
-let contestQSOLimit = 1;
+const { InputBoxClassName, ButtonClassNameBlue, ButtonClassNameGreen, InputLabel1 } = config;
 
-// Defining a React functional component named InsertContacts.
+const CONTEST_QSO_LIMIT = 1;
+
 const InsertContacts = ({ isOpen, onClose, onClosed }) => {
+  const contestQSOCounterRef = useRef(0);
   const [showCallsignInfo, setShowCallsignInfo] = useState(false);
   const [currentCallsign, setCurrentCallsign] = useState([]);
   const [showQSOsForParkNumber, setShowQSOsForParkNumber] = useState(false);
@@ -87,11 +84,9 @@ const InsertContacts = ({ isOpen, onClose, onClosed }) => {
 
   // Function to add a new Contest record to the 'contestRecords' state.
   const addContestRecord = () => {
-    // Ensure only the maximum number (contestQSOLimit) of Content QSO records can be entered
-    if (contestQSOCounter < contestQSOLimit) {
-      contestQSOCounter++;
-      // Adding a new Contest record to the existing records with default values.
-      setContestRecords([...contestRecords, { QSO_ID: '', Contest_ID: '', Contest_QSO_Number: '', Contest_QSO_Exchange_Data: '', }]);
+    if (contestQSOCounterRef.current < CONTEST_QSO_LIMIT) {
+      contestQSOCounterRef.current++;
+      setContestRecords([...contestRecords, { QSO_ID: '', Contest_ID: '', Contest_QSO_Number: '', Contest_QSO_Exchange_Data: '' }]);
     }
   };
   
@@ -144,10 +139,9 @@ const InsertContacts = ({ isOpen, onClose, onClosed }) => {
     setFormData(initialFormData);
     setQSORecords(initialPOTAQSOFormData);
     setContestRecords(initialContestQSOFormData);
+    contestQSOCounterRef.current = 0;
     onClose();
   }
-
-  const authHeaders = { Authorization: `Bearer ${ApiKey}` };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -162,7 +156,7 @@ const InsertContacts = ({ isOpen, onClose, onClosed }) => {
 
     for (const callsign of callsignsToAdd) {
       try {
-        const res = await axios.post(`${ApiBaseUrl}/qsos`, {
+        const result = await createQso({
           date: formatDateToMMDDYYYY(new Date()),
           time: getCurrentTime(),
           callsign: callsign.trim(),
@@ -170,8 +164,8 @@ const InsertContacts = ({ isOpen, onClose, onClosed }) => {
           notes: formData.QSO_Notes,
           received: formData.QSO_Received,
           sent: formData.QSO_Sent,
-        }, { headers: authHeaders });
-        createdIds.push(res.data.id);
+        });
+        createdIds.push(result.id);
       } catch (err) {
         console.log(err);
       }
@@ -181,10 +175,7 @@ const InsertContacts = ({ isOpen, onClose, onClosed }) => {
       for (const qsoRecord of qsoRecords) {
         if (qsoRecord.POTAPark_ID && qsoRecord.QSO_Type) {
           try {
-            await axios.post(`${ApiBaseUrl}/qsos/${qsoId}/pota`, {
-              parkId: qsoRecord.POTAPark_ID,
-              qsoType: qsoRecord.QSO_Type,
-            }, { headers: authHeaders });
+            await createPotaQso(qsoId, qsoRecord.POTAPark_ID, qsoRecord.QSO_Type);
           } catch (err) {
             console.log(err);
           }
@@ -194,11 +185,7 @@ const InsertContacts = ({ isOpen, onClose, onClosed }) => {
       for (const contestRecord of contestRecords) {
         if (contestRecord.Contest_ID) {
           try {
-            await axios.post(`${ApiBaseUrl}/qsos/${qsoId}/contest`, {
-              contestId: contestRecord.Contest_ID,
-              qsoNumber: contestRecord.Contest_QSO_Number,
-              exchangeData: contestRecord.Contest_QSO_Exchange_Data,
-            }, { headers: authHeaders });
+            await createContestQso(qsoId, contestRecord.Contest_ID, contestRecord.Contest_QSO_Number, contestRecord.Contest_QSO_Exchange_Data);
           } catch (err) {
             console.log(err);
           }

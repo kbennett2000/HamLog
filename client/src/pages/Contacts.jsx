@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import InsertContacts from './InsertContacts';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
 import QSOsForParkNumber from './QSOsForParkNumber';
 import CallsignInfo from './CallsignInfo';
+import { getQsos, deleteQso } from '../api/hamlog-api';
 import config from '../config';
 const {
   AppTitle,
-  ApiBaseUrl,
-  ApiKey,
   ButtonClassNameBlue,
   ButtonClassNameGreen,
   ButtonClassNameRed,
@@ -36,8 +34,8 @@ const Contacts = () => {
 
   const fetchData = async () => {
     try {
-      const res = await axios.get(`${ApiBaseUrl}/qsos`);
-      setConditions(res.data);
+      const data = await getQsos();
+      setConditions(data);
     } catch (err) {
       console.log(err);
     }
@@ -64,9 +62,7 @@ const Contacts = () => {
     if (choice === 'Yes') {
       // Delete the record
       try {
-        await axios.delete(`${ApiBaseUrl}/qsos/${currentQSOId}`, {
-          headers: { Authorization: `Bearer ${ApiKey}` },
-        });
+        await deleteQso(currentQSOId);
         fetchData();
       } catch (error) {
         // Logging any errors that occur during the form submission.

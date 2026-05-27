@@ -1,1 +1,11 @@
 node_modules/
+
+# Database dumps - contains PII (real names/addresses from QRZ lookups).
+# NEVER commit.
+backups/
+*.sql
+!backend/init-db/*.sql
+.env
+.env.*
+!.env.example
+backend/results.txt

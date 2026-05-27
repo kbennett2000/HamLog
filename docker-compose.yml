@@ -1,0 +1,22 @@
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-hamlog_root_pw}
+      MYSQL_DATABASE: ${DB_NAME:-HamLogDB}
+      MYSQL_USER: ${DB_USER:-hamlog}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-hamlog_pw}
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    volumes:
+      - hamlog_data:/var/lib/mysql
+      - ./backend/init-db:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  hamlog_data:

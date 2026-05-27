@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from "express";
 import mysql from "mysql2";
 import cors from "cors";
@@ -8,10 +9,10 @@ app.use(express.json());
 app.use(cors());
 
 let dbHamLog = mysql.createPool({
-  host: "192.168.1.85",
-  user: "testUser",
-  password: "password1",
-  database: "HamLogDB",
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
@@ -209,6 +210,12 @@ app.get("/Get_ContactInfo_Count", async (req, res) => {
   return res.status(200).json({ Contacts: rows });
 });
 
-app.listen(7800, "0.0.0.0", () => {
-  console.log("Connected to backend");
-});
+const port = process.env.PORT || 7800;
+
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(port, "0.0.0.0", () => {
+    console.log(`Connected to backend on port ${port}`);
+  });
+}
+
+export { app, dbHamLog };

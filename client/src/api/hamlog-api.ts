@@ -86,3 +86,21 @@ export async function createContactInfo(data: CreateContactInfoData): Promise<{ 
   const res = await client.post('/contact-info', data, authHeaders());
   return res.data;
 }
+
+export function getExportUrl(park?: string): string {
+  const base = `${config.ApiBaseUrl}/qsos/export`;
+  return park ? `${base}?park=${encodeURIComponent(park)}` : base;
+}
+
+export async function importAdif(file: File): Promise<{ imported: number; ids: number[] }> {
+  const formData = new FormData();
+  formData.append('file', file);
+  const res = await client.post('/qsos/import', formData, {
+    ...authHeaders(),
+    headers: {
+      ...authHeaders().headers,
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return res.data;
+}

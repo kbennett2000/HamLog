@@ -85,6 +85,28 @@ export async function getQsosByPark(parkId: string): Promise<RowDataPacket[]> {
   return rows;
 }
 
+export async function getQsosForExport(parkFilter?: string): Promise<RowDataPacket[]> {
+  if (parkFilter) {
+    const [rows] = await db.execute<RowDataPacket[]>(
+      `SELECT c.*, p.POTAPark_ID, p.QSO_Type AS POTA_QSO_Type
+       FROM Contacts c
+       LEFT JOIN POTA_QSOs p ON c.QSO_ID = p.QSO_ID
+       WHERE p.POTAPark_ID = ?
+       ORDER BY c.qso_datetime_utc DESC, c.QSO_Date DESC`,
+      [parkFilter]
+    );
+    return rows;
+  }
+
+  const [rows] = await db.execute<RowDataPacket[]>(
+    `SELECT c.*, p.POTAPark_ID, p.QSO_Type AS POTA_QSO_Type
+     FROM Contacts c
+     LEFT JOIN POTA_QSOs p ON c.QSO_ID = p.QSO_ID
+     ORDER BY c.qso_datetime_utc DESC, c.QSO_Date DESC`
+  );
+  return rows;
+}
+
 function formatDate(inputString: string): string {
   const inputDate = new Date(inputString);
   if (isNaN(inputDate.getTime())) {

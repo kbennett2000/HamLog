@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import InsertContacts from './InsertContacts';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
 import QSOsForParkNumber from './QSOsForParkNumber';
 import CallsignInfo from './CallsignInfo';
-import { getQsos, deleteQso } from '../api/hamlog-api';
+import { getQsos, deleteQso, getExportUrl, importAdif } from '../api/hamlog-api';
 import type { Contact } from '../types/qso';
 import config from '../config';
 const {
@@ -98,6 +98,26 @@ const Contacts = () => {
     fetchData();
   };
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleExport = () => {
+    window.open(getExportUrl(), '_blank');
+  };
+
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const result = await importAdif(file);
+      alert(`Imported ${result.imported} QSOs`);
+      fetchData();
+    } catch (err) {
+      console.error('Import failed:', err);
+      alert('Import failed. Check console for details.');
+    }
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
   useEffect(() => {
     fetchData();
     const interval = setInterval(fetchData, 60000);
@@ -109,6 +129,9 @@ const Contacts = () => {
       <h1 className='text-3xl font-bold mb-4'>{AppTitle}</h1>
       <div className='flex items-center space-x-2'>
         <button onClick={() => HandleInsert()} className={ButtonClassNameGreen}>+ QSO</button>
+        <button onClick={handleExport} className={ButtonClassNameBlue}>Export ADIF</button>
+        <button onClick={() => fileInputRef.current?.click()} className={ButtonClassNameBlue}>Import ADIF</button>
+        <input type='file' ref={fileInputRef} accept='.adi,.adif' onChange={handleImport} className='hidden' />
       </div>
       <div className='mx-auto'>
         <div className='mx-auto'>

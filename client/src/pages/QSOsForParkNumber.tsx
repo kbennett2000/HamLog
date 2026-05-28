@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { getQsosByPark } from '../api/hamlog-api';
 import { formatFrequency } from '../utils/format';
 import config from '../config';
-const { TableHeading1, TableCell1, TableStyle1, TableHeadStyle3, TableBodyStyle1 } = config;
+const { TableHeading2, TableCell1, TableStyle1, TableHeadStyle3, TableBodyStyle1 } = config;
 
 interface QSOsForParkNumberProps {
   parkNumberToSearchFor: string;
@@ -39,43 +39,37 @@ const QSOsForParkNumber: React.FC<QSOsForParkNumberProps> = ({ parkNumberToSearc
   if (!isOpen || conditions.length === 0) return null;
 
   return (
-    <div className='fixed top-0 right-0 mt-4 mr-4 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full md:w-auto' id='my-modal'>
-      <div className='relative p-5 border w-auto shadow-lg rounded-md bg-white'>
-        <h1 className='text-3xl font-bold mb-4'>{parkNumberToSearchFor}</h1>
-        <div className='mx-auto'>
-          <div className='mx-auto'>
-            <div className='flex flex-col'>
-              <div className='overflow-x-auto shadow-md sm:rounded-lg'>
-                <div className='inline-block min-w-full align-middle'>
-                  <div className='overflow-hidden '>
-                    <table className={TableStyle1}>
-                      <thead className={TableHeadStyle3}>
-                        <tr>
-                          <th scope='col' className={TableHeading1}>Date</th>
-                          {displayTime && (<th scope='col' className={TableHeading1}>Time</th>)}
-                          <th scope='col' className={TableHeading1}>Call</th>
-                          <th scope='col' className={TableHeading1}>Freq</th>
-                        </tr>
-                      </thead>
-                      <tbody className={TableBodyStyle1}>
-                        {conditions.map((condition, index) => (
-                          <React.Fragment key={index}>
-                            <tr className={`hover:bg-green-100 dark:hover:bg-green-700 ${index % 2 === 0 ? 'bg-gray-100 dark:bg-gray-400' : '' } ${index % 2 === 1 ? 'bg-gray-300 dark:bg-gray-600' : '' }`} >
-                              <td className={TableCell1}>{new Date(condition.QSO_Date).toLocaleDateString('en-US')}</td>
-                              {displayTime && (<td className={TableCell1}>{condition.QSO_MTZTime.slice(0, 5)}</td>)}
-                              <td className={TableCell1}>{condition.QSO_Callsign}</td>
-                              <td className={TableCell1}>{formatFrequency(condition.QSO_Frequency)}</td>
-                            </tr>
-                          </React.Fragment>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+    <div className="fixed top-16 right-4 w-[calc(100vw-2rem)] sm:w-80 max-h-[calc(100vh-5rem)] overflow-y-auto z-50 bg-[var(--color-card-bg)] border border-[var(--color-card-border)] rounded-xl shadow-panel animate-slide-in-right">
+      <div className="p-4 border-b border-[var(--color-card-border)]">
+        <h2 className="text-lg font-bold font-mono text-[var(--color-text-primary)]">
+          {parkNumberToSearchFor}
+        </h2>
+      </div>
+
+      <div className="overflow-hidden">
+        <table className={TableStyle1}>
+          <thead className={TableHeadStyle3}>
+            <tr>
+              <th scope="col" className={TableHeading2}>Date</th>
+              {displayTime && (<th scope="col" className={TableHeading2}>Time</th>)}
+              <th scope="col" className={TableHeading2}>Call</th>
+              <th scope="col" className={TableHeading2}>Freq</th>
+            </tr>
+          </thead>
+          <tbody className={TableBodyStyle1}>
+            {conditions.map((condition, index) => (
+              <tr
+                key={index}
+                className={`hover:bg-[var(--color-surface-100)] ${index % 2 === 0 ? 'bg-[var(--color-surface-50)]' : 'bg-[var(--color-card-bg)]'}`}
+              >
+                <td className={TableCell1}>{new Date(condition.QSO_Date).toLocaleDateString('en-US')}</td>
+                {displayTime && (<td className={TableCell1}>{condition.QSO_MTZTime.slice(0, 5)}</td>)}
+                <td className={`${TableCell1} font-mono font-medium`}>{condition.QSO_Callsign}</td>
+                <td className={`${TableCell1} font-mono`}>{formatFrequency(condition.QSO_Frequency)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

@@ -2,14 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import QSOsForCallsign from './QSOsForCallsign';
 import { AddCallsignInfo } from '../services/CallsignLookup';
 import { getContactInfo } from '../api/hamlog-api';
-import config from '../config';
-const {
-  TableHeading1,
-  TableCell1,
-  TableStyle1,
-  TableBodyStyle1,
-  TableHeadStyle1,
-} = config;
+import { MapPin, User } from 'lucide-react';
 
 interface CallsignInfoProps {
   callSignToSearchFor: string;
@@ -55,55 +48,49 @@ const CallsignInfo: React.FC<CallsignInfoProps> = ({ callSignToSearchFor, isOpen
 
   if (!isOpen || conditions.length === 0) return null;
 
+  const info = conditions[0];
+
   return (
-    <div className='fixed top-0 right-0 mt-4 mr-4 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full md:w-auto' id='my-modal'>
-      <div className='relative p-5 border w-auto shadow-lg rounded-md bg-white'>
-        <h1 className='text-3xl font-bold mb-4'>{callSignToSearchFor}</h1>
-        <div className='mx-auto'>
-          <div className='mx-auto'>
-            <div className='flex flex-col'>
-              <div className='overflow-x-auto shadow-md sm:rounded-lg'>
-                <div className='inline-block min-w-full align-middle'>
-                  <div className='overflow-hidden '>
-                    <table className={TableStyle1}>
-                      <thead className={TableHeadStyle1}>
-                        <tr>
-                          <th scope='col' className={TableHeading1}>{conditions[0].ContactInfo_Name}</th>
-                        </tr>
-                      </thead>
-                      <tbody className={TableBodyStyle1}>
-                        {conditions.map((condition, index) => (
-                          <React.Fragment key={index}>
-                            <tr className={`${index % 2 === 0 ? 'bg-gray-100 dark:bg-gray-400' : '' } ${index % 2 === 1 ? 'bg-gray-300 dark:bg-gray-600' : '' }`} >
-                              <td className={TableCell1}>
-                                {condition.ContactInfo_City}
-                                {condition.ContactInfo_usState.length > 0 && ", " + condition.ContactInfo_usState}
-                              </td>
-                            </tr>
-                            <tr className={`${index % 2 === 0 ? 'bg-gray-100 dark:bg-gray-400' : '' } ${index % 2 === 1 ? 'bg-gray-300 dark:bg-gray-600' : '' }`} >
-                              <td className={TableCell1}>{condition.ContactInfo_AddressCountry}</td>
-                            </tr>
-                            <tr className={`${index % 2 === 0 ? 'bg-gray-100 dark:bg-gray-400' : '' } ${index % 2 === 1 ? 'bg-gray-300 dark:bg-gray-600' : '' }`} >
-                              <td className={TableCell1}>
-                                <div className='overflow-x-auto shadow-md sm:rounded-lg'>
-                                  <div className='inline-block min-w-full align-middle'>
-                                    <div className='overflow-hidden'>
-                                      <QSOsForCallsign callSignToSearchFor={callSignToSearchFor} isOpen={isOpen} displayTime={false} />
-                                    </div>
-                                  </div>
-                                </div>
-                              </td>
-                            </tr>
-                          </React.Fragment>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
+    <div className="fixed top-16 right-4 w-[calc(100vw-2rem)] sm:w-80 max-h-[calc(100vh-5rem)] overflow-y-auto z-50 bg-[var(--color-card-bg)] border border-[var(--color-card-border)] rounded-xl shadow-panel animate-slide-in-right">
+      <div className="p-4 border-b border-[var(--color-card-border)]">
+        <h2 className="text-lg font-bold font-mono text-[var(--color-text-primary)]">
+          {callSignToSearchFor}
+        </h2>
+      </div>
+
+      <div className="p-4 space-y-3">
+        {info.ContactInfo_Name && (
+          <div className="flex items-start gap-2">
+            <User className="w-4 h-4 text-[var(--color-text-muted)] mt-0.5 shrink-0" />
+            <span className="text-sm font-medium text-[var(--color-text-primary)]">
+              {info.ContactInfo_Name}
+            </span>
+          </div>
+        )}
+
+        {(info.ContactInfo_City || info.ContactInfo_usState) && (
+          <div className="flex items-start gap-2">
+            <MapPin className="w-4 h-4 text-[var(--color-text-muted)] mt-0.5 shrink-0" />
+            <div className="text-sm text-[var(--color-text-secondary)]">
+              <div>
+                {info.ContactInfo_City}
+                {info.ContactInfo_usState?.length > 0 && `, ${info.ContactInfo_usState}`}
               </div>
+              {info.ContactInfo_AddressCountry && (
+                <div className="text-[var(--color-text-muted)]">{info.ContactInfo_AddressCountry}</div>
+              )}
             </div>
           </div>
+        )}
+      </div>
+
+      <div className="border-t border-[var(--color-card-border)]">
+        <div className="px-4 py-2">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
+            QSO History
+          </h3>
         </div>
+        <QSOsForCallsign callSignToSearchFor={callSignToSearchFor} isOpen={isOpen} displayTime={false} />
       </div>
     </div>
   );

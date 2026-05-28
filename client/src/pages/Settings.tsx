@@ -1,14 +1,39 @@
 import React, { useState } from 'react';
 import { downloadJsonBackup, downloadAdifBackup } from '../api/hamlog-api';
+import { useTheme } from '../contexts/ThemeContext';
+import type { ThemeName } from '../contexts/ThemeContext';
+import { Download, FileJson, FileText, Terminal, Palette, Check } from 'lucide-react';
 import config from '../config';
 
 const { ButtonClassNameGreen, ButtonClassNameBlue } = config;
 
 type DownloadState = 'idle' | 'json' | 'adif';
 
+const themes: { id: ThemeName; label: string; description: string; colors: string[] }[] = [
+  {
+    id: 'theme-indigo',
+    label: 'Indigo + Emerald',
+    description: 'Professional dashboard',
+    colors: ['#4f46e5', '#059669', '#f43f5e', '#f8fafc'],
+  },
+  {
+    id: 'theme-teal',
+    label: 'Teal + Amber',
+    description: 'Warm radio aesthetic',
+    colors: ['#0d9488', '#d97706', '#dc2626', '#fafaf9'],
+  },
+  {
+    id: 'theme-dark',
+    label: 'Dark Mode',
+    description: 'Easy on the eyes',
+    colors: ['#0ea5e9', '#22c55e', '#ef4444', '#18181b'],
+  },
+];
+
 const Settings: React.FC = () => {
   const [downloading, setDownloading] = useState<DownloadState>('idle');
   const [error, setError] = useState<string | null>(null);
+  const { theme, setTheme } = useTheme();
 
   const handleDownload = async (format: 'json' | 'adif') => {
     setDownloading(format);
@@ -27,14 +52,58 @@ const Settings: React.FC = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <h2 className="text-2xl font-bold mb-6">Settings</h2>
+    <div className="max-w-2xl mx-auto space-y-6">
+      <h2 className="text-2xl font-bold text-[var(--color-text-primary)]">Settings</h2>
 
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
-        <h3 className="text-lg font-semibold mb-4">Backup / Export</h3>
+      {/* Theme Selector */}
+      <div className="bg-[var(--color-card-bg)] border border-[var(--color-card-border)] rounded-xl shadow-card p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Palette className="w-5 h-5 text-primary-500" />
+          <h3 className="text-lg font-semibold text-[var(--color-text-primary)]">Appearance</h3>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {themes.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => setTheme(t.id)}
+              className={`relative p-4 rounded-xl border-2 text-left transition-all ${
+                theme === t.id
+                  ? 'border-primary-500 bg-primary-500/10 shadow-sm'
+                  : 'border-[var(--color-card-border)] hover:border-[var(--color-surface-300)]'
+              }`}
+            >
+              {theme === t.id && (
+                <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-primary-500 flex items-center justify-center">
+                  <Check className="w-3 h-3 text-white" />
+                </div>
+              )}
+              <div className="flex gap-1 mb-2">
+                {t.colors.map((color, i) => (
+                  <div
+                    key={i}
+                    className="w-5 h-5 rounded-full border border-black/10"
+                    style={{ backgroundColor: color }}
+                  />
+                ))}
+              </div>
+              <div className="text-sm font-medium text-[var(--color-text-primary)]">{t.label}</div>
+              <div className="text-xs text-[var(--color-text-muted)]">{t.description}</div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Backup / Export */}
+      <div className="bg-[var(--color-card-bg)] border border-[var(--color-card-border)] rounded-xl shadow-card p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Download className="w-5 h-5 text-primary-500" />
+          <h3 className="text-lg font-semibold text-[var(--color-text-primary)]">Backup / Export</h3>
+        </div>
 
         {error && (
-          <div className="bg-red-100 text-red-700 p-3 rounded mb-4">{error}</div>
+          <div className="bg-danger-500/10 border border-danger-200 text-danger-500 p-3 rounded-lg mb-4 text-sm">
+            {error}
+          </div>
         )}
 
         <div className="space-y-4">
@@ -44,9 +113,10 @@ const Settings: React.FC = () => {
               disabled={downloading !== 'idle'}
               className={`${ButtonClassNameGreen} ${downloading !== 'idle' ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
+              <FileJson className="w-4 h-4" />
               {downloading === 'json' ? 'Downloading...' : 'Download JSON Backup'}
             </button>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            <p className="text-sm text-[var(--color-text-muted)] mt-1.5">
               Full backup of all QSO data including POTA and contest records. Best for archival and restoring.
             </p>
           </div>
@@ -57,21 +127,26 @@ const Settings: React.FC = () => {
               disabled={downloading !== 'idle'}
               className={`${ButtonClassNameBlue} ${downloading !== 'idle' ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
+              <FileText className="w-4 h-4" />
               {downloading === 'adif' ? 'Downloading...' : 'Download ADIF Export'}
             </button>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            <p className="text-sm text-[var(--color-text-muted)] mt-1.5">
               Standard ADIF format compatible with other logging software.
             </p>
           </div>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-        <h3 className="text-lg font-semibold mb-4">API Access</h3>
-        <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
+      {/* API Access */}
+      <div className="bg-[var(--color-card-bg)] border border-[var(--color-card-border)] rounded-xl shadow-card p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Terminal className="w-5 h-5 text-primary-500" />
+          <h3 className="text-lg font-semibold text-[var(--color-text-primary)]">API Access</h3>
+        </div>
+        <p className="text-sm text-[var(--color-text-secondary)] mb-3">
           You can automate backups using the API. First obtain a token, then download:
         </p>
-        <pre className="bg-gray-100 dark:bg-gray-900 p-4 rounded text-xs overflow-x-auto whitespace-pre-wrap">
+        <pre className="bg-[var(--color-surface-900)] text-[var(--color-surface-400)] p-4 rounded-lg text-xs font-mono overflow-x-auto whitespace-pre-wrap">
 {`# Get a token
 curl -s -X POST ${window.location.origin}/api/auth/login \\
   -H "Content-Type: application/json" \\
@@ -86,8 +161,8 @@ curl -H "Authorization: Bearer TOKEN" \\
 curl -H "Authorization: Bearer TOKEN" \\
   ${window.location.origin}/api/backup/adif -o hamlog-backup.adi`}
         </pre>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">
-          Or use the included script: <code className="bg-gray-100 dark:bg-gray-900 px-1 rounded">scripts/backup-api.ps1</code>
+        <p className="text-sm text-[var(--color-text-muted)] mt-3">
+          Or use the included script: <code className="bg-[var(--color-surface-100)] px-1.5 py-0.5 rounded text-xs font-mono">scripts/backup-api.ps1</code>
         </p>
       </div>
     </div>

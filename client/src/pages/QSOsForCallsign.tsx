@@ -2,13 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { getQsosByCallsign } from '../api/hamlog-api';
 import { formatFrequency } from '../utils/format';
 import config from '../config';
-const {
-  TableHeading1,
-  TableCell1,
-  TableStyle1,
-  TableBodyStyle1,
-  TableHeadStyle2,
-} = config;
+const { TableHeading2, TableCell1, TableStyle1, TableBodyStyle1, TableHeadStyle2 } = config;
 
 interface QSOsForCallsignProps {
   callSignToSearchFor: string;
@@ -45,24 +39,22 @@ const QSOsForCallsign: React.FC<QSOsForCallsignProps> = ({ callSignToSearchFor, 
   if (!isOpen || conditions.length === 0) return null;
 
   return (
-    <div className='overflow-hidden'>
+    <div className="overflow-hidden">
       <table className={TableStyle1}>
         <thead className={TableHeadStyle2}>
           <tr>
-            <th scope='col' className={TableHeading1}>Date</th>
-            {displayTime && (<th scope='col' className={TableHeading1}>Time</th>)}
-            <th scope='col' className={TableHeading1}>Freq</th>
+            <th scope="col" className={TableHeading2}>Date</th>
+            {displayTime && (<th scope="col" className={TableHeading2}>Time</th>)}
+            <th scope="col" className={TableHeading2}>Freq</th>
           </tr>
         </thead>
         <tbody className={TableBodyStyle1}>
           {conditions.map((condition, index) => (
-            <React.Fragment key={index}>
-              <tr className={`${index % 2 === 0 ? 'bg-gray-100 dark:bg-gray-400' : '' } ${index % 2 === 1 ? 'bg-gray-300 dark:bg-gray-600' : '' }`} >
-                <td className={TableCell1}>{new Date(condition.QSO_Date).toLocaleDateString('en-US')}</td>
-                {displayTime && (<td className={TableCell1}>{condition.QSO_MTZTime.slice(0, 5)}</td>)}
-                <td className={TableCell1}>{formatFrequency(condition.QSO_Frequency)}</td>
-              </tr>
-            </React.Fragment>
+            <tr key={index} className={index % 2 === 0 ? 'bg-[var(--color-surface-50)]' : 'bg-[var(--color-card-bg)]'}>
+              <td className={TableCell1}>{new Date(condition.QSO_Date).toLocaleDateString('en-US')}</td>
+              {displayTime && (<td className={TableCell1}>{condition.QSO_MTZTime.slice(0, 5)}</td>)}
+              <td className={`${TableCell1} font-mono`}>{formatFrequency(condition.QSO_Frequency)}</td>
+            </tr>
           ))}
         </tbody>
       </table>

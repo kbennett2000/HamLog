@@ -5,18 +5,16 @@ import QSOsForParkNumber from './QSOsForParkNumber';
 import CallsignInfo from './CallsignInfo';
 import { getQsos, deleteQso, exportAdif, importAdif } from '../api/hamlog-api';
 import type { Contact } from '../types/qso';
+import { Plus, Download, Upload, ChevronRight, Trash2 } from 'lucide-react';
 import config from '../config';
 const {
-  ButtonClassNameBlue,
-  ButtonClassNameGreen,
-  ButtonClassNameRed,
+  ButtonClassNameOutline,
   TableHeading1,
   TableHeading2,
   TableCell1,
   TableStyle1,
   TableBodyStyle1,
   TableHeadStyle1,
-  TableHeadStyle2,
   TableHeadStyle3,
 } = config;
 
@@ -30,7 +28,6 @@ const Contacts = () => {
   const [showQSOsForParkNumber, setShowQSOsForParkNumber] = useState(false);
   const [currentParkNumber, setCurrentParkNumber] = useState('');
   const [showCallsignInfo, setShowCallsignInfo] = useState(false);
-
 
   const fetchData = async () => {
     try {
@@ -73,20 +70,20 @@ const Contacts = () => {
   const handleCallsignMouseOver = (qsoCallsign: string) => {
     setCurrentCallsign(qsoCallsign);
     setShowCallsignInfo(true);
-  }
+  };
 
   const handleCallsignMouseLeave = () => {
     setShowCallsignInfo(false);
-  }
+  };
 
   const handleParkNumberMouseOver = (parkNumber: string) => {
     setCurrentParkNumber(parkNumber);
     setShowQSOsForParkNumber(true);
-  }
+  };
 
   const handleParkNumberMouseLeave = () => {
     setShowQSOsForParkNumber(false);
-  }
+  };
 
   const handleInsertContactsClosed = () => {
     fetchData();
@@ -123,106 +120,270 @@ const Contacts = () => {
 
   return (
     <>
-      <div className='flex items-center space-x-2'>
-        <button onClick={() => HandleInsert()} className={ButtonClassNameGreen}>+ QSO</button>
-        <button onClick={handleExport} className={ButtonClassNameBlue}>Export ADIF</button>
-        <button onClick={() => fileInputRef.current?.click()} className={ButtonClassNameBlue}>Import ADIF</button>
-        <input type='file' ref={fileInputRef} accept='.adi,.adif' onChange={handleImport} className='hidden' />
+      {/* Action Toolbar */}
+      <div className="bg-[var(--color-card-bg)] border border-[var(--color-card-border)] rounded-xl p-3 mb-4 shadow-card">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex items-center gap-2 flex-wrap">
+            <button onClick={() => HandleInsert()} className="inline-flex items-center gap-1.5 px-3 py-2 bg-accent-600 text-white text-sm font-medium rounded-lg hover:bg-accent-700 transition-colors shadow-sm">
+              <Plus className="w-4 h-4" /> New QSO
+            </button>
+            <button onClick={handleExport} className={ButtonClassNameOutline}>
+              <Download className="w-4 h-4" /> Export ADIF
+            </button>
+            <button onClick={() => fileInputRef.current?.click()} className={ButtonClassNameOutline}>
+              <Upload className="w-4 h-4" /> Import ADIF
+            </button>
+            <input type="file" ref={fileInputRef} accept=".adi,.adif" onChange={handleImport} className="hidden" />
+          </div>
+          <span className="text-xs font-medium text-[var(--color-text-muted)]">
+            {conditions.length} QSO{conditions.length !== 1 ? 's' : ''}
+          </span>
+        </div>
       </div>
-      <div className='mx-auto'>
-        <div className='mx-auto'>
-          <div className='flex flex-col'>
-            <div className='overflow-x-auto shadow-md sm:rounded-lg'>
-              <div className='inline-block min-w-full align-middle'>
-                <div className='overflow-hidden '>
-                  <table id='MainDataTable' className={TableStyle1}>
-                    <thead className={TableHeadStyle1}>
+
+      {/* Desktop Table */}
+      <div className="hidden md:block">
+        <div className="bg-[var(--color-card-bg)] border border-[var(--color-card-border)] rounded-xl overflow-hidden shadow-card">
+          <div className="overflow-x-auto">
+            <table id="MainDataTable" className={TableStyle1}>
+              <thead className={TableHeadStyle1}>
+                <tr>
+                  <th scope="col" className={`${TableHeading1} w-16`}></th>
+                  <th scope="col" className={TableHeading1}>Date</th>
+                  <th scope="col" className={TableHeading1}>Time</th>
+                  <th scope="col" className={TableHeading1}>Callsign</th>
+                  <th scope="col" className={TableHeading1}>Frequency</th>
+                  <th scope="col" className={TableHeading1}>Mode</th>
+                  <th scope="col" className={TableHeading1}>Band</th>
+                  <th scope="col" className={`${TableHeading1} w-16`}></th>
+                </tr>
+              </thead>
+              <tbody className={TableBodyStyle1}>
+                {conditions.map((condition, index) => (
+                  <React.Fragment key={index}>
+                    <tr className={`hover:bg-[var(--color-surface-100)] transition-colors ${index % 2 === 0 ? 'bg-[var(--color-card-bg)]' : 'bg-[var(--color-surface-50)]'}`}>
+                      <td className={TableCell1}>
+                        <button
+                          onClick={() => toggleRow(index)}
+                          className="p-1 rounded-md hover:bg-[var(--color-surface-100)] text-[var(--color-text-muted)] transition-all"
+                        >
+                          <ChevronRight className={`w-4 h-4 transition-transform duration-200 ${expandedRows[index] ? 'rotate-90' : ''}`} />
+                        </button>
+                      </td>
+                      <td className={TableCell1}>{new Date(condition.QSO_Date).toLocaleDateString('en-US')}</td>
+                      <td className={`${TableCell1} font-mono tabular-nums`}>{condition.QSO_MTZTime.slice(0, 5)}</td>
+                      <td
+                        className={`${TableCell1} font-mono font-medium text-primary-600 cursor-pointer hover:text-primary-700`}
+                        onMouseLeave={() => handleCallsignMouseLeave()}
+                        onMouseOver={() => handleCallsignMouseOver(condition.QSO_Callsign)}
+                      >
+                        {condition.QSO_Callsign}
+                      </td>
+                      <td className={`${TableCell1} font-mono tabular-nums`}>{condition.QSO_Frequency}</td>
+                      <td className={TableCell1}>{condition.mode || ''}</td>
+                      <td className={TableCell1}>{condition.band || ''}</td>
+                      <td className={TableCell1}>
+                        <button
+                          onClick={() => HandleDelete(condition.QSO_ID)}
+                          className="p-1.5 rounded-md text-[var(--color-text-muted)] hover:text-danger-500 hover:bg-danger-500/10 transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </td>
+                    </tr>
+                    {expandedRows[index] && (
                       <tr>
-                          <th scope='col' className={TableHeading1}>Details</th>
-                          <th scope='col' className={TableHeading1}>Date</th>
-                          <th scope='col' className={TableHeading1}>Time</th>
-                          <th scope='col' className={TableHeading1}>Callsign</th>
-                          <th scope='col' className={TableHeading1}>Frequency</th>
-                          <th scope='col' className={TableHeading1}>Mode</th>
-                          <th scope='col' className={TableHeading1}>Band</th>
-                          <th scope='col' className={TableHeading1}>Delete</th>
-                      </tr>
-                    </thead>
-                    <tbody className={TableBodyStyle1}>
-                      {conditions.map((condition, index) => (
-                        <React.Fragment key={index}>
-                          <tr className={`hover:bg-green-100 dark:hover:bg-green-700 ${index % 2 === 0 ? 'bg-gray-100 dark:bg-gray-400' : '' } ${index % 2 === 1 ? 'bg-gray-300 dark:bg-gray-600' : '' }`} >
-                            <td className={TableCell1}>                                  
-                              <button onClick={() => toggleRow(index)} className={ButtonClassNameBlue}>{expandedRows[index] ? '-' : '+'}</button>
-                            </td>
-                            <td className={TableCell1}>{new Date(condition.QSO_Date).toLocaleDateString('en-US')}</td>
-                            <td className={TableCell1}>{condition.QSO_MTZTime.slice(0, 5)}</td>
-                            <td className={TableCell1} onMouseLeave={() => handleCallsignMouseLeave()} onMouseOver={() => handleCallsignMouseOver(condition.QSO_Callsign)}>{condition.QSO_Callsign}</td>                            
-                            <td className={TableCell1}>{condition.QSO_Frequency}</td>
-                            <td className={TableCell1}>{condition.mode || ''}</td>
-                            <td className={TableCell1}>{condition.band || ''}</td>
-                            <td className={TableCell1}>
-                              <button onClick={() => HandleDelete(condition.QSO_ID)} className={ButtonClassNameRed}>X</button>
-                            </td>
-                          </tr>
-                          <tr>
-                          {expandedRows[index] && condition.POTA_QSOs.length > 0 && (
-                            <td colSpan={3}>
-                              <table>
-                                <thead className={TableHeadStyle3}>
-                                  <th scope='col' className={TableHeading2}>Park Number</th>
-                                  <th scope='col' className={TableHeading2}>QSO Type</th>
-                                </thead>
-                                <tbody className={TableBodyStyle1}>
-                                  {condition.POTA_QSOs.map((potaQSO, index2) => (
-                                    <tr className={`hover:bg-blue-100 dark:hover:bg-blue-700 ${index2 % 2 === 0 ? 'bg-gray-200 dark:bg-gray-500' : '' }`}>
-                                      <td key={potaQSO.POTA_QSO_ID} className={TableCell1} onMouseLeave={() => handleParkNumberMouseLeave()} onMouseOver={() => handleParkNumberMouseOver(potaQSO.POTAPark_ID)}>{potaQSO.POTAPark_ID}</td>
-                                      <td key={potaQSO.POTA_QSO_ID} className={TableCell1}>{potaQSO.QSO_Type === '1' ? 'Hunter' : potaQSO.QSO_Type === '2' ? 'Activator' : ''}</td>
+                        <td colSpan={8} className="p-0">
+                          <div className="border-l-2 border-primary-400 bg-[var(--color-surface-50)] p-4 mx-4 mb-2 rounded-r-lg animate-slide-in-up">
+                            {condition.POTA_QSOs.length > 0 && (
+                              <div className="mb-4">
+                                <h4 className="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)] mb-2">POTA Records</h4>
+                                <table className={TableStyle1}>
+                                  <thead className={TableHeadStyle3}>
+                                    <tr>
+                                      <th scope="col" className={TableHeading2}>Park Number</th>
+                                      <th scope="col" className={TableHeading2}>QSO Type</th>
                                     </tr>
-                                  ))}
-                                </tbody>
-                              </table>
-                            </td>
-                          )}                            
-                          {expandedRows[index] && (condition.QSO_Received || condition.QSO_Sent || condition.QSO_Notes) && (          
-                            <td colSpan={3}>
-                              <table id='ExpandedRowsTable' className={TableStyle1}>
-                                <thead className={TableHeadStyle2}>
-                                  <tr>
-                                    <th scope='col' className={TableHeading1}>Received</th>
-                                    <th scope='col' className={TableHeading1}>Sent</th>
-                                    <th scope='col' className={TableHeading1}>Notes</th>
-                                  </tr>
-                                </thead>
-                                <tbody className={TableBodyStyle1}>
-                                  <tr>
-                                    <td className={TableCell1}>{condition.QSO_Received}</td>
-                                    <td className={TableCell1}>{condition.QSO_Sent}</td>
-                                    <td className={TableCell1} style={{ whiteSpace: 'pre-wrap' }}>{condition.QSO_Notes}</td>
-                                  </tr>
-                                </tbody>
-                              </table>
-                            </td>
-                          )}
-                          </tr>
-                        </React.Fragment>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                                  </thead>
+                                  <tbody className={TableBodyStyle1}>
+                                    {condition.POTA_QSOs.map((potaQSO, index2) => (
+                                      <tr key={potaQSO.POTA_QSO_ID} className={`hover:bg-[var(--color-surface-100)] ${index2 % 2 === 0 ? 'bg-[var(--color-card-bg)]' : 'bg-[var(--color-surface-50)]'}`}>
+                                        <td
+                                          className={`${TableCell1} font-mono font-medium text-primary-600 cursor-pointer hover:text-primary-700`}
+                                          onMouseLeave={() => handleParkNumberMouseLeave()}
+                                          onMouseOver={() => handleParkNumberMouseOver(potaQSO.POTAPark_ID)}
+                                        >
+                                          {potaQSO.POTAPark_ID}
+                                        </td>
+                                        <td className={TableCell1}>
+                                          {potaQSO.QSO_Type === '1' ? 'Hunter' : potaQSO.QSO_Type === '2' ? 'Activator' : ''}
+                                        </td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            )}
+
+                            {(condition.QSO_Received || condition.QSO_Sent || condition.QSO_Notes) && (
+                              <div>
+                                <h4 className="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)] mb-2">Details</h4>
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                  {condition.QSO_Received && (
+                                    <div>
+                                      <span className="text-xs text-[var(--color-text-muted)]">Received</span>
+                                      <p className="text-sm text-[var(--color-text-primary)] font-medium">{condition.QSO_Received}</p>
+                                    </div>
+                                  )}
+                                  {condition.QSO_Sent && (
+                                    <div>
+                                      <span className="text-xs text-[var(--color-text-muted)]">Sent</span>
+                                      <p className="text-sm text-[var(--color-text-primary)] font-medium">{condition.QSO_Sent}</p>
+                                    </div>
+                                  )}
+                                  {condition.QSO_Notes && (
+                                    <div className="sm:col-span-3">
+                                      <span className="text-xs text-[var(--color-text-muted)]">Notes</span>
+                                      <p className="text-sm text-[var(--color-text-primary)] whitespace-pre-wrap">{condition.QSO_Notes}</p>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Card Layout */}
+      <div className="md:hidden space-y-2">
+        {conditions.map((condition, index) => (
+          <div
+            key={index}
+            className="bg-[var(--color-card-bg)] border border-[var(--color-card-border)] rounded-xl shadow-card overflow-hidden"
+          >
+            <div className="p-3">
+              <div className="flex items-center justify-between mb-2">
+                <span
+                  className="font-mono font-bold text-primary-600 text-base cursor-pointer"
+                  onClick={() => {
+                    if (showCallsignInfo && currentCallsign === condition.QSO_Callsign) {
+                      handleCallsignMouseLeave();
+                    } else {
+                      handleCallsignMouseOver(condition.QSO_Callsign);
+                    }
+                  }}
+                >
+                  {condition.QSO_Callsign}
+                </span>
+                <span className="text-xs text-[var(--color-text-muted)]">
+                  {new Date(condition.QSO_Date).toLocaleDateString('en-US')} {condition.QSO_MTZTime.slice(0, 5)}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-[var(--color-surface-100)] text-xs font-mono text-[var(--color-text-secondary)]">
+                  {condition.QSO_Frequency}
+                </span>
+                {condition.mode && (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-primary-500/10 text-xs font-medium text-primary-600">
+                    {condition.mode}
+                  </span>
+                )}
+                {condition.band && (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-accent-500/10 text-xs font-medium text-accent-600">
+                    {condition.band}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex items-center gap-1 mt-2 pt-2 border-t border-[var(--color-surface-100)]">
+                <button
+                  onClick={() => toggleRow(index)}
+                  className="p-1.5 rounded-md hover:bg-[var(--color-surface-100)] text-[var(--color-text-muted)] transition-all text-xs flex items-center gap-1"
+                >
+                  <ChevronRight className={`w-3.5 h-3.5 transition-transform duration-200 ${expandedRows[index] ? 'rotate-90' : ''}`} />
+                  Details
+                </button>
+                <div className="flex-1" />
+                <button
+                  onClick={() => HandleDelete(condition.QSO_ID)}
+                  className="p-1.5 rounded-md text-[var(--color-text-muted)] hover:text-danger-500 hover:bg-danger-500/10 transition-colors"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
               </div>
             </div>
+
+            {expandedRows[index] && (
+              <div className="border-t border-[var(--color-card-border)] bg-[var(--color-surface-50)] p-3 space-y-3 animate-slide-in-up">
+                {condition.POTA_QSOs.length > 0 && (
+                  <div>
+                    <h4 className="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)] mb-1.5">POTA</h4>
+                    {condition.POTA_QSOs.map((potaQSO) => (
+                      <div key={potaQSO.POTA_QSO_ID} className="flex items-center gap-2">
+                        <span
+                          className="font-mono text-sm font-medium text-primary-600 cursor-pointer"
+                          onClick={() => {
+                            if (showQSOsForParkNumber && currentParkNumber === potaQSO.POTAPark_ID) {
+                              handleParkNumberMouseLeave();
+                            } else {
+                              handleParkNumberMouseOver(potaQSO.POTAPark_ID);
+                            }
+                          }}
+                        >
+                          {potaQSO.POTAPark_ID}
+                        </span>
+                        <span className="text-xs text-[var(--color-text-muted)]">
+                          {potaQSO.QSO_Type === '1' ? 'Hunter' : potaQSO.QSO_Type === '2' ? 'Activator' : ''}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {(condition.QSO_Received || condition.QSO_Sent || condition.QSO_Notes) && (
+                  <div className="space-y-1.5">
+                    {condition.QSO_Received && (
+                      <div className="flex gap-2">
+                        <span className="text-xs text-[var(--color-text-muted)] w-16 shrink-0">Received</span>
+                        <span className="text-sm text-[var(--color-text-primary)]">{condition.QSO_Received}</span>
+                      </div>
+                    )}
+                    {condition.QSO_Sent && (
+                      <div className="flex gap-2">
+                        <span className="text-xs text-[var(--color-text-muted)] w-16 shrink-0">Sent</span>
+                        <span className="text-sm text-[var(--color-text-primary)]">{condition.QSO_Sent}</span>
+                      </div>
+                    )}
+                    {condition.QSO_Notes && (
+                      <div className="flex gap-2">
+                        <span className="text-xs text-[var(--color-text-muted)] w-16 shrink-0">Notes</span>
+                        <span className="text-sm text-[var(--color-text-primary)] whitespace-pre-wrap">{condition.QSO_Notes}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
-        </div>        
+        ))}
       </div>
-      <div id='ControlsDiv' className='flex flex-col items-center space-x-2'>
-        <DeleteConfirmationModal isOpen={showModal} onClose={() => setShowModal(false)} onConfirm={handleUserChoice} />
-        <InsertContacts isOpen={showInsertContacts} onClose={() => setShowInsertContacts(false)} onClosed={handleInsertContactsClosed} />
-        <CallsignInfo callSignToSearchFor={currentCallsign} isOpen={showCallsignInfo} />
-        <QSOsForParkNumber parkNumberToSearchFor={currentParkNumber} isOpen={showQSOsForParkNumber} displayTime={false} />
-      </div>
+
+      {/* Modals and Info Panels */}
+      <DeleteConfirmationModal isOpen={showModal} onClose={() => setShowModal(false)} onConfirm={handleUserChoice} />
+      <InsertContacts isOpen={showInsertContacts} onClose={() => setShowInsertContacts(false)} onClosed={handleInsertContactsClosed} />
+      <CallsignInfo callSignToSearchFor={currentCallsign} isOpen={showCallsignInfo} />
+      <QSOsForParkNumber parkNumberToSearchFor={currentParkNumber} isOpen={showQSOsForParkNumber} displayTime={false} />
     </>
-  );  
+  );
 };
 
 export default Contacts;

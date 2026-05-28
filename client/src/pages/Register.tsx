@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { Radio } from 'lucide-react';
 import config from '../config';
 
-const { InputBoxClassName, ButtonClassNameGreen } = config;
+const { InputBoxClassName, ButtonClassNameGreen, InputLabel1 } = config;
 
 const Register = () => {
   const { register } = useAuth();
@@ -39,17 +40,24 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
-      <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-md">
-        <h1 className="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">Create Account</h1>
+    <div className="min-h-screen flex items-center justify-center bg-[var(--color-body-bg)] px-4">
+      <div className="bg-[var(--color-card-bg)] border border-[var(--color-card-border)] p-8 rounded-2xl shadow-panel w-full max-w-md animate-scale-in">
+        <div className="flex flex-col items-center mb-8">
+          <div className="w-12 h-12 rounded-xl bg-primary-500/10 flex items-center justify-center mb-3">
+            <Radio className="w-6 h-6 text-primary-600" />
+          </div>
+          <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Create Account</h1>
+          <p className="text-sm text-[var(--color-text-muted)] mt-1">Join HamLog</p>
+        </div>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded">
+            <div className="bg-danger-500/10 border border-danger-200 text-danger-500 px-4 py-3 rounded-lg text-sm">
               {error}
             </div>
           )}
           <div>
-            <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Username</label>
+            <label className={InputLabel1}>Username</label>
             <input
               type="text"
               value={username}
@@ -62,12 +70,12 @@ const Register = () => {
             />
           </div>
           <div>
-            <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Callsign</label>
+            <label className={InputLabel1}>Callsign</label>
             <input
               type="text"
               value={callsign}
               onChange={e => setCallsign(e.target.value.toUpperCase())}
-              className={InputBoxClassName}
+              className={`${InputBoxClassName} font-mono uppercase`}
               required
               minLength={3}
               maxLength={12}
@@ -75,7 +83,7 @@ const Register = () => {
             />
           </div>
           <div>
-            <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Password</label>
+            <label className={InputLabel1}>Password</label>
             <input
               type="password"
               value={password}
@@ -86,7 +94,7 @@ const Register = () => {
             />
           </div>
           <div>
-            <label className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Confirm Password</label>
+            <label className={InputLabel1}>Confirm Password</label>
             <input
               type="password"
               value={confirmPassword}
@@ -96,13 +104,13 @@ const Register = () => {
               minLength={6}
             />
           </div>
-          <button type="submit" disabled={submitting} className={`${ButtonClassNameGreen} w-full`}>
+          <button type="submit" disabled={submitting} className={`${ButtonClassNameGreen} w-full ${submitting ? 'opacity-60 cursor-not-allowed' : ''}`}>
             {submitting ? 'Creating account...' : 'Register'}
           </button>
         </form>
-        <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
+        <p className="mt-6 text-center text-sm text-[var(--color-text-muted)]">
           Already have an account?{' '}
-          <Link to="/login" className="text-blue-500 hover:text-blue-700">Log In</Link>
+          <Link to="/login" className="text-primary-600 hover:text-primary-700 font-medium">Log In</Link>
         </p>
       </div>
     </div>

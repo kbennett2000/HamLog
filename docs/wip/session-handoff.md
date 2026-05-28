@@ -1,199 +1,169 @@
 # Session Handoff
 
-Date: 2026-05-27. Branch: `main` (clean, up to date with `origin/main` at the
-time of writing). HamLog = self-hosted amateur radio QSO logger (React 18 +
+Date: 2026-05-28. Branch: `main` (clean, up to date with `origin/main` as of
+this writing). HamLog = self-hosted amateur radio QSO logger (React 18 +
 Tailwind, Express + MySQL, Docker Compose, TypeScript strict).
 
 ## Goal
 
-Take HamLog from "functional after the 7-phase cleanup" to a polished,
-publishable v1.0.0: visual overhaul, three new user-facing features (map,
-search, sort), offline-awareness, complete end-user documentation with
-screenshots, and GitHub discoverability/community-health setup — plus a v1.0.0
-release.
+Fix and polish the QSO map feature introduced in a prior session: the map
+rendered off-center at a fixed zoom with the world repeating horizontally and
+pins appearing in only one tile copy. Additionally, surface a meaningful QSO
+count (distinguishing "plotted" from "total in window"), add guidance when the
+map is empty, and keep documentation and screenshots in sync.
 
 ## Done
 
-All of the following are committed and pushed to `origin/main`. Commit order
-(oldest first), verified against `git log`:
+All of the following are committed and pushed to `origin/main`. Commits
+confirmed against `git log` (oldest first):
 
-- `db61054b feat: complete UI visual overhaul with three selectable themes`
-  - New `client/src/contexts/ThemeContext.tsx`. Themes: `theme-indigo`
-    (default) / `theme-teal` / `theme-dark`, applied via CSS variables,
-    persisted in localStorage key `hamlog-theme`.
-  - Custom Tailwind theme in `client/tailwind.config.js` referencing CSS vars
-    (`--color-primary` / `--color-accent` / `--color-danger` /
-    `--color-surface-*`) defined in `client/src/index.css`.
-  - Self-hosted Inter font (`@fontsource-variable/inter`), `lucide-react`
-    icons.
-  - Redesigned NavBar (mobile hamburger), Contacts (desktop table + mobile
-    cards), CallsignInfo / QSOsForParkNumber (now non-blocking floating
-    panels, not full-screen overlays), modals (backdrop blur + mobile
-    bottom-sheet), Login / Register, Settings. Design tokens live in
-    `client/src/config.ts`.
-  - Review fixes folded in: modal-vs-tooltip z-index, dark-unsafe
-    `color-50` → `color-500/10`, empty-callsign mouseover guard.
-- `f833bef5 fix: remove Unix-only PORT syntax from start script for Windows compat`
-  - Fixed `client/package.json` start script (dropped Unix `PORT=4000`
-    prefix). Added gitignored `client/.env` with
-    `DANGEROUSLY_DISABLE_HOST_CHECK=true` (works around a react-scripts 5 dev
-    bug).
-- `c8d5a8be docs: improve .env.example with quick-start instructions`
-  - Docker LAN quick-start comments. Port configurable via `PORT`
-    (default 8050); a single app container serves API + built frontend.
-- `832023c4 feat: add QSO map with HamDB callsign lookup and time filters`
-  - `client/src/pages/Map.tsx` (Leaflet + `react-leaflet@4` — intentionally
-    DOWNGRADED from v5, which requires React 19).
-  - `backend/src/services/hamdb-service.ts` (hamdb.org via Node `fetch`,
-    returns null on failure).
-  - `backend/src/services/contact-info-service.ts`:
-    `lookupAndCreateContactInfo` / `updateContactInfoFromHamDB` /
-    `getCallsignsNeedingBackfill`.
-  - `backend/src/services/qso-service.ts`: `createContact` fires an async
-    lookup; new `getQsosForMap`.
-  - Endpoints: `GET /api/qsos/map?from=&to=`, `POST /api/contact-info/lookup`,
-    `POST /api/contact-info/backfill`. Map nav link + Settings backfill button.
-  - Filters: Day / Week / Month / 6mo / Year / All / Custom.
-- `71648a3d feat: add client-side QSO search with multi-field filtering`
-  - `client/src/components/SearchBar.tsx` + `client/src/utils/filter-qsos.ts`.
-    AND-combined fields: callsign / date-range / frequency / band / mode /
-    POTA park / notes.
-- `fb286255 feat: add sortable column headers to QSO log table`
-  - `client/src/components/SortableHeader.tsx` + `client/src/utils/sort-qsos.ts`.
-    Band sorts by frequency order. Contacts render pipeline:
-    conditions → `filterQsos` → `sortQsos` → display.
-- `1038deaa fix: add offline-aware UX for map tiles and callsign backfill`
-  - App is ~95% offline already; only external deps are HamDB and OSM tiles.
-    Added a map tile-error banner + a "needs internet" hint on the Settings
-    backfill action. No features removed.
-- `027c958a docs: comprehensive documentation for non-technical ham operators`
-  (note: `f8259563 cleanup` sits between this and the previous feature commit)
-  - Rewrote `README.md`; created `docs/install-ubuntu.md`,
-    `docs/install-windows.md`, `docs/install-mac.md`, `docs/user-guide.md`,
-    `docs/troubleshooting.md`. (Screenshot placeholders, filled in by the next
-    commit.)
-- `f1d6662c docs: add documentation screenshots and reproducible capture tooling`
-  - 14 PNGs in `docs/screenshots/` (verified: login, register, log-table,
-    search-bar, sort-columns, callsign-hover, expanded-row, add-qso,
-    add-qso-pota, map-view, map-popup, settings-theme, settings-backfill,
-    log-mobile).
-  - Captured from a THROWAWAY isolated instance: Compose project
-    `hamlog-demo`, port 8060, separate volume, torn down with `down -v`.
-    Seeded with FICTIONAL data only via `scripts/screenshots/demo-seed.sql`
-    (user W1DEMO / demo1234, ~18 invented callsigns, global lat/lng).
-  - `scripts/screenshots/capture.mjs` (Playwright).
-  - `.gitignore` exceptions: fictional `demo-seed.sql` + `.env.demo.example`
-    are tracked; real `.env.demo` + `node_modules` stay ignored. VERIFIED:
-    `git check-ignore` confirms `.env.demo` is ignored while `demo-seed.sql`
-    and `.env.demo.example` are tracked.
-- `6d18297c docs: boost discoverability — banner, badges, community health files`
-  - Set repo description (dropped the inaccurate SOTA claim) + 18 topics via
-    `gh`. Branded `docs/social-banner.png` (1280x640) via
-    `scripts/screenshots/banner.html` + `make-banner.mjs`. README banner +
-    shields.io badges.
-  - `.github/`: `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`,
-    `ISSUE_TEMPLATE/{bug_report.yml, feature_request.yml, config.yml}`,
-    `PULL_REQUEST_TEMPLATE.md` (all verified present).
-- `4f919205 updated agents` — see "Watch out for"; this is NOT what the working
-  record predicted.
-- Release **v1.0.0** published; tag `v1.0.0` exists in the repo.
-- GitHub issue **#35** (QSO map) closed with a summary.
+- `f088519b fix: auto-fit QSO map to all pins and use a single non-wrapping globe`
+  - New pure helper `client/src/utils/map-view.ts`: exports constants
+    (`WORLD_CENTER [20,0]`, `WORLD_ZOOM 2`, `MIN_ZOOM 2`, `FIT_MAX_ZOOM 10`,
+    `FIT_PADDING [40,40]`, `MAX_BOUNDS [[-90,-180],[90,180]]`), `isValidCoord`
+    (rejects non-finite / out-of-range / exactly 0,0 null-island), and
+    `getMarkerBounds` (bbox over valid markers or null when none).
+  - `client/src/pages/Map.tsx`: replaced the average-center/fixed-zoom/`key`-
+    remount approach with a `FitBounds` child component that uses
+    react-leaflet's `useMap()` + `useEffect` to call `map.fitBounds` on
+    mount and on every filter change; falls back to `map.setView(WORLD_CENTER,
+    WORLD_ZOOM)` when there are no valid markers. `TileLayer` got `noWrap`;
+    `MapContainer` got `minZoom`, `maxBounds`, and `maxBoundsViscosity=1`.
+    Invalid-coord markers are filtered from pins, count, and fit math.
+  - `client/src/index.css`: `.leaflet-container` background set to
+    `var(--color-surface-200)` via `html .leaflet-container { ... }` (unlayered
+    selector + bumped specificity to override leaflet.css's default gray).
+  - New test files: `client/src/utils/map-view.test.ts` and
+    `client/src/pages/Map.test.tsx` (react-leaflet and react-router-dom both
+    jest.mock'd because both ship ESM and break CRA's Jest 27 bundled resolver).
+  - `docs/user-guide.md` updated (removed now-false "centers on average
+    position" and "background turns grey" descriptions).
+
+- `9ac344a3 feat: clarify QSO map count, add empty-state guidance and date labels`
+  - `backend/src/services/qso-service.ts`: new `getQsoCountForRange(userId,
+    from?, to?)` function, fetches total QSO count for the time window
+    regardless of geocoding status.
+  - `backend/src/routes/qsos.ts`: `GET /api/qsos/map` now fetches markers and
+    total in parallel (`Promise.all`) and returns `{ markers, total }`.
+  - `client/src/types/qso.ts`: new `MapData { markers, total }` type.
+  - `client/src/api/hamlog-api.ts`: `getMapData` return type updated to
+    `MapData`.
+  - `client/src/utils/map-view.ts`: `formatMapCount(valid, total)` — returns
+    "N QSOs on map" when all are plotted, "X of Y QSOs mapped" otherwise.
+  - `client/src/utils/map-view.test.ts` and `client/src/pages/Map.test.tsx`
+    expanded with count/empty-state/label tests (49 total frontend map tests).
+  - `client/src/pages/Map.tsx`: empty-state banner below the filter bar
+    ("No QSOs in this time range." when total is 0; "Backfill Locations" Link
+    to /settings when total > 0 but none geocoded); Custom date inputs got
+    From/To labels + `aria-label`; popup dates use `toLocaleDateString()`
+    instead of hard-coded `en-US`; `loading` initializes `true` to suppress
+    empty-state flash on mount.
+  - `client/package.json`: `jest.moduleNameMapper` entry routing
+    `^react-router-dom$` to its CJS `dist/index.js` so CRA's Jest 27 can
+    resolve the module when mocking it. (react-router-dom v7 ships only ESM
+    in its default export; CRA's Jest can't handle that for mocks.)
+  - `backend/__tests__/qso-service.test.ts`: the project's first DB-mocking
+    backend test — 6 cases, uses `jest.unstable_mockModule` + top-level
+    `await import` + `@jest/globals` (required native-ESM pattern for the
+    backend's `"type": "module"` package).
+  - `docs/user-guide.md` updated with count label and empty-state guidance.
+
+- `2ee3154c docs: regenerate map screenshots for the single-globe view`
+  - `docs/screenshots/map-view.png` and `map-popup.png` recaptured from a
+    current build (single non-wrapping globe, auto-fit view).
+  - `scripts/screenshots/capture.mjs`: removed the now-obsolete manual
+    zoom-out step that existed to work around the old fixed-zoom behavior.
 
 ## Decisions
 
-- Theming via CSS variables + a Tailwind theme that references them, with
-  three named themes and localStorage persistence. (Explicit.)
-- `react-leaflet` pinned to **v4** because v5 requires React 19; HamLog is on
-  React 18. Do not bump react-leaflet without first migrating React. (Explicit.)
-- HamDB (hamdb.org) chosen as the callsign-lookup provider; lookups are
-  best-effort and return null on failure rather than throwing. (Explicit.)
-- Callsign enrichment is async/fire-and-forget on contact creation, with a
-  manual backfill endpoint/button for historical rows. (Explicit.)
-- Map/search/sort layered as a client-side render pipeline
-  (`filterQsos` → `sortQsos`) over data already fetched, rather than
-  server-side query params (except the map's `from`/`to`). (Implicit but
-  consistent across the SearchBar/SortableHeader work.)
-- Screenshots must come from a disposable instance seeded with fictional data,
-  because the LOCAL Windows Docker instance contains the operator's REAL log
-  (see "Watch out for"). (Explicit — drove the whole `scripts/screenshots/`
-  isolation design.)
-- Single app container serves both the API and the built frontend; LAN port is
-  configurable via `PORT`. (Explicit.)
+- `isValidCoord` rejects exactly `(0, 0)` (null island) in addition to
+  out-of-range and non-finite values. This is the pragmatic call for ham radio:
+  a real QSO contact at lat 0 / lng 0 (Gulf of Guinea) is theoretically
+  possible but vanishingly unlikely, and an unset coordinate defaults to 0,0 in
+  the DB. Accepted as a known trade-off; no alternative was considered in depth.
+- `FitBounds` is a separate child component rather than logic inside the parent
+  `Map` component because react-leaflet's `useMap()` hook can only be called
+  inside a `MapContainer` descendant, not in the component that renders the
+  `MapContainer` itself. This is a react-leaflet architectural constraint, not
+  a style preference.
+- The backend returns `total` alongside `markers` (via `Promise.all`) rather
+  than computing it on the client from the existing markers array, because the
+  markers array only contains geocoded QSOs — the client has no way to know
+  how many non-geocoded QSOs exist in the window. A second DB query was the
+  only correct approach.
+- `jest.moduleNameMapper` pointing react-router-dom to its CJS build was chosen
+  over alternatives (transformIgnorePatterns, custom resolver) because it is
+  the narrowest possible change and does not affect runtime behavior — only
+  Jest's module resolution for that one package.
+- Zod validation for `GET /api/qsos/map`'s `from`/`to` query params was
+  explicitly deferred (see Pending). The inputs are `type=date` HTML fields so
+  the UI cannot produce an invalid value, and the issue pre-dates this session.
 
 ## In progress
 
-Nothing is mid-edit. The working tree is clean and there are no unpushed
-commits.
+Nothing is mid-edit. Working tree is clean, all three commits pushed.
 
 ## Pending / next session
 
-- **Tests (REQUIRED by CLAUDE.md, NOT done this session).** No automated tests
-  were added for any of this session's work. At minimum, cover:
-  - `client/src/utils/filter-qsos.ts` (AND-combined multi-field filtering,
-    incl. date-range and frequency/band edge cases).
-  - `client/src/utils/sort-qsos.ts` (especially band-sorts-by-frequency-order).
-  - `backend/src/services/hamdb-service.ts` (null-on-failure path, fetch
-    mocking).
-  - New components `SearchBar.tsx`, `SortableHeader.tsx`, `Map.tsx`.
-  CLAUDE.md states a task is not "done" until relevant tests pass — treat this
-  as the top outstanding item.
-- **Manual GitHub follow-up (cannot be done from CLI):** upload the social
-  preview image via the web UI — Settings → General → Social preview →
-  `docs/social-banner.png`. Steps are in `scripts/screenshots/README.md`.
-- Decide the fate of commit `4f919205 updated agents` (see "Watch out for").
+- **Zod validation for `GET /api/qsos/map` query params.** The `from` and `to`
+  date strings are currently unvalidated on the backend. The code reviewer
+  flagged this as a hardening gap. Deferred this session as out-of-scope.
+  Add a Zod schema in `backend/src/schemas/` and wire it through the route
+  validation middleware, matching the pattern used by other endpoints.
+- **Count label scope label (marginal).** The fresh-eyes review suggested
+  appending "in this range" to the count label when a non-"All" filter is
+  active, for clarity. Deferred as low-priority. If done, update
+  `formatMapCount` signature and adjust `map-view.test.ts` and `Map.test.tsx`.
+- **`App.test.tsx` cannot load under CRA Jest.** Pre-existing issue: the test
+  file fails to even parse because react-router-dom v7 ships ESM and CRA's
+  Jest 27 bundled resolver can't handle it. The `moduleNameMapper` added this
+  session changed the error message but did not fix it. The entire frontend map
+  test suite (49 tests) and the full backend suite (45 tests) pass regardless.
+  Fix requires either upgrading react-router-dom's test setup or ejecting CRA.
+  Left as pre-existing tech debt.
+- **Social preview image** (manual GitHub step — cannot be done from CLI):
+  upload `docs/social-banner.png` via GitHub's web UI at Settings > General >
+  Social preview. Steps documented in `scripts/screenshots/README.md`.
 
 ## Open questions
 
-- **What is commit `4f919205 updated agents`?** It is currently HEAD and is
-  pushed to `origin/main`. It modifies `.claude/agents/code-reviewer.md`,
-  `debugger.md`, `doc-writer.md`, `test-writer.md` and adds
-  `decision-recorder.md` + `session-closer.md` (6 files, +119/-15). It was
-  authored as `Kris Bennett <kbennett2000@hotmail.com>` with NO
-  `Co-Authored-By` trailer — i.e. it does not look like an AI-assisted commit
-  from this project's normal flow (which uses
-  `Co-Authored-By: Claude Opus 4.7 (1M context)`). The prior session's working
-  record believed these edits had been `git reset` and left uncommitted with
-  "origin unknown". They are NOT uncommitted — they are committed and pushed.
-  Next session should confirm with the operator whether these agent changes
-  were intended to land on `main`, and revert if not.
-- Are the agent-definition edits in `4f919205` consistent with how this repo
-  wants its `.claude/agents/` maintained, or were they accidental local edits
-  swept up by a `git add -A`? Unresolved.
+- None new from this session. The open question about commit `4f919205 updated
+  agents` from the prior session (operator-authored, no Co-Authored-By trailer,
+  modifying `.claude/agents/`) remains unresolved. Ask the operator whether
+  those agent-definition edits were intentional and whether they should stay
+  on `main`.
 
 ## Watch out for
 
 - **Real operator data lives in the LOCAL Windows Docker instance.** It holds
-  the operator's actual log (~920 contacts, real callsigns/names). NEVER use
+  the operator's actual log (~920+ contacts, real callsigns/names). NEVER use
   it for screenshots, demos, or fixtures. Use the disposable `hamlog-demo`
-  Compose project (port 8060, separate volume) with
-  `scripts/screenshots/demo-seed.sql` instead, and tear it down with
-  `down -v`. The real instance was verified untouched (920 contacts) after the
-  screenshot work.
-- **Separate-server data migration was guidance only — no repo change.** The
-  operator's production log runs on a separate Ubuntu server.
-  `backups/2024_04_06_HamLogDB.sql` is a PRE-multi-user dump; its
-  `DROP TABLE` + old-schema recreate strips the `user_id` column, so naively
-  importing it hides QSOs (they have no owner). The fix given was SQL to
-  `ALTER` add `user_id` / `qso_datetime_utc` / `frequency_mhz` / `mode` /
-  `band` then backfill `user_id = 1`. That SQL was run on THEIR server, not in
-  this repo — do not assume any migration file exists here for it.
-- **`4f919205 updated agents` is an unexpected commit at HEAD** (see Open
-  questions). The git history diverges from the prior session's stated
-  expectation here; trust `git log`, not the narrative that those edits were
-  left uncommitted.
-- **SOTA is scaffolded only, not implemented.** Do not advertise it (the repo
-  description was deliberately corrected to drop the SOTA claim). No SOTA UI
-  per CLAUDE.md "Out of Scope for v1".
-- **Regenerating screenshots/banner needs internet** (Playwright Chromium
-  download + OSM tiles). The app itself is offline-capable; only the capture
-  tooling needs the network.
-- **GitHub community-profile health shows ~85%**, because GitHub only counts a
-  legacy single issue template, not the `ISSUE_TEMPLATE/` forms. The forms
-  work correctly; the percentage is cosmetic.
-- **`session-closer` agent file exists but is not a registered/launchable
-  subagent type in this runtime.** Its definition is present at
-  `.claude/agents/session-closer.md` (added in `4f919205`) but cannot be
-  invoked as a subagent here.
-- Project commit convention for AI-assisted work:
-  `Co-Authored-By: Claude Opus 4.7 (1M context)`. (Commit `4f919205` notably
-  lacks this trailer.)
+  Compose project (port 8060, separate volume, seeded from
+  `scripts/screenshots/demo-seed.sql` with fictional data) and tear it down
+  with `docker compose -p hamlog-demo down -v` when done.
+- **react-leaflet is pinned to v4.** Do not upgrade to v5 without first
+  migrating the frontend to React 19. v5 requires React 19; HamLog is on
+  React 18.
+- **Backend tests use `jest.unstable_mockModule`.** The backend is
+  `"type": "module"` (native ESM). `jest.mock()` does not work for ESM
+  modules; `jest.unstable_mockModule` + top-level `await import(...)` +
+  `@jest/globals` is the required pattern. Do not switch to `jest.mock()` for
+  new backend tests.
+- **`client/package.json` has a `moduleNameMapper` entry for react-router-dom**
+  pointing it at `./node_modules/react-router-dom/dist/index.js` (the CJS
+  build). This is needed so CRA's Jest 27 can resolve react-router-dom when
+  it is mocked in `Map.test.tsx`. If react-router-dom is upgraded or
+  restructured, this path will need updating.
+- **`formatMapCount` in `client/src/utils/map-view.ts` takes `(valid, total)`
+  not `(total, valid)`.** Argument order matters; the tests cover this but
+  swapping the args produces a plausible-looking wrong result rather than a
+  crash.
+- **The `loading` state in `Map.tsx` initializes `true`** so the component does
+  not briefly show an empty-state banner before the first fetch completes.
+  If the data-fetch logic is refactored, preserve this initialization or
+  empty-state will flash on every mount.
+- **SOTA is scaffolded only.** No SOTA UI per CLAUDE.md. Do not advertise it.
+- **The prior session's open question about `4f919205 updated agents`** is still
+  open (see Open questions above). The agent files in `.claude/agents/` were
+  modified in that commit without a `Co-Authored-By` trailer; status is
+  unresolved.

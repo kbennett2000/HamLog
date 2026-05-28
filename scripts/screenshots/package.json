@@ -1,0 +1,13 @@
+{
+  "name": "hamlog-screenshots",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local dev tooling to capture documentation screenshots. Not part of the app runtime.",
+  "type": "module",
+  "scripts": {
+    "capture": "node capture.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.49.0"
+  }
+}

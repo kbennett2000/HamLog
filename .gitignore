@@ -6,8 +6,12 @@ backups/
 *.sql
 !backend/init-db/01-schema.sql
 !backend/src/migrations/*.sql
+# Demo seed for screenshots — fictional data only, safe to commit.
+!scripts/screenshots/demo-seed.sql
 .env
 .env.*
 !.env.example
+# Documented template for the throwaway screenshot env (no real secrets).
+!scripts/screenshots/.env.demo.example
 backend/results.txt
 client/build/

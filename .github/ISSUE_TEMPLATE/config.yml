@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Setup & troubleshooting help
+    url: https://github.com/kbennett2000/HamLog/blob/main/docs/troubleshooting.md
+    about: Having trouble installing or running HamLog? Start with the troubleshooting guide.
+  - name: User guide
+    url: https://github.com/kbennett2000/HamLog/blob/main/docs/user-guide.md
+    about: How to use HamLog's features once it's running.

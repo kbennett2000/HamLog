@@ -1,4 +1,18 @@
+<p align="center">
+  <img src="docs/social-banner.png" alt="HamLog — self-hosted amateur radio QSO logger" width="100%" />
+</p>
+
 # HamLog
+
+<p align="center">
+  <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT" />
+  <img src="https://img.shields.io/badge/deploy-Docker_Compose-2496ED?logo=docker&logoColor=white" alt="Docker Compose" />
+  <img src="https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white" alt="React 18" />
+  <img src="https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Node.js-20_LTS-339933?logo=nodedotjs&logoColor=white" alt="Node.js 20" />
+  <img src="https://img.shields.io/badge/offline-first-10b981" alt="Offline-first" />
+  <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs welcome" />
+</p>
 
 A self-hosted amateur radio QSO logging application for your home network.
 
@@ -211,6 +225,6 @@ MIT — see [LICENSE](LICENSE).
 
 ## Contributing
 
-Contributions are welcome. Open an issue to discuss a bug or feature before sending a pull request. Please keep changes focused and include tests for new behavior.
+Contributions are welcome — see [CONTRIBUTING.md](.github/CONTRIBUTING.md) for setup, workflow, and guidelines. Open an issue to discuss a bug or feature before sending a pull request. Please keep changes focused and include tests for new behavior.
 
 If you find a data-loss bug, please open an issue immediately and include your HamLog version and any relevant error output from `docker compose logs app`.

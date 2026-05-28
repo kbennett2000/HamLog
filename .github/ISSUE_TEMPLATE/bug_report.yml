@@ -1,0 +1,50 @@
+name: Bug report
+description: Report something that isn't working as expected
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file a bug! Please check the
+        [troubleshooting guide](../blob/main/docs/troubleshooting.md) first — it
+        covers the most common issues.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A clear description of the bug and what you expected instead.
+      placeholder: When I click X, Y happens, but I expected Z.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to ...
+        2. Click ...
+        3. See error
+    validations:
+      required: true
+  - type: dropdown
+    id: host
+    attributes:
+      label: Host platform
+      options:
+        - Ubuntu Server
+        - Windows
+        - macOS
+        - Other (note in description)
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: HamLog version / commit
+      placeholder: v1.0.0 or commit hash
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: "Output from `docker compose logs app` if relevant. Do NOT paste real personal data."
+      render: shell

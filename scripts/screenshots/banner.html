@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1280px; height: 640px; overflow: hidden; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: radial-gradient(1200px 600px at 78% 18%, #1e293b 0%, #0f172a 55%, #020617 100%);
+    color: #f8fafc;
+    position: relative;
+  }
+  /* faint lat/long grid */
+  .grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(to right, rgba(148,163,184,0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(148,163,184,0.06) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+  /* concentric "signal" rings, top-right */
+  .rings { position: absolute; top: -180px; right: -120px; }
+  .rings span {
+    position: absolute; border: 2px solid rgba(99,102,241,0.18); border-radius: 50%;
+    top: 50%; left: 50%; transform: translate(-50%,-50%);
+  }
+  .content { position: absolute; inset: 0; padding: 84px 88px; display: flex; flex-direction: column; }
+  .brand { display: flex; align-items: center; gap: 22px; }
+  .logo {
+    width: 84px; height: 84px; border-radius: 22px;
+    background: rgba(99,102,241,0.14); border: 1px solid rgba(99,102,241,0.35);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .wordmark { font-size: 76px; font-weight: 800; letter-spacing: -2px; line-height: 1; }
+  .tagline {
+    margin-top: 40px; font-size: 36px; font-weight: 600; line-height: 1.28;
+    max-width: 880px; color: #e2e8f0;
+  }
+  .tagline b { color: #818cf8; font-weight: 700; }
+  .sub { margin-top: 18px; font-size: 22px; color: #94a3b8; font-weight: 500; }
+  .chips { margin-top: auto; display: flex; gap: 14px; flex-wrap: wrap; }
+  .chip {
+    font-size: 22px; font-weight: 600; padding: 12px 22px; border-radius: 999px;
+    background: rgba(148,163,184,0.10); border: 1px solid rgba(148,163,184,0.22); color: #cbd5e1;
+  }
+  .chip.accent { background: rgba(16,185,129,0.14); border-color: rgba(16,185,129,0.40); color: #6ee7b7; }
+  .pin { position: absolute; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); }
+  .pin::after { content:''; position:absolute; width:38%; height:38%; background:#0f172a; border-radius:50%; top:31%; left:31%; }
+</style>
+</head>
+<body>
+  <div class="grid"></div>
+  <div class="rings">
+    <span style="width:360px;height:360px"></span>
+    <span style="width:520px;height:520px"></span>
+    <span style="width:700px;height:700px"></span>
+    <span style="width:900px;height:900px"></span>
+  </div>
+
+  <!-- decorative location pins (no data) -->
+  <div class="pin" style="width:30px;height:30px;background:#6366f1;top:150px;right:300px;"></div>
+  <div class="pin" style="width:24px;height:24px;background:#818cf8;top:300px;right:200px;"></div>
+  <div class="pin" style="width:22px;height:22px;background:#34d399;top:235px;right:430px;"></div>
+
+  <div class="content">
+    <div class="brand">
+      <div class="logo">
+        <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"></path>
+          <path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"></path>
+          <circle cx="12" cy="12" r="2"></circle>
+          <path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"></path>
+          <path d="M19.1 4.9C23 8.8 23 15.2 19.1 19.1"></path>
+        </svg>
+      </div>
+      <div class="wordmark">HamLog</div>
+    </div>
+
+    <div class="tagline">Self-hosted <b>amateur radio</b> QSO logger with POTA, contests, callsign lookup, and a <b>world map</b> of every contact.</div>
+    <div class="sub">Runs on your LAN via Docker · Works offline · Open source (MIT)</div>
+
+    <div class="chips">
+      <div class="chip accent">QSO Logging</div>
+      <div class="chip">POTA</div>
+      <div class="chip">Contests</div>
+      <div class="chip">QSO Map</div>
+      <div class="chip">ADIF Import / Export</div>
+      <div class="chip">Offline-first</div>
+    </div>
+  </div>
+</body>
+</html>

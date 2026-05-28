@@ -52,6 +52,23 @@ docker compose -p hamlog-demo --env-file scripts/screenshots/.env.demo down -v
 
 The demo login is `demo` / `demo1234`.
 
+## Social preview banner
+
+`docs/social-banner.png` is the card GitHub shows when the repo is shared on
+social media, Slack, Discord, etc. To regenerate it from `banner.html`:
+
+```bash
+cd scripts/screenshots
+node make-banner.mjs   # writes docs/social-banner.png at 1280x640
+```
+
+GitHub can only accept the social preview image through the web UI (there is no
+API/CLI for it). To set it:
+
+1. Go to **https://github.com/kbennett2000/HamLog/settings** (repo → Settings → General).
+2. Scroll to **Social preview**.
+3. Click **Edit** → **Upload an image** and choose `docs/social-banner.png`.
+
 ## Safety
 
 - The demo instance uses the Compose project name `hamlog-demo`, giving it its

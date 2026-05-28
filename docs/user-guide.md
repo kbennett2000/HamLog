@@ -281,8 +281,9 @@ map.
 
 ![Map View](screenshots/map-view.png)
 
-Each marker represents a QSO. The map centers on the average position of all
-visible markers.
+Each marker represents a QSO. The map automatically fits the view to show all
+your markers at once. When you change the time filter, the view re-fits to the
+new set of markers.
 
 ### Time filters
 
@@ -322,8 +323,8 @@ location data for all callsigns in your log.
 ### Offline use
 
 Map tile images are loaded from OpenStreetMap and require an internet
-connection. If you are offline, the map background turns grey and a banner
-appears:
+connection. If you are offline, the map tiles will not load (the background
+shows a plain neutral color) and a banner appears:
 
 > Map tiles unavailable offline. Markers are still shown with correct positions.
 

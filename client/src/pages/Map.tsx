@@ -1,10 +1,20 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import { WifiOff } from 'lucide-react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { getMapData } from '../api/hamlog-api';
 import type { MapMarker } from '../types/qso';
+import {
+  WORLD_CENTER,
+  WORLD_ZOOM,
+  MIN_ZOOM,
+  FIT_MAX_ZOOM,
+  FIT_PADDING,
+  MAX_BOUNDS,
+  isValidCoord,
+  getMarkerBounds,
+} from '../utils/map-view';
 import config from '../config';
 
 // Fix Leaflet default marker icons (broken by Webpack)
@@ -50,6 +60,24 @@ function getDateRange(preset: TimePreset): { from?: string; to?: string } {
   return { from: from.toISOString().slice(0, 10), to };
 }
 
+// Drives the map view from the marker set: fits the viewport to all pins on
+// load and whenever the markers change (e.g. a time-filter refetch). Must be
+// rendered as a child of MapContainer so useMap() resolves.
+const FitBounds: React.FC<{ markers: MapMarker[] }> = ({ markers }) => {
+  const map = useMap();
+
+  useEffect(() => {
+    const bounds = getMarkerBounds(markers);
+    if (bounds) {
+      map.fitBounds(bounds, { padding: FIT_PADDING, maxZoom: FIT_MAX_ZOOM });
+    } else {
+      map.setView(WORLD_CENTER, WORLD_ZOOM);
+    }
+  }, [markers, map]);
+
+  return null;
+};
+
 const Map: React.FC = () => {
   const [markers, setMarkers] = useState<MapMarker[]>([]);
   const [preset, setPreset] = useState<TimePreset>('all');
@@ -94,12 +122,10 @@ const Map: React.FC = () => {
     fetchData();
   }, [preset, customFrom, customTo]);
 
-  const center = useMemo<[number, number]>(() => {
-    if (markers.length === 0) return [39.8, -98.6]; // center of US
-    const avgLat = markers.reduce((s, m) => s + m.lat, 0) / markers.length;
-    const avgLng = markers.reduce((s, m) => s + m.lng, 0) / markers.length;
-    return [avgLat, avgLng];
-  }, [markers]);
+  const validMarkers = useMemo(
+    () => markers.filter(m => isValidCoord(m.lat, m.lng)),
+    [markers],
+  );
 
   return (
     <div className="space-y-3 -mx-4 sm:-mx-6">
@@ -138,7 +164,7 @@ const Map: React.FC = () => {
             )}
 
             <span className="text-xs font-medium text-[var(--color-text-muted)] sm:ml-auto">
-              {loading ? 'Loading...' : `${markers.length} QSO${markers.length !== 1 ? 's' : ''} on map`}
+              {loading ? 'Loading...' : `${validMarkers.length} QSO${validMarkers.length !== 1 ? 's' : ''} on map`}
             </span>
           </div>
         </div>
@@ -157,17 +183,21 @@ const Map: React.FC = () => {
       {/* Map */}
       <div className="h-[calc(100vh-12rem)] min-h-[400px]">
         <MapContainer
-          center={center}
-          zoom={markers.length > 0 ? 4 : 3}
+          center={WORLD_CENTER}
+          zoom={WORLD_ZOOM}
+          minZoom={MIN_ZOOM}
+          maxBounds={MAX_BOUNDS}
+          maxBoundsViscosity={1.0}
           className="h-full w-full rounded-xl"
-          key={`${center[0]}-${center[1]}`}
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            noWrap
             eventHandlers={{ tileerror: handleTileError, tileload: handleTileLoad }}
           />
-          {markers.map(m => (
+          <FitBounds markers={validMarkers} />
+          {validMarkers.map(m => (
             <Marker key={m.qsoId} position={[m.lat, m.lng]}>
               <Popup>
                 <div className="text-sm space-y-1">

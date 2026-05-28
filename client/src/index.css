@@ -207,3 +207,10 @@
     color: var(--color-primary-100);
   }
 }
+
+/* Neutral, theme-aware backdrop for the area around the single (non-wrapping)
+   globe, overriding Leaflet's default light-gray. Kept unlayered with a bumped
+   specificity so it wins over leaflet.css regardless of stylesheet order. */
+html .leaflet-container {
+  background: var(--color-surface-200);
+}

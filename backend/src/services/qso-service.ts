@@ -172,6 +172,24 @@ export async function getQsosForMap(userId: number, from?: string, to?: string):
   return rows;
 }
 
+export async function getQsoCountForRange(userId: number, from?: string, to?: string): Promise<number> {
+  let query = 'SELECT COUNT(*) AS count FROM Contacts WHERE user_id = ?';
+  const params: (string | number)[] = [userId];
+
+  if (from) {
+    query += ' AND QSO_Date >= ?';
+    params.push(from);
+  }
+  if (to) {
+    query += ' AND QSO_Date <= ?';
+    params.push(to);
+  }
+
+  const [rows] = await db.execute<RowDataPacket[]>(query, params);
+  const row = rows[0] as RowDataPacket | undefined;
+  return row != null ? Number(row.count) : 0;
+}
+
 function formatDate(inputString: string): string {
   const inputDate = new Date(inputString);
   if (isNaN(inputDate.getTime())) {

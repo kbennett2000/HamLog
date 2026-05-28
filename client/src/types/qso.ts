@@ -36,6 +36,11 @@ export interface MapMarker {
   country: string;
 }
 
+export interface MapData {
+  markers: MapMarker[];
+  total: number;
+}
+
 export interface SearchFilters {
   callsign: string;
   dateFrom: string;

@@ -81,6 +81,15 @@ jest.mock('../api/hamlog-api', () => ({
 }));
 
 // ---------------------------------------------------------------------------
+// react-router-dom mock — the ESM build breaks CRA's Jest transform, same
+// reason react-leaflet is mocked. Render Link as a plain <a> tag so href
+// assertions work without a real Router context.
+// ---------------------------------------------------------------------------
+jest.mock('react-router-dom', () => ({
+  Link: ({ to, children, ...rest }: any) => <a href={to} {...rest}>{children}</a>,
+}));
+
+// ---------------------------------------------------------------------------
 // Fixture factory — only require the fields that vary per test
 // ---------------------------------------------------------------------------
 let nextId = 1;
@@ -129,7 +138,7 @@ describe('Map component', () => {
       makeMarker({ lat: 51, lng: 0 }),
       makeMarker({ lat: -33, lng: 151 }),
     ];
-    (getMapData as jest.Mock).mockResolvedValue(markers);
+    (getMapData as jest.Mock).mockResolvedValue({ markers, total: 3 });
 
     await renderMap();
 
@@ -147,7 +156,7 @@ describe('Map component', () => {
       makeMarker({ lat: 0, lng: 0 }),     // null-island — must be excluded
       makeMarker({ lat: 200, lng: 200 }), // out of range — must be excluded
     ];
-    (getMapData as jest.Mock).mockResolvedValue(fixture);
+    (getMapData as jest.Mock).mockResolvedValue({ markers: fixture, total: 4 });
 
     await renderMap();
 
@@ -156,15 +165,15 @@ describe('Map component', () => {
       expect(screen.getAllByTestId('marker')).toHaveLength(2);
     });
 
-    // The count label reflects valid markers only, not the raw API payload size
-    expect(screen.getByText('2 QSOs on map')).toBeInTheDocument();
+    // The count label shows "X of Y QSOs mapped" because valid (2) < total (4)
+    expect(screen.getByText('2 of 4 QSOs mapped')).toBeInTheDocument();
   });
 
   // -------------------------------------------------------------------------
   // Case 3: TileLayer has noWrap={true}
   // -------------------------------------------------------------------------
   it('renders TileLayer with noWrap true', async () => {
-    (getMapData as jest.Mock).mockResolvedValue([]);
+    (getMapData as jest.Mock).mockResolvedValue({ markers: [], total: 0 });
 
     await renderMap();
 
@@ -179,7 +188,7 @@ describe('Map component', () => {
   // Case 4: MapContainer receives single-globe view constraints
   // -------------------------------------------------------------------------
   it('passes minZoom=MIN_ZOOM, maxBounds=MAX_BOUNDS, maxBoundsViscosity=1 to MapContainer', async () => {
-    (getMapData as jest.Mock).mockResolvedValue([]);
+    (getMapData as jest.Mock).mockResolvedValue({ markers: [], total: 0 });
 
     await renderMap();
 
@@ -206,7 +215,7 @@ describe('Map component', () => {
       makeMarker({ lat: 51, lng: 10 }),
       makeMarker({ lat: -33, lng: 151 }),
     ];
-    (getMapData as jest.Mock).mockResolvedValue(validMarkers);
+    (getMapData as jest.Mock).mockResolvedValue({ markers: validMarkers, total: validMarkers.length });
 
     await renderMap();
 
@@ -224,7 +233,7 @@ describe('Map component', () => {
   // Case 6: Empty markers → world view; fitBounds is NOT called
   // -------------------------------------------------------------------------
   it('calls map.setView(WORLD_CENTER, WORLD_ZOOM) and does not call fitBounds when markers is empty', async () => {
-    (getMapData as jest.Mock).mockResolvedValue([]);
+    (getMapData as jest.Mock).mockResolvedValue({ markers: [], total: 0 });
 
     await renderMap();
 
@@ -245,7 +254,7 @@ describe('Map component', () => {
       makeMarker({ lat: 0, lng: 0 }),     // invalid
       makeMarker({ lat: 200, lng: 200 }), // invalid
     ];
-    (getMapData as jest.Mock).mockResolvedValue(fixture);
+    (getMapData as jest.Mock).mockResolvedValue({ markers: fixture, total: 4 });
 
     await renderMap();
 
@@ -273,7 +282,7 @@ describe('Map component', () => {
       city: 'Chicago',
       country: 'US',
     });
-    (getMapData as jest.Mock).mockResolvedValue([marker]);
+    (getMapData as jest.Mock).mockResolvedValue({ markers: [marker], total: 1 });
 
     await renderMap();
 
@@ -298,8 +307,8 @@ describe('Map component', () => {
     ];
 
     (getMapData as jest.Mock)
-      .mockResolvedValueOnce(initialMarkers)
-      .mockResolvedValueOnce(afterClickMarkers);
+      .mockResolvedValueOnce({ markers: initialMarkers, total: initialMarkers.length })
+      .mockResolvedValueOnce({ markers: afterClickMarkers, total: afterClickMarkers.length });
 
     await renderMap();
 
@@ -328,5 +337,72 @@ describe('Map component', () => {
       // we need at least one more call after the click
       expect(mockMap.fitBounds.mock.calls.length).toBeGreaterThan(fitBoundsCountBefore);
     });
+  });
+
+  // -------------------------------------------------------------------------
+  // Case 10: Count label shows "X of Y QSOs mapped" when valid < total
+  // -------------------------------------------------------------------------
+  it("shows 'X of Y QSOs mapped' when some QSOs are not mapped", async () => {
+    const markers = [
+      makeMarker({ lat: 40, lng: -74 }),
+      makeMarker({ lat: 51, lng: 10 }),
+    ];
+    (getMapData as jest.Mock).mockResolvedValue({ markers, total: 5 });
+
+    await renderMap();
+
+    await screen.findByText('2 of 5 QSOs mapped');
+  });
+
+  // -------------------------------------------------------------------------
+  // Case 11: Empty-state banner when total === 0
+  // -------------------------------------------------------------------------
+  it('shows an empty-state for an empty time range', async () => {
+    (getMapData as jest.Mock).mockResolvedValue({ markers: [], total: 0 });
+
+    await renderMap();
+
+    // The banner text must appear
+    await screen.findByText(/No QSOs in this time range/);
+
+    // No backfill/Settings link should be present in the empty-range state
+    expect(screen.queryByRole('link', { name: /backfill locations/i })).not.toBeInTheDocument();
+  });
+
+  // -------------------------------------------------------------------------
+  // Case 12: Empty-state banner with backfill hint when QSOs exist but none geocoded
+  // -------------------------------------------------------------------------
+  it('shows a backfill hint when QSOs exist but none are geocoded', async () => {
+    (getMapData as jest.Mock).mockResolvedValue({ markers: [], total: 7 });
+
+    await renderMap();
+
+    // Banner must mention location data
+    await screen.findByText(/location data/i);
+
+    // A "Backfill Locations" link pointing to /settings must be present
+    const link = screen.getByRole('link', { name: /backfill locations/i });
+    expect(link).toHaveAttribute('href', '/settings');
+  });
+
+  // -------------------------------------------------------------------------
+  // Case 13: Custom date-range inputs have accessible aria-labels
+  // -------------------------------------------------------------------------
+  it('labels the Custom date-range inputs with aria-labels', async () => {
+    (getMapData as jest.Mock).mockResolvedValue({ markers: [], total: 0 });
+
+    await renderMap();
+
+    // Click the Custom preset button to reveal the date inputs
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Custom' }));
+    });
+
+    // Settle any pending state updates
+    await waitFor(() => {
+      expect(screen.getByLabelText('From date')).toBeInTheDocument();
+    });
+
+    expect(screen.getByLabelText('To date')).toBeInTheDocument();
   });
 });

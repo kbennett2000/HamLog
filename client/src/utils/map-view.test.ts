@@ -8,6 +8,7 @@ import {
   MAX_BOUNDS,
   isValidCoord,
   getMarkerBounds,
+  formatMapCount,
 } from './map-view';
 
 // ---------------------------------------------------------------------------
@@ -196,5 +197,34 @@ describe('getMarkerBounds', () => {
     // Confirm it is actually wider than the base bounds
     expect(extendedBounds![0][0]).toBeLessThan(baseBounds![0][0]);   // minLat lower
     expect(extendedBounds![1][1]).toBeGreaterThan(baseBounds![1][1]); // maxLng higher
+  });
+});
+
+// ---------------------------------------------------------------------------
+// formatMapCount
+// ---------------------------------------------------------------------------
+describe('formatMapCount', () => {
+  it('returns "0 QSOs on map" when valid === 0 and total === 0', () => {
+    expect(formatMapCount(0, 0)).toBe('0 QSOs on map');
+  });
+
+  it('returns "1 QSO on map" (singular) when valid === 1 and total === 1', () => {
+    expect(formatMapCount(1, 1)).toBe('1 QSO on map');
+  });
+
+  it('returns "2 QSOs on map" (plural) when valid === 2 and total === 2', () => {
+    expect(formatMapCount(2, 2)).toBe('2 QSOs on map');
+  });
+
+  it('returns "5 QSOs on map" when valid === total === 5', () => {
+    expect(formatMapCount(5, 5)).toBe('5 QSOs on map');
+  });
+
+  it('returns "3 of 5 QSOs mapped" when valid < total (3, 5)', () => {
+    expect(formatMapCount(3, 5)).toBe('3 of 5 QSOs mapped');
+  });
+
+  it('returns "0 of 5 QSOs mapped" when valid === 0 and total > 0', () => {
+    expect(formatMapCount(0, 5)).toBe('0 of 5 QSOs mapped');
   });
 });

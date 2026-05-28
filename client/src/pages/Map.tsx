@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
-import { WifiOff } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { WifiOff, MapPinOff } from 'lucide-react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { getMapData } from '../api/hamlog-api';
@@ -14,6 +15,7 @@ import {
   MAX_BOUNDS,
   isValidCoord,
   getMarkerBounds,
+  formatMapCount,
 } from '../utils/map-view';
 import config from '../config';
 
@@ -80,10 +82,11 @@ const FitBounds: React.FC<{ markers: MapMarker[] }> = ({ markers }) => {
 
 const Map: React.FC = () => {
   const [markers, setMarkers] = useState<MapMarker[]>([]);
+  const [total, setTotal] = useState(0);
   const [preset, setPreset] = useState<TimePreset>('all');
   const [customFrom, setCustomFrom] = useState('');
   const [customTo, setCustomTo] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [tilesOffline, setTilesOffline] = useState(false);
 
   const handleTileError = useCallback(() => {
@@ -111,9 +114,11 @@ const Map: React.FC = () => {
         }
 
         const data = await getMapData(from, to);
-        setMarkers(data);
+        setMarkers(data.markers);
+        setTotal(data.total);
       } catch {
         setMarkers([]);
+        setTotal(0);
       } finally {
         setLoading(false);
       }
@@ -147,8 +152,10 @@ const Map: React.FC = () => {
 
             {preset === 'custom' && (
               <div className="flex items-center gap-2">
+                <span className="text-sm text-[var(--color-text-muted)]">From</span>
                 <input
                   type="date"
+                  aria-label="From date"
                   value={customFrom}
                   onChange={e => setCustomFrom(e.target.value)}
                   className="px-2 py-1.5 border border-[var(--color-card-border)] rounded-lg text-sm bg-[var(--color-card-bg)] text-[var(--color-text-primary)]"
@@ -156,6 +163,7 @@ const Map: React.FC = () => {
                 <span className="text-sm text-[var(--color-text-muted)]">to</span>
                 <input
                   type="date"
+                  aria-label="To date"
                   value={customTo}
                   onChange={e => setCustomTo(e.target.value)}
                   className="px-2 py-1.5 border border-[var(--color-card-border)] rounded-lg text-sm bg-[var(--color-card-bg)] text-[var(--color-text-primary)]"
@@ -164,7 +172,7 @@ const Map: React.FC = () => {
             )}
 
             <span className="text-xs font-medium text-[var(--color-text-muted)] sm:ml-auto">
-              {loading ? 'Loading...' : `${validMarkers.length} QSO${validMarkers.length !== 1 ? 's' : ''} on map`}
+              {loading ? 'Loading...' : formatMapCount(validMarkers.length, total)}
             </span>
           </div>
         </div>
@@ -176,6 +184,28 @@ const Map: React.FC = () => {
           <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary-500/10 text-sm text-primary-600">
             <WifiOff className="w-4 h-4 shrink-0" />
             <span>Map tiles unavailable offline. Markers are still shown with correct positions.</span>
+          </div>
+        </div>
+      )}
+
+      {/* Empty-state Banner — neutral styling so it reads as a calm "no data"
+          hint, distinct from the primary-tinted offline banner above. */}
+      {!loading && validMarkers.length === 0 && (
+        <div className="px-4 sm:px-6">
+          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--color-surface-100)] text-sm text-[var(--color-text-secondary)]">
+            <MapPinOff className="w-4 h-4 shrink-0" />
+            {total === 0 ? (
+              <span>No QSOs in this time range.</span>
+            ) : (
+              <span>
+                None of your {total} QSO{total !== 1 ? 's' : ''} in this range have location
+                data yet. Run{' '}
+                <Link to="/settings" className="font-medium text-primary-600 underline hover:no-underline">
+                  Backfill Locations
+                </Link>{' '}
+                in Settings.
+              </span>
+            )}
           </div>
         </div>
       )}
@@ -209,7 +239,7 @@ const Map: React.FC = () => {
                     </div>
                   )}
                   <div className="border-t pt-1 mt-1 text-xs text-gray-500 space-y-0.5">
-                    <div>{new Date(m.date).toLocaleDateString('en-US')} {m.time?.slice(0, 5)}</div>
+                    <div>{new Date(m.date).toLocaleDateString()} {m.time?.slice(0, 5)}</div>
                     <div>{m.frequency} MHz {m.mode && `/ ${m.mode}`} {m.band && `/ ${m.band}`}</div>
                   </div>
                 </div>

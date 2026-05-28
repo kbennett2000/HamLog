@@ -285,6 +285,14 @@ Each marker represents a QSO. The map automatically fits the view to show all
 your markers at once. When you change the time filter, the view re-fits to the
 new set of markers.
 
+The label at the top right reads **"N QSOs on map"** when every QSO in the
+selected time range is plotted. If some contacts don't have a known location
+yet, it reads **"X of Y QSOs mapped"** — where Y is the number of QSOs in the
+selected range and X is how many of those have coordinates. When nothing can be
+plotted, a banner under the filter bar explains why: either there are no QSOs in
+the selected range, or the QSOs in range have no location data yet (with a link
+to **Backfill Locations** in Settings).
+
 ### Time filters
 
 The bar above the map has preset time filters:
@@ -294,8 +302,8 @@ The bar above the map has preset time filters:
 | Day | Last 24 hours |
 | Week | Last 7 days |
 | Month | Last 30 days |
-| 6 Months | Last 6 months |
-| Year | Last 365 days |
+| 6 Months | Last 6 calendar months |
+| Year | Last 12 calendar months |
 | All | All time |
 | Custom | Date range you choose |
 

@@ -7,7 +7,7 @@ import {
   createContact, createPotaQso, createContestQso,
   deleteContact, getAllQsosWithPota,
   getQsosByCallsign, getQsosByPark, getQsosForExport,
-  getQsosForMap, verifyContactOwnership,
+  getQsosForMap, getQsoCountForRange, verifyContactOwnership,
 } from '../services/qso-service.js';
 import { parseAdif, adifRecordToQso } from '../services/adif-parser.js';
 import { exportAdif } from '../services/adif-exporter.js';
@@ -73,7 +73,10 @@ router.get('/map', requireAuth, async (req: Request, res: Response, next: NextFu
   try {
     const from = typeof req.query.from === 'string' ? req.query.from : undefined;
     const to = typeof req.query.to === 'string' ? req.query.to : undefined;
-    const rows = await getQsosForMap(req.user!.userId, from, to);
+    const [rows, total] = await Promise.all([
+      getQsosForMap(req.user!.userId, from, to),
+      getQsoCountForRange(req.user!.userId, from, to),
+    ]);
 
     const markers = rows.map(r => ({
       qsoId: r.QSO_ID,
@@ -90,7 +93,7 @@ router.get('/map', requireAuth, async (req: Request, res: Response, next: NextFu
       country: r.ContactInfo_Country || '',
     })).filter(m => !isNaN(m.lat) && !isNaN(m.lng));
 
-    res.json({ markers });
+    res.json({ markers, total });
   } catch (err) {
     next(err);
   }

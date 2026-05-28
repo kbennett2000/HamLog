@@ -36,6 +36,22 @@ export interface MapMarker {
   country: string;
 }
 
+export interface SearchFilters {
+  callsign: string;
+  dateFrom: string;
+  dateTo: string;
+  frequency: string;
+  band: string;
+  mode: string;
+  potaPark: string;
+  notes: string;
+}
+
+export const defaultSearchFilters: SearchFilters = {
+  callsign: '', dateFrom: '', dateTo: '', frequency: '',
+  band: '', mode: '', potaPark: '', notes: '',
+};
+
 export interface ContactInfo {
   ContactInfo_ID: number;
   ContactInfo_Callsign: string;

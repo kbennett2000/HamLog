@@ -1,10 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import InsertContacts from './InsertContacts';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
 import QSOsForParkNumber from './QSOsForParkNumber';
 import CallsignInfo from './CallsignInfo';
+import SearchBar from '../components/SearchBar';
 import { getQsos, deleteQso, exportAdif, importAdif } from '../api/hamlog-api';
-import type { Contact } from '../types/qso';
+import type { Contact, SearchFilters } from '../types/qso';
+import { defaultSearchFilters } from '../types/qso';
+import { filterQsos } from '../utils/filter-qsos';
 import { Plus, Download, Upload, ChevronRight, Trash2 } from 'lucide-react';
 import config from '../config';
 const {
@@ -28,6 +31,11 @@ const Contacts = () => {
   const [showQSOsForParkNumber, setShowQSOsForParkNumber] = useState(false);
   const [currentParkNumber, setCurrentParkNumber] = useState('');
   const [showCallsignInfo, setShowCallsignInfo] = useState(false);
+  const [filters, setFilters] = useState<SearchFilters>(defaultSearchFilters);
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  const filteredConditions = useMemo(() => filterQsos(conditions, filters), [conditions, filters]);
+  const isFiltered = Object.values(filters).some(v => v !== '');
 
   const fetchData = async () => {
     try {
@@ -120,6 +128,15 @@ const Contacts = () => {
 
   return (
     <>
+      {/* Search Bar */}
+      <SearchBar
+        filters={filters}
+        onFiltersChange={setFilters}
+        onClear={() => setFilters(defaultSearchFilters)}
+        isOpen={searchOpen}
+        onToggle={() => setSearchOpen(!searchOpen)}
+      />
+
       {/* Action Toolbar */}
       <div className="bg-[var(--color-card-bg)] border border-[var(--color-card-border)] rounded-xl p-3 mb-4 shadow-card">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -136,7 +153,9 @@ const Contacts = () => {
             <input type="file" ref={fileInputRef} accept=".adi,.adif" onChange={handleImport} className="hidden" />
           </div>
           <span className="text-xs font-medium text-[var(--color-text-muted)]">
-            {conditions.length} QSO{conditions.length !== 1 ? 's' : ''}
+            {isFiltered
+              ? `Showing ${filteredConditions.length} of ${conditions.length} QSOs`
+              : `${conditions.length} QSO${conditions.length !== 1 ? 's' : ''}`}
           </span>
         </div>
       </div>
@@ -159,7 +178,7 @@ const Contacts = () => {
                 </tr>
               </thead>
               <tbody className={TableBodyStyle1}>
-                {conditions.map((condition, index) => (
+                {filteredConditions.map((condition, index) => (
                   <React.Fragment key={index}>
                     <tr className={`hover:bg-[var(--color-surface-100)] transition-colors ${index % 2 === 0 ? 'bg-[var(--color-card-bg)]' : 'bg-[var(--color-surface-50)]'}`}>
                       <td className={TableCell1}>
@@ -264,7 +283,7 @@ const Contacts = () => {
 
       {/* Mobile Card Layout */}
       <div className="md:hidden space-y-2">
-        {conditions.map((condition, index) => (
+        {filteredConditions.map((condition, index) => (
           <div
             key={index}
             className="bg-[var(--color-card-bg)] border border-[var(--color-card-border)] rounded-xl shadow-card overflow-hidden"

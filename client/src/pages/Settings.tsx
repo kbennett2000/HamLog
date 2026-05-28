@@ -126,9 +126,16 @@ const Settings: React.FC = () => {
           {backfillStatus === 'running' ? 'Looking up callsigns...' : 'Backfill Locations'}
         </button>
         {backfillResult && (
-          <p className="text-sm text-[var(--color-text-muted)] mt-2">
-            Processed {backfillResult.total} callsign{backfillResult.total !== 1 ? 's' : ''}: {backfillResult.updated} updated, {backfillResult.failed} failed.
-          </p>
+          <div className="mt-2 space-y-1">
+            <p className="text-sm text-[var(--color-text-muted)]">
+              Processed {backfillResult.total} callsign{backfillResult.total !== 1 ? 's' : ''}: {backfillResult.updated} updated, {backfillResult.failed} failed.
+            </p>
+            {backfillResult.total > 0 && backfillResult.failed > backfillResult.total * 0.8 && (
+              <p className="text-xs text-[var(--color-text-muted)]">
+                Most lookups failed. HamDB requires an internet connection.
+              </p>
+            )}
+          </div>
         )}
       </div>
 

@@ -1,5 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { WifiOff } from 'lucide-react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { getMapData } from '../api/hamlog-api';
@@ -55,6 +56,15 @@ const Map: React.FC = () => {
   const [customFrom, setCustomFrom] = useState('');
   const [customTo, setCustomTo] = useState('');
   const [loading, setLoading] = useState(false);
+  const [tilesOffline, setTilesOffline] = useState(false);
+
+  const handleTileError = useCallback(() => {
+    setTilesOffline(true);
+  }, []);
+
+  const handleTileLoad = useCallback(() => {
+    setTilesOffline(false);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -134,6 +144,16 @@ const Map: React.FC = () => {
         </div>
       </div>
 
+      {/* Offline Banner */}
+      {tilesOffline && (
+        <div className="px-4 sm:px-6">
+          <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary-500/10 text-sm text-primary-600">
+            <WifiOff className="w-4 h-4 shrink-0" />
+            <span>Map tiles unavailable offline. Markers are still shown with correct positions.</span>
+          </div>
+        </div>
+      )}
+
       {/* Map */}
       <div className="h-[calc(100vh-12rem)] min-h-[400px]">
         <MapContainer
@@ -145,6 +165,7 @@ const Map: React.FC = () => {
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            eventHandlers={{ tileerror: handleTileError, tileload: handleTileLoad }}
           />
           {markers.map(m => (
             <Marker key={m.qsoId} position={[m.lat, m.lng]}>

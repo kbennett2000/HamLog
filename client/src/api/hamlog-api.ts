@@ -1,6 +1,6 @@
 import axios from 'axios';
 import config from '../config';
-import type { Contact, ContactInfo } from '../types/qso';
+import type { Contact, ContactInfo, MapMarker } from '../types/qso';
 
 const client = axios.create({
   baseURL: config.ApiBaseUrl,
@@ -158,6 +158,23 @@ export async function downloadJsonBackup(): Promise<void> {
 export async function downloadAdifBackup(): Promise<void> {
   const res = await client.get('/backup/adif', { responseType: 'blob' });
   triggerDownload(res.data, `hamlog-backup-${formatDateForFilename()}.adi`);
+}
+
+export async function getMapData(from?: string, to?: string): Promise<MapMarker[]> {
+  const params: Record<string, string> = {};
+  if (from) params.from = from;
+  if (to) params.to = to;
+  const res = await client.get('/qsos/map', { params });
+  return res.data.markers;
+}
+
+export async function triggerCallsignLookup(callsign: string): Promise<void> {
+  await client.post('/contact-info/lookup', { callsign });
+}
+
+export async function backfillCallsignData(): Promise<{ total: number; updated: number; failed: number }> {
+  const res = await client.post('/contact-info/backfill');
+  return res.data;
 }
 
 export async function importAdif(file: File): Promise<{ imported: number; ids: number[] }> {

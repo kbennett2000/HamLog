@@ -7,7 +7,7 @@ import {
   createContact, createPotaQso, createContestQso,
   deleteContact, getAllQsosWithPota,
   getQsosByCallsign, getQsosByPark, getQsosForExport,
-  verifyContactOwnership,
+  getQsosForMap, verifyContactOwnership,
 } from '../services/qso-service.js';
 import { parseAdif, adifRecordToQso } from '../services/adif-parser.js';
 import { exportAdif } from '../services/adif-exporter.js';
@@ -64,6 +64,33 @@ router.post('/import', requireAuth, upload.single('file'), async (req: Request, 
     }
 
     res.status(201).json({ imported: imported.length, ids: imported });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get('/map', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const from = typeof req.query.from === 'string' ? req.query.from : undefined;
+    const to = typeof req.query.to === 'string' ? req.query.to : undefined;
+    const rows = await getQsosForMap(req.user!.userId, from, to);
+
+    const markers = rows.map(r => ({
+      qsoId: r.QSO_ID,
+      callsign: r.QSO_Callsign,
+      date: r.QSO_Date,
+      time: r.QSO_MTZTime,
+      frequency: r.QSO_Frequency,
+      mode: r.mode || null,
+      band: r.band || null,
+      lat: parseFloat(r.ContactInfo_Latitude),
+      lng: parseFloat(r.ContactInfo_Longitude),
+      name: r.ContactInfo_Name || '',
+      city: r.ContactInfo_City || '',
+      country: r.ContactInfo_Country || '',
+    })).filter(m => !isNaN(m.lat) && !isNaN(m.lng));
+
+    res.json({ markers });
   } catch (err) {
     next(err);
   }

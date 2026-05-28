@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import ContactsControl from './controls/ContactsControl';
 import Settings from './pages/Settings';
+import MapPage from './pages/Map';
 import NavBar from './components/NavBar';
 import './App.css';
 
@@ -49,6 +50,11 @@ const App = () => {
             <Route path="/" element={
               <ProtectedRoute>
                 <AuthenticatedLayout><ContactsControl /></AuthenticatedLayout>
+              </ProtectedRoute>
+            } />
+            <Route path="/map" element={
+              <ProtectedRoute>
+                <AuthenticatedLayout><MapPage /></AuthenticatedLayout>
               </ProtectedRoute>
             } />
             <Route path="/settings" element={

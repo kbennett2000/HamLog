@@ -24,6 +24,9 @@ const NavBar: React.FC = () => {
             <NavLink to="/" end className={({ isActive }) => isActive ? activeClass : inactiveClass}>
               Log
             </NavLink>
+            <NavLink to="/map" className={({ isActive }) => isActive ? activeClass : inactiveClass}>
+              Map
+            </NavLink>
             <NavLink to="/settings" className={({ isActive }) => isActive ? activeClass : inactiveClass}>
               Settings
             </NavLink>
@@ -65,6 +68,13 @@ const NavBar: React.FC = () => {
             onClick={() => setMobileOpen(false)}
           >
             Log
+          </NavLink>
+          <NavLink
+            to="/map"
+            className={({ isActive }) => `block ${isActive ? activeClass : inactiveClass}`}
+            onClick={() => setMobileOpen(false)}
+          >
+            Map
           </NavLink>
           <NavLink
             to="/settings"

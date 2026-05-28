@@ -21,6 +21,21 @@ export interface Contact {
   POTA_QSOs: PotaQso[];
 }
 
+export interface MapMarker {
+  qsoId: number;
+  callsign: string;
+  date: string;
+  time: string;
+  frequency: string;
+  mode: string | null;
+  band: string | null;
+  lat: number;
+  lng: number;
+  name: string;
+  city: string;
+  country: string;
+}
+
 export interface ContactInfo {
   ContactInfo_ID: number;
   ContactInfo_Callsign: string;

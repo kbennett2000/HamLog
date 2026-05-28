@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { downloadJsonBackup, downloadAdifBackup } from '../api/hamlog-api';
+import { downloadJsonBackup, downloadAdifBackup, backfillCallsignData } from '../api/hamlog-api';
 import { useTheme } from '../contexts/ThemeContext';
 import type { ThemeName } from '../contexts/ThemeContext';
-import { Download, FileJson, FileText, Terminal, Palette, Check } from 'lucide-react';
+import { Download, FileJson, FileText, Terminal, Palette, Check, MapPin } from 'lucide-react';
 import config from '../config';
 
 const { ButtonClassNameGreen, ButtonClassNameBlue } = config;
@@ -33,6 +33,8 @@ const themes: { id: ThemeName; label: string; description: string; colors: strin
 const Settings: React.FC = () => {
   const [downloading, setDownloading] = useState<DownloadState>('idle');
   const [error, setError] = useState<string | null>(null);
+  const [backfillStatus, setBackfillStatus] = useState<'idle' | 'running' | 'done'>('idle');
+  const [backfillResult, setBackfillResult] = useState<{ total: number; updated: number; failed: number } | null>(null);
   const { theme, setTheme } = useTheme();
 
   const handleDownload = async (format: 'json' | 'adif') => {
@@ -48,6 +50,19 @@ const Settings: React.FC = () => {
       setError('Download failed. Please try again.');
     } finally {
       setDownloading('idle');
+    }
+  };
+
+  const handleBackfill = async () => {
+    setBackfillStatus('running');
+    setBackfillResult(null);
+    try {
+      const result = await backfillCallsignData();
+      setBackfillResult(result);
+    } catch {
+      setBackfillResult({ total: 0, updated: 0, failed: 1 });
+    } finally {
+      setBackfillStatus('done');
     }
   };
 
@@ -91,6 +106,30 @@ const Settings: React.FC = () => {
             </button>
           ))}
         </div>
+      </div>
+
+      {/* Callsign Data */}
+      <div className="bg-[var(--color-card-bg)] border border-[var(--color-card-border)] rounded-xl shadow-card p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <MapPin className="w-5 h-5 text-primary-500" />
+          <h3 className="text-lg font-semibold text-[var(--color-text-primary)]">Callsign Data</h3>
+        </div>
+        <p className="text-sm text-[var(--color-text-secondary)] mb-3">
+          Look up location data for all callsigns using HamDB. This populates the QSO map with markers.
+        </p>
+        <button
+          onClick={handleBackfill}
+          disabled={backfillStatus === 'running'}
+          className={`${ButtonClassNameBlue} ${backfillStatus === 'running' ? 'opacity-50 cursor-not-allowed' : ''}`}
+        >
+          <MapPin className="w-4 h-4" />
+          {backfillStatus === 'running' ? 'Looking up callsigns...' : 'Backfill Locations'}
+        </button>
+        {backfillResult && (
+          <p className="text-sm text-[var(--color-text-muted)] mt-2">
+            Processed {backfillResult.total} callsign{backfillResult.total !== 1 ? 's' : ''}: {backfillResult.updated} updated, {backfillResult.failed} failed.
+          </p>
+        )}
       </div>
 
       {/* Backup / Export */}

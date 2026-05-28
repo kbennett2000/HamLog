@@ -1,6 +1,8 @@
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import { db } from '../db/pool.js';
 import type { CreateQsoInput } from '../schemas/qso.schema.js';
+import { lookupAndCreateContactInfo } from './contact-info-service.js';
+import logger from '../logger.js';
 
 export async function createContact(input: CreateQsoInput, userId: number): Promise<number> {
   const formatted = formatDate(input.date) + ' 00:00:00';
@@ -16,6 +18,11 @@ export async function createContact(input: CreateQsoInput, userId: number): Prom
     [userId, formatted, timeStr, input.callsign, input.frequency, input.notes, input.received, input.sent,
      utcDatetime, freqDecimal, input.mode || null, input.band || null]
   );
+
+  lookupAndCreateContactInfo(input.callsign).catch(err =>
+    logger.warn({ err, callsign: input.callsign }, 'Background callsign lookup failed')
+  );
+
   return result.insertId;
 }
 
@@ -132,6 +139,36 @@ export async function getQsosForExport(userId: number, parkFilter?: string): Pro
      ORDER BY c.qso_datetime_utc DESC, c.QSO_Date DESC`,
     [userId]
   );
+  return rows;
+}
+
+export async function getQsosForMap(userId: number, from?: string, to?: string): Promise<RowDataPacket[]> {
+  let query = `
+    SELECT c.QSO_ID, c.QSO_Date, c.QSO_MTZTime, c.QSO_Callsign, c.QSO_Frequency,
+           c.mode, c.band, ci.ContactInfo_Latitude, ci.ContactInfo_Longitude,
+           ci.ContactInfo_Name, ci.ContactInfo_City, ci.ContactInfo_Country
+    FROM Contacts c
+    INNER JOIN ContactInfo ci ON c.QSO_Callsign = ci.ContactInfo_Callsign
+    WHERE c.user_id = ?
+      AND ci.ContactInfo_Latitude != ''
+      AND ci.ContactInfo_Longitude != ''
+      AND ci.ContactInfo_Latitude IS NOT NULL
+      AND ci.ContactInfo_Longitude IS NOT NULL`;
+
+  const params: (string | number)[] = [userId];
+
+  if (from) {
+    query += ' AND c.QSO_Date >= ?';
+    params.push(from);
+  }
+  if (to) {
+    query += ' AND c.QSO_Date <= ?';
+    params.push(to);
+  }
+
+  query += ' ORDER BY c.QSO_Date DESC, c.QSO_MTZTime DESC';
+
+  const [rows] = await db.execute<RowDataPacket[]>(query, params);
   return rows;
 }
 

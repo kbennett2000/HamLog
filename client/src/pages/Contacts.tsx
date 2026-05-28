@@ -4,10 +4,12 @@ import DeleteConfirmationModal from './DeleteConfirmationModal';
 import QSOsForParkNumber from './QSOsForParkNumber';
 import CallsignInfo from './CallsignInfo';
 import SearchBar from '../components/SearchBar';
+import SortableHeader from '../components/SortableHeader';
 import { getQsos, deleteQso, exportAdif, importAdif } from '../api/hamlog-api';
-import type { Contact, SearchFilters } from '../types/qso';
+import type { Contact, SearchFilters, SortConfig, SortField } from '../types/qso';
 import { defaultSearchFilters } from '../types/qso';
 import { filterQsos } from '../utils/filter-qsos';
+import { sortQsos } from '../utils/sort-qsos';
 import { Plus, Download, Upload, ChevronRight, Trash2 } from 'lucide-react';
 import config from '../config';
 const {
@@ -33,9 +35,22 @@ const Contacts = () => {
   const [showCallsignInfo, setShowCallsignInfo] = useState(false);
   const [filters, setFilters] = useState<SearchFilters>(defaultSearchFilters);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [sort, setSort] = useState<SortConfig>({ field: 'date', direction: 'desc' });
 
-  const filteredConditions = useMemo(() => filterQsos(conditions, filters), [conditions, filters]);
+  const displayedConditions = useMemo(
+    () => sortQsos(filterQsos(conditions, filters), sort),
+    [conditions, filters, sort]
+  );
   const isFiltered = Object.values(filters).some(v => v !== '');
+
+  const handleSort = (field: SortField) => {
+    setSort(prev => {
+      if (prev.field === field) {
+        return { field, direction: prev.direction === 'asc' ? 'desc' : 'asc' };
+      }
+      return { field, direction: field === 'date' ? 'desc' : 'asc' };
+    });
+  };
 
   const fetchData = async () => {
     try {
@@ -154,7 +169,7 @@ const Contacts = () => {
           </div>
           <span className="text-xs font-medium text-[var(--color-text-muted)]">
             {isFiltered
-              ? `Showing ${filteredConditions.length} of ${conditions.length} QSOs`
+              ? `Showing ${displayedConditions.length} of ${conditions.length} QSOs`
               : `${conditions.length} QSO${conditions.length !== 1 ? 's' : ''}`}
           </span>
         </div>
@@ -168,17 +183,17 @@ const Contacts = () => {
               <thead className={TableHeadStyle1}>
                 <tr>
                   <th scope="col" className={`${TableHeading1} w-16`}></th>
-                  <th scope="col" className={TableHeading1}>Date</th>
+                  <SortableHeader label="Date" field="date" currentSort={sort} onSort={handleSort} className={TableHeading1} />
                   <th scope="col" className={TableHeading1}>Time</th>
-                  <th scope="col" className={TableHeading1}>Callsign</th>
-                  <th scope="col" className={TableHeading1}>Frequency</th>
-                  <th scope="col" className={TableHeading1}>Mode</th>
-                  <th scope="col" className={TableHeading1}>Band</th>
+                  <SortableHeader label="Callsign" field="callsign" currentSort={sort} onSort={handleSort} className={TableHeading1} />
+                  <SortableHeader label="Frequency" field="frequency" currentSort={sort} onSort={handleSort} className={TableHeading1} />
+                  <SortableHeader label="Mode" field="mode" currentSort={sort} onSort={handleSort} className={TableHeading1} />
+                  <SortableHeader label="Band" field="band" currentSort={sort} onSort={handleSort} className={TableHeading1} />
                   <th scope="col" className={`${TableHeading1} w-16`}></th>
                 </tr>
               </thead>
               <tbody className={TableBodyStyle1}>
-                {filteredConditions.map((condition, index) => (
+                {displayedConditions.map((condition, index) => (
                   <React.Fragment key={index}>
                     <tr className={`hover:bg-[var(--color-surface-100)] transition-colors ${index % 2 === 0 ? 'bg-[var(--color-card-bg)]' : 'bg-[var(--color-surface-50)]'}`}>
                       <td className={TableCell1}>
@@ -283,7 +298,7 @@ const Contacts = () => {
 
       {/* Mobile Card Layout */}
       <div className="md:hidden space-y-2">
-        {filteredConditions.map((condition, index) => (
+        {displayedConditions.map((condition, index) => (
           <div
             key={index}
             className="bg-[var(--color-card-bg)] border border-[var(--color-card-border)] rounded-xl shadow-card overflow-hidden"

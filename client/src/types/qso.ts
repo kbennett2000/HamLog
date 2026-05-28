@@ -52,6 +52,13 @@ export const defaultSearchFilters: SearchFilters = {
   band: '', mode: '', potaPark: '', notes: '',
 };
 
+export type SortField = 'date' | 'callsign' | 'frequency' | 'mode' | 'band';
+export type SortDirection = 'asc' | 'desc';
+export interface SortConfig {
+  field: SortField;
+  direction: SortDirection;
+}
+
 export interface ContactInfo {
   ContactInfo_ID: number;
   ContactInfo_Callsign: string;

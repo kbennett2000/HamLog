@@ -103,15 +103,10 @@ async function main() {
   await page.goto(`${BASE}/`);
   await page.getByText('New QSO').waitFor();
 
-  // Map
+  // Map — the view auto-fits to all markers on load, so no manual zoom is needed.
   await page.goto(`${BASE}/map`);
-  await page.waitForTimeout(3500); // allow tiles + markers to load
-  // Zoom out so the whole world (all markers) fits in the viewport
-  for (let i = 0; i < 3; i++) {
-    await page.locator('.leaflet-control-zoom-out').click();
-    await page.waitForTimeout(700);
-  }
-  await page.waitForTimeout(2000); // let the wider tiles load
+  await page.locator('.leaflet-marker-icon').first().waitFor({ timeout: 15000 });
+  await page.waitForTimeout(3500); // allow tiles + the fit-bounds animation to settle
   await shot(page, 'map-view');
   // Click a marker near the center of the viewport so its popup is visible
   const marker = page.locator('.leaflet-marker-icon').first();

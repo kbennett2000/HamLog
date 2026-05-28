@@ -5,6 +5,7 @@ import cors from 'cors';
 import authRoutes from './routes/auth.js';
 import qsoRoutes from './routes/qsos.js';
 import contactInfoRoutes from './routes/contact-info.js';
+import backupRoutes from './routes/backup.js';
 import { errorHandler } from './middleware/error-handler.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/qsos', qsoRoutes);
 app.use('/api/contact-info', contactInfoRoutes);
+app.use('/api/backup', backupRoutes);
 
 app.use(errorHandler);
 

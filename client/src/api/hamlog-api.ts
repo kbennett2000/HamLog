@@ -129,15 +129,35 @@ export async function createContactInfo(data: CreateContactInfoData): Promise<{ 
   return res.data;
 }
 
+function triggerDownload(blob: Blob, filename: string): void {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 export async function exportAdif(park?: string): Promise<void> {
   const params = park ? { park } : {};
   const res = await client.get('/qsos/export', { params, responseType: 'blob' });
-  const url = URL.createObjectURL(res.data);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'hamlog-export.adi';
-  a.click();
-  URL.revokeObjectURL(url);
+  triggerDownload(res.data, 'hamlog-export.adi');
+}
+
+function formatDateForFilename(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+export async function downloadJsonBackup(): Promise<void> {
+  const res = await client.get('/backup/json', { responseType: 'blob' });
+  triggerDownload(res.data, `hamlog-backup-${formatDateForFilename()}.json`);
+}
+
+export async function downloadAdifBackup(): Promise<void> {
+  const res = await client.get('/backup/adif', { responseType: 'blob' });
+  triggerDownload(res.data, `hamlog-backup-${formatDateForFilename()}.adi`);
 }
 
 export async function importAdif(file: File): Promise<{ imported: number; ids: number[] }> {

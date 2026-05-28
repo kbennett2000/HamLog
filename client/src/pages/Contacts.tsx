@@ -5,10 +5,8 @@ import QSOsForParkNumber from './QSOsForParkNumber';
 import CallsignInfo from './CallsignInfo';
 import { getQsos, deleteQso, exportAdif, importAdif } from '../api/hamlog-api';
 import type { Contact } from '../types/qso';
-import { useAuth } from '../contexts/AuthContext';
 import config from '../config';
 const {
-  AppTitle,
   ButtonClassNameBlue,
   ButtonClassNameGreen,
   ButtonClassNameRed,
@@ -23,7 +21,6 @@ const {
 } = config;
 
 const Contacts = () => {
-  const { user, logout } = useAuth();
   const [conditions, setConditions] = useState<Contact[]>([]);
   const [expandedRows, setExpandedRows] = useState<boolean[]>([]);
   const [showModal, setShowModal] = useState(false);
@@ -133,13 +130,6 @@ const Contacts = () => {
 
   return (
     <>
-      <div className='flex items-center justify-between mb-4'>
-        <h1 className='text-3xl font-bold'>{AppTitle}</h1>
-        <div className='flex items-center space-x-3'>
-          <span className='text-sm text-gray-600 dark:text-gray-300 font-mono'>{user?.callsign}</span>
-          <button onClick={logout} className={ButtonClassNameRed}>Logout</button>
-        </div>
-      </div>
       <div className='flex items-center space-x-2'>
         <button onClick={() => HandleInsert()} className={ButtonClassNameGreen}>+ QSO</button>
         <button onClick={handleExport} className={ButtonClassNameBlue}>Export ADIF</button>

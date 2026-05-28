@@ -4,6 +4,8 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ContactsControl from './controls/ContactsControl';
+import Settings from './pages/Settings';
+import NavBar from './components/NavBar';
 import './App.css';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -18,6 +20,15 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
   return isAuthenticated ? <Navigate to="/" replace /> : <>{children}</>;
 }
 
+function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <NavBar />
+      <main className="p-4">{children}</main>
+    </>
+  );
+}
+
 const App = () => {
   return (
     <BrowserRouter>
@@ -25,7 +36,16 @@ const App = () => {
         <Routes>
           <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
           <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
-          <Route path="/" element={<ProtectedRoute><ContactsControl /></ProtectedRoute>} />
+          <Route path="/" element={
+            <ProtectedRoute>
+              <AuthenticatedLayout><ContactsControl /></AuthenticatedLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/settings" element={
+            <ProtectedRoute>
+              <AuthenticatedLayout><Settings /></AuthenticatedLayout>
+            </ProtectedRoute>
+          } />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>

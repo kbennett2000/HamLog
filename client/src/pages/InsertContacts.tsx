@@ -165,8 +165,8 @@ const InsertContacts: React.FC<InsertContactsProps> = ({ isOpen, onClose, onClos
           band: formData.QSO_Band,
         });
         createdIds.push(result.id);
-      } catch (err) {
-        console.log(err);
+      } catch {
+        // QSO creation failed silently
       }
     }
 
@@ -175,8 +175,8 @@ const InsertContacts: React.FC<InsertContactsProps> = ({ isOpen, onClose, onClos
         if (qsoRecord.POTAPark_ID && qsoRecord.QSO_Type) {
           try {
             await createPotaQso(qsoId, qsoRecord.POTAPark_ID, qsoRecord.QSO_Type);
-          } catch (err) {
-            console.log(err);
+          } catch {
+            // POTA QSO creation failed silently
           }
         }
       }
@@ -185,8 +185,8 @@ const InsertContacts: React.FC<InsertContactsProps> = ({ isOpen, onClose, onClos
         if (contestRecord.Contest_ID) {
           try {
             await createContestQso(qsoId, contestRecord.Contest_ID, contestRecord.Contest_QSO_Number, contestRecord.Contest_QSO_Exchange_Data);
-          } catch (err) {
-            console.log(err);
+          } catch {
+            // Contest QSO creation failed silently
           }
         }
       }

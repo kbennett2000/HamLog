@@ -1,14 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { getQsosByPark } from '../api/hamlog-api';
+import { formatFrequency } from '../utils/format';
 import config from '../config';
 const { TableHeading1, TableCell1, TableStyle1, TableHeadStyle3, TableBodyStyle1 } = config;
-
-function formatFrequency(inputFreq: string): string {
-  const dotCount = (inputFreq.match(/\./g) || []).length;
-  if (dotCount === 1) return inputFreq;
-  if (dotCount === 2) return inputFreq.substring(0, inputFreq.lastIndexOf('.'));
-  return '';
-}
 
 interface QSOsForParkNumberProps {
   parkNumberToSearchFor: string;
@@ -34,8 +28,7 @@ const QSOsForParkNumber: React.FC<QSOsForParkNumberProps> = ({ parkNumberToSearc
       try {
         const rows = await getQsosByPark(parkNumberToSearchFor);
         setConditions(Array.isArray(rows) ? rows : []);
-      } catch (err) {
-        console.log(err);
+      } catch {
         setConditions([]);
       }
     };

@@ -4,24 +4,21 @@ Documentation should take two paths:
 - Installing and configuring the app
 - Using the app once it's installed
 
+Please include screenshots in the documentation and repo README
+
 ------------------------------------------------
-
-There should be an option to backup logs.
-Log backups should be easy to run, easy to automate, and should produce a single file as output for backup.
-It should be possible to download a backup of your log in the browser UI
-
--------------------------------
 
 Visual overhaul - let's make the site look nice, clean, modern, and compelling. 
 It should have a responive design that works well on PCs or mobile devices
 When going through the current UI, please pay attention to mouse overs, they contain information I dont want to loose
 
+--------------------
 
-----------------------
-
-Clean up and unused or unneeded items
-
-------------------------
-
-multi-user support
+Map of all my QSOs
+- Map should include time filters
+  - Examples:
+    - Map all QSOs for the last day
+    - Map all QSOs in last six months
+    - Map all QSOs ever
+    - etc...
 

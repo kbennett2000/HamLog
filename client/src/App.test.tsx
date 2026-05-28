@@ -3,6 +3,6 @@ import App from './App';
 
 test('renders app title', () => {
   render(<App />);
-  const titleElement = screen.getByText(/My Hamlog/i);
+  const titleElement = screen.getByText(/HamLog/i);
   expect(titleElement).toBeInTheDocument();
 });

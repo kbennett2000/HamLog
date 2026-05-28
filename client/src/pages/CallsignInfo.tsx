@@ -39,8 +39,7 @@ const CallsignInfo: React.FC<CallsignInfoProps> = ({ callSignToSearchFor, isOpen
           setConditions([]);
           AddCallsignInfo([callSignToSearchFor]);
         }
-      } catch (err) {
-        console.log(err);
+      } catch {
         setConditions([]);
       }
     };

@@ -36,8 +36,8 @@ const Contacts = () => {
     try {
       const data = await getQsos();
       setConditions(data);
-    } catch (err) {
-      console.log(err);
+    } catch {
+      // fetch error handled silently
     }
   };
 
@@ -63,15 +63,10 @@ const Contacts = () => {
       try {
         await deleteQso(currentQSOId);
         fetchData();
-      } catch (error) {
-        // Logging any errors that occur during the form submission.
-        console.error('Error deleting record:', error);
+      } catch {
+        // delete error handled silently
       }
-    } else if (choice === 'No') {
-      // Do Nothing
-    } else {
-      // Do nothing
-    }    
+    }
     setShowModal(false);
   };
 
@@ -102,9 +97,8 @@ const Contacts = () => {
   const handleExport = async () => {
     try {
       await exportAdif();
-    } catch (err) {
-      console.error('Export failed:', err);
-      alert('Export failed. Check console for details.');
+    } catch {
+      alert('Export failed.');
     }
   };
 
@@ -115,9 +109,8 @@ const Contacts = () => {
       const result = await importAdif(file);
       alert(`Imported ${result.imported} QSOs`);
       fetchData();
-    } catch (err) {
-      console.error('Import failed:', err);
-      alert('Import failed. Check console for details.');
+    } catch {
+      alert('Import failed.');
     }
     if (fileInputRef.current) fileInputRef.current.value = '';
   };

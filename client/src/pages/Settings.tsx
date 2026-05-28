@@ -19,8 +19,7 @@ const Settings: React.FC = () => {
       } else {
         await downloadAdifBackup();
       }
-    } catch (err) {
-      console.error('Backup download failed:', err);
+    } catch {
       setError('Download failed. Please try again.');
     } finally {
       setDownloading('idle');

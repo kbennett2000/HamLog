@@ -22,7 +22,7 @@ export async function AddCallsignInfo(CallsignsToLookup: string[]) {
         });
       }
     }
-  } catch (error) {
-    console.error('Error during callsign lookup:', error);
+  } catch {
+    // callsign lookup failed silently
   }
 }

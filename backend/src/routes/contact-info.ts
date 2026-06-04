@@ -1,5 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { requireAuth } from '../middleware/auth.js';
+import { lookupLimiter } from '../middleware/rate-limit.js';
 import { validate } from '../middleware/validate.js';
 import { createContactInfoSchema } from '../schemas/contact-info.schema.js';
 import {
@@ -40,7 +41,7 @@ router.post('/', requireAuth, validate(createContactInfoSchema), async (req: Req
   }
 });
 
-router.post('/lookup', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
+router.post('/lookup', requireAuth, lookupLimiter, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const callsign = req.body.callsign;
     if (!callsign || typeof callsign !== 'string') {

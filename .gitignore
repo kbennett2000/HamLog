@@ -15,3 +15,7 @@ backups/
 !scripts/screenshots/.env.demo.example
 backend/results.txt
 client/build/
+
+
+# Claude Code local settings (shared .claude/ settings stay tracked)
+.claude/settings.local.json

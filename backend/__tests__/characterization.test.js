@@ -376,14 +376,18 @@ describe('Multi-user data isolation', () => {
 });
 
 describe('SQL injection prevention', () => {
-  it('callsign with SQL injection is safely handled', async () => {
+  // Probe a free-form field (notes) rather than callsign: callsign now has light
+  // format validation (Data-quality F9) and would 400 an injection-shaped value, so
+  // notes is the right field to prove parameterization stores hostile input verbatim.
+  it('injection string in a free-form field is safely handled', async () => {
     if (skipIfNoDb()) return;
+    const injection = "';DROP TABLE Contacts;--";
     const res = await post('/qsos', {
       date: '01/01/2025',
       time: '12:00',
-      callsign: "';DROP T--",
+      callsign: 'W1SQL',
       frequency: '14.074',
-      notes: '',
+      notes: injection,
       received: '',
       sent: '',
     });
@@ -391,7 +395,7 @@ describe('SQL injection prevention', () => {
     const id = (await res.json()).id;
 
     const [rows] = await dbPool.execute('SELECT * FROM Contacts WHERE QSO_ID = ?', [id]);
-    expect(rows[0].QSO_Callsign).toBe("';DROP T--");
+    expect(rows[0].QSO_Notes).toBe(injection);
 
     await del(`/qsos/${id}`);
   });

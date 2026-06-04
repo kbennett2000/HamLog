@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { gridField } from './field-formats.js';
 
 export const createContactInfoSchema = z.object({
   callsign: z.string().min(1, 'callsign is required'),
@@ -10,7 +11,7 @@ export const createContactInfoSchema = z.object({
   latitude: z.string().default(''),
   longitude: z.string().default(''),
   itu: z.string().default(''),
-  grid: z.string().default(''),
+  grid: gridField(),
   qth: z.string().default(''),
   country: z.string().default(''),
 });

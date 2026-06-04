@@ -2,11 +2,12 @@ import { Router, Request, Response } from 'express';
 import { register, login, AuthError } from '../services/auth-service.js';
 import { registerSchema, loginSchema } from '../schemas/auth.schema.js';
 import { requireAuth } from '../middleware/auth.js';
+import { authLimiter } from '../middleware/rate-limit.js';
 import logger from '../logger.js';
 
 const router = Router();
 
-router.post('/register', async (req: Request, res: Response) => {
+router.post('/register', authLimiter, async (req: Request, res: Response) => {
   try {
     const input = registerSchema.parse(req.body);
     const result = await register(input);
@@ -25,7 +26,7 @@ router.post('/register', async (req: Request, res: Response) => {
   }
 });
 
-router.post('/login', async (req: Request, res: Response) => {
+router.post('/login', authLimiter, async (req: Request, res: Response) => {
   try {
     const input = loginSchema.parse(req.body);
     const result = await login(input);

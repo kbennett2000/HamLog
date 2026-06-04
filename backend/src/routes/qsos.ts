@@ -9,8 +9,9 @@ import {
   deleteContact, getAllQsosWithPota,
   getQsosByCallsign, getQsosByPark, getQsosForExport,
   getQsosForMap, getQsoCountForRange, verifyContactOwnership,
+  importAdif,
 } from '../services/qso-service.js';
-import { parseAdif, adifRecordToQso } from '../services/adif-parser.js';
+import { parseAdif } from '../services/adif-parser.js';
 import { exportAdif } from '../services/adif-exporter.js';
 
 const router = Router();
@@ -40,31 +41,14 @@ router.post('/import', requireAuth, upload.single('file'), async (req: Request, 
     const content = req.file.buffer.toString('utf-8');
     const records = parseAdif(content);
 
-    const imported: number[] = [];
-    for (const record of records) {
-      const qso = adifRecordToQso(record);
-      if (!qso.callsign || !qso.date) continue;
+    const { importedIds, skipped } = await importAdif(records, userId);
 
-      const id = await createContact({
-        date: qso.date,
-        time: qso.time,
-        callsign: qso.callsign,
-        frequency: qso.frequency,
-        notes: qso.notes,
-        received: qso.received,
-        sent: qso.sent,
-        mode: qso.mode,
-        band: qso.band,
-      }, userId);
-
-      if (qso.potaParkId) {
-        await createPotaQso(String(id), qso.potaParkId, qso.potaQsoType || '1');
-      }
-
-      imported.push(id);
-    }
-
-    res.status(201).json({ imported: imported.length, ids: imported });
+    res.status(201).json({
+      imported: importedIds.length,
+      ids: importedIds,
+      skipped: skipped.length,
+      skippedRecords: skipped,
+    });
   } catch (err) {
     next(err);
   }

@@ -1,6 +1,8 @@
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import { db } from '../db/pool.js';
 import type { CreateQsoInput } from '../schemas/qso.schema.js';
+import { isValidCallsign, isValidFrequency, normalizeCallsign } from '../schemas/field-formats.js';
+import { adifRecordToQso, type AdifRecord } from './adif-parser.js';
 import { lookupAndCreateContactInfo } from './contact-info-service.js';
 import logger from '../logger.js';
 
@@ -24,6 +26,69 @@ export async function createContact(input: CreateQsoInput, userId: number): Prom
   );
 
   return result.insertId;
+}
+
+export interface ImportSkip {
+  callsign: string;
+  reason: string;
+}
+
+export interface ImportResult {
+  importedIds: number[];
+  skipped: ImportSkip[];
+}
+
+/**
+ * Import a batch of parsed ADIF records (Data-quality F9). Each record is validated
+ * independently and a single bad record is SKIPPED-AND-REPORTED, never aborting the
+ * whole batch — important when re-importing large or third-party logs. Lean-permissive:
+ * empty frequency is allowed (band-only QSOs); only present-but-garbage is rejected.
+ */
+export async function importAdif(records: AdifRecord[], userId: number): Promise<ImportResult> {
+  const importedIds: number[] = [];
+  const skipped: ImportSkip[] = [];
+
+  for (const record of records) {
+    const qso = adifRecordToQso(record);
+    const rawCall = qso.callsign;
+
+    if (!rawCall || !qso.date) {
+      skipped.push({ callsign: rawCall || '(none)', reason: !rawCall ? 'missing callsign' : 'missing date' });
+      continue;
+    }
+    if (!isValidCallsign(rawCall)) {
+      skipped.push({ callsign: rawCall, reason: 'invalid callsign format' });
+      continue;
+    }
+    if (qso.frequency && !isValidFrequency(qso.frequency)) {
+      skipped.push({ callsign: rawCall, reason: 'invalid frequency' });
+      continue;
+    }
+
+    try {
+      const id = await createContact({
+        date: qso.date,
+        time: qso.time,
+        callsign: normalizeCallsign(rawCall),
+        frequency: qso.frequency,
+        notes: qso.notes,
+        received: qso.received,
+        sent: qso.sent,
+        mode: qso.mode,
+        band: qso.band,
+      }, userId);
+
+      if (qso.potaParkId) {
+        await createPotaQso(String(id), qso.potaParkId, qso.potaQsoType || '1');
+      }
+      importedIds.push(id);
+    } catch (err) {
+      logger.warn({ err, callsign: rawCall }, 'ADIF import: record failed, skipping');
+      skipped.push({ callsign: rawCall, reason: 'insert failed' });
+    }
+  }
+
+  return { importedIds, skipped };
 }
 
 export async function verifyContactOwnership(qsoId: string, userId: number): Promise<boolean> {

@@ -1,10 +1,11 @@
 import { z } from 'zod';
+import { callsignField, frequencyField } from './field-formats.js';
 
 export const createQsoSchema = z.object({
   date: z.string().min(1, 'date is required'),
   time: z.string().default(''),
-  callsign: z.string().min(1, 'callsign is required'),
-  frequency: z.string().min(1, 'frequency is required'),
+  callsign: callsignField(),
+  frequency: frequencyField(),
   notes: z.string().default(''),
   received: z.string().default(''),
   sent: z.string().default(''),

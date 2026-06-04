@@ -38,13 +38,36 @@ export interface ImportResult {
   skipped: ImportSkip[];
 }
 
+// Whole-file cap on the number of records per ADIF import (Data-quality F10). Tunable;
+// overridable via MAX_IMPORT_RECORDS for tests/ops. Not memory protection (the 10 MB
+// multer limit already bounds input) — it gives an early, clear rejection instead of a
+// confusing slow failure on an absurdly large file.
+export const MAX_IMPORT_RECORDS = 50000;
+
+export class ImportLimitError extends Error {
+  constructor(public readonly count: number, public readonly limit: number) {
+    super(
+      `ADIF file has ${count} records, exceeding the import limit of ${limit}. ` +
+        `Split it into smaller files and import them separately.`,
+    );
+    this.name = 'ImportLimitError';
+  }
+}
+
 /**
  * Import a batch of parsed ADIF records (Data-quality F9). Each record is validated
  * independently and a single bad record is SKIPPED-AND-REPORTED, never aborting the
  * whole batch — important when re-importing large or third-party logs. Lean-permissive:
  * empty frequency is allowed (band-only QSOs); only present-but-garbage is rejected.
+ *
+ * F10: an over-cap file is rejected up front (before any insert) rather than truncated.
  */
 export async function importAdif(records: AdifRecord[], userId: number): Promise<ImportResult> {
+  const limit = Number(process.env.MAX_IMPORT_RECORDS) || MAX_IMPORT_RECORDS;
+  if (records.length > limit) {
+    throw new ImportLimitError(records.length, limit);
+  }
+
   const importedIds: number[] = [];
   const skipped: ImportSkip[] = [];
 

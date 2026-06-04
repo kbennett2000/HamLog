@@ -9,7 +9,7 @@ import {
   deleteContact, getAllQsosWithPota,
   getQsosByCallsign, getQsosByPark, getQsosForExport,
   getQsosForMap, getQsoCountForRange, verifyContactOwnership,
-  importAdif,
+  importAdif, ImportLimitError,
 } from '../services/qso-service.js';
 import { parseAdif } from '../services/adif-parser.js';
 import { exportAdif } from '../services/adif-exporter.js';
@@ -50,6 +50,10 @@ router.post('/import', requireAuth, upload.single('file'), async (req: Request, 
       skippedRecords: skipped,
     });
   } catch (err) {
+    if (err instanceof ImportLimitError) {
+      res.status(400).json({ error: err.message });
+      return;
+    }
     next(err);
   }
 });

@@ -29,6 +29,7 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required — generate with openssl rand -base64 24}
       DB_NAME: ${DB_NAME:-HamLogDB}
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required — generate with node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"}
+      CORS_ORIGIN: ${CORS_ORIGIN:-}
       NODE_ENV: production
     depends_on:
       db:

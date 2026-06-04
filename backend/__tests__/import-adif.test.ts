@@ -1,4 +1,4 @@
-import { jest, describe, it, expect, beforeEach } from '@jest/globals';
+import { jest, describe, it, expect, beforeEach, afterEach } from '@jest/globals';
 
 /**
  * Data-quality F9 — importAdif skip-and-report. A single bad record must NOT abort the
@@ -14,7 +14,7 @@ jest.unstable_mockModule('../src/db/pool.js', () => ({
   db: { execute: jest.fn() },
 }));
 
-const { importAdif } = await import('../src/services/qso-service.js');
+const { importAdif, ImportLimitError } = await import('../src/services/qso-service.js');
 const { db } = await import('../src/db/pool.js');
 const mockExecute = db.execute as unknown as jest.Mock;
 
@@ -22,6 +22,10 @@ describe('importAdif', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockExecute.mockResolvedValue([{ insertId: 1 }, []]);
+  });
+
+  afterEach(() => {
+    delete process.env.MAX_IMPORT_RECORDS; // never leak the cap override between tests
   });
 
   it('imports valid records and skips-and-reports the bad ones (never throws)', async () => {
@@ -60,5 +64,34 @@ describe('importAdif', () => {
     expect(result.importedIds).toHaveLength(1);
     expect(result.skipped).toHaveLength(1);
     expect(result.skipped[0].reason).toBe('insert failed');
+  });
+
+  describe('record cap (F10)', () => {
+    it('rejects an over-cap file before any insert (zero rows written)', async () => {
+      process.env.MAX_IMPORT_RECORDS = '2';
+      const records = [
+        { call: 'W1AW', qso_date: '20260101', freq: '14.074' },
+        { call: 'K1ABC', qso_date: '20260101', freq: '7.040' },
+        { call: 'N1XYZ', qso_date: '20260101', freq: '21.0' },
+      ];
+
+      await expect(importAdif(records, 1)).rejects.toThrow(ImportLimitError);
+      await expect(importAdif(records, 1)).rejects.toThrow(/exceeding the import limit of 2/);
+      expect(mockExecute).not.toHaveBeenCalled(); // rejected before the insert loop
+    });
+
+    it('accepts a file at the cap and F9 skip-and-report still applies', async () => {
+      process.env.MAX_IMPORT_RECORDS = '2';
+      const records = [
+        { call: 'W1AW', qso_date: '20260101', freq: '14.074' }, // ok
+        { call: 'W1 AW', qso_date: '20260101', freq: '14.074' }, // bad callsign -> skipped
+      ];
+
+      const result = await importAdif(records, 1);
+
+      expect(result.importedIds).toHaveLength(1);
+      expect(result.skipped).toHaveLength(1);
+      expect(result.skipped[0].reason).toBe('invalid callsign format');
+    });
   });
 });

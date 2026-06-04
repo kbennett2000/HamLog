@@ -14,4 +14,5 @@ RUN npm ci --omit=dev && npm install tsx
 COPY backend/ .
 COPY --from=frontend /app/build ./public/
 EXPOSE 8050
+USER node
 CMD ["npx", "tsx", "src/server.ts"]

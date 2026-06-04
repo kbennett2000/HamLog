@@ -1,8 +1,9 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import multer from 'multer';
 import { requireAuth } from '../middleware/auth.js';
-import { validate } from '../middleware/validate.js';
+import { validate, validateQuery } from '../middleware/validate.js';
 import { createQsoSchema, createPotaQsoSchema, createContestQsoSchema } from '../schemas/qso.schema.js';
+import { mapQuerySchema } from '../schemas/map.schema.js';
 import {
   createContact, createPotaQso, createContestQso,
   deleteContact, getAllQsosWithPota,
@@ -69,7 +70,7 @@ router.post('/import', requireAuth, upload.single('file'), async (req: Request, 
   }
 });
 
-router.get('/map', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
+router.get('/map', requireAuth, validateQuery(mapQuerySchema), async (req: Request, res: Response, next: NextFunction) => {
   try {
     const from = typeof req.query.from === 'string' ? req.query.from : undefined;
     const to = typeof req.query.to === 'string' ? req.query.to : undefined;

@@ -13,9 +13,14 @@ jest.unstable_mockModule('../src/db/pool.js', () => ({
   db: { execute: jest.fn() },
 }));
 
-const { getQsoCountForRange } = await import('../src/services/qso-service.js');
+const { getQsoCountForRange, createContact, DuplicateQsoError } = await import('../src/services/qso-service.js');
 const { db } = await import('../src/db/pool.js');
 const mockExecute = db.execute as unknown as jest.Mock;
+
+const sampleQso = {
+  date: '2026-01-01', time: '12:00', callsign: 'W1AW', frequency: '14.074',
+  notes: '', received: '', sent: '', mode: 'SSB', band: '20m',
+};
 
 describe('getQsoCountForRange', () => {
   beforeEach(() => {
@@ -88,5 +93,49 @@ describe('getQsoCountForRange', () => {
     const result = await getQsoCountForRange(1);
 
     expect(result).toBe(0);
+  });
+});
+
+describe('createContact duplicate detection', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('throws DuplicateQsoError and does not INSERT when a matching QSO exists', async () => {
+    mockExecute.mockResolvedValueOnce([[{ QSO_ID: 42 }], []]); // dedup lookup hits
+
+    await expect(createContact(sampleQso, 1)).rejects.toBeInstanceOf(DuplicateQsoError);
+
+    expect(mockExecute).toHaveBeenCalledTimes(1); // only the SELECT, never the INSERT
+    const [sql, params] = mockExecute.mock.calls[0];
+    expect(sql).toContain('SELECT QSO_ID FROM Contacts');
+    expect(sql).toContain('<=>'); // null-safe band/mode comparison
+    // params: [userId, callsign, utcDatetime, band, mode]. The datetime is built by the
+    // same code used on insert, so it stays consistent for matching; assert the parts
+    // that are TZ-independent.
+    expect([params[0], params[1], params[3], params[4]]).toEqual([1, 'W1AW', '20m', 'SSB']);
+    expect(params[2]).toMatch(/ 12:00:00$/);
+  });
+
+  it('proceeds to INSERT and returns the new id when no duplicate is found', async () => {
+    mockExecute
+      .mockResolvedValueOnce([[], []])               // dedup lookup: no match
+      .mockResolvedValueOnce([{ insertId: 7 }, []])  // INSERT
+      .mockResolvedValue([[], []]);                  // background contact-info lookups
+
+    const id = await createContact(sampleQso, 1);
+
+    expect(id).toBe(7);
+    const [sql] = mockExecute.mock.calls[1];
+    expect(sql).toContain('INSERT INTO Contacts');
+  });
+
+  it('treats empty band/mode as NULL in the dedup lookup', async () => {
+    mockExecute.mockResolvedValueOnce([[], []]).mockResolvedValue([{ insertId: 1 }, []]);
+
+    await createContact({ ...sampleQso, band: '', mode: '' }, 1);
+
+    const [, params] = mockExecute.mock.calls[0];
+    expect([params[0], params[1], params[3], params[4]]).toEqual([1, 'W1AW', null, null]);
   });
 });

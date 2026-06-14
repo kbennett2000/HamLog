@@ -24,6 +24,9 @@ const MIGRATIONS = [
   '003-add-mode-band.sql',
   '004-add-users-table.sql',
   '005-add-user-id-to-contacts.sql',
+  '006-backfill-user-id.sql',
+  '007-user-id-not-null.sql',
+  '008-add-contacts-dedup-index.sql',
 ];
 
 async function ensureMigrationsTable(): Promise<void> {

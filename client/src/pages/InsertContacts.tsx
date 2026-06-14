@@ -125,6 +125,7 @@ const InsertContacts: React.FC<InsertContactsProps> = ({ isOpen, onClose, onClos
 
     const callsignsToAdd = formData.QSO_Callsign.split(',');
     const createdIds = [];
+    const failures: string[] = [];
 
     for (const callsign of callsignsToAdd) {
       try {
@@ -140,9 +141,15 @@ const InsertContacts: React.FC<InsertContactsProps> = ({ isOpen, onClose, onClos
           band: formData.QSO_Band,
         });
         createdIds.push(result.id);
-      } catch {
-        // QSO creation failed silently
+      } catch (err) {
+        const message = (err as { response?: { data?: { error?: string } } })?.response?.data?.error
+          ?? 'could not be added';
+        failures.push(`${callsign.trim()}: ${message}`);
       }
+    }
+
+    if (failures.length) {
+      alert(`Some QSOs were not added:\n${failures.join('\n')}`);
     }
 
     for (const qsoId of createdIds) {
@@ -165,6 +172,12 @@ const InsertContacts: React.FC<InsertContactsProps> = ({ isOpen, onClose, onClos
           }
         }
       }
+    }
+
+    // Keep the form open with the user's input intact if nothing was saved (e.g. the
+    // only callsign was a duplicate), so they can correct it without re-typing.
+    if (createdIds.length === 0) {
+      return;
     }
 
     setFormData(initialFormData);

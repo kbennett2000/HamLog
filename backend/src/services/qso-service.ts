@@ -6,11 +6,46 @@ import { adifRecordToQso, type AdifRecord } from './adif-parser.js';
 import { lookupAndCreateContactInfo } from './contact-info-service.js';
 import logger from '../logger.js';
 
+export class DuplicateQsoError extends Error {
+  constructor() {
+    super('A QSO with the same callsign, time, band, and mode is already in the log');
+    this.name = 'DuplicateQsoError';
+  }
+}
+
+/**
+ * Returns the QSO_ID of an existing contact that duplicates this one, or null.
+ * A duplicate is the same user + callsign (case-insensitive) + UTC date/time to the
+ * minute + band + mode. Band/mode are compared null-safe (`<=>`) so empty values
+ * (stored as NULL by createContact) match each other.
+ */
+async function findDuplicateContactId(
+  userId: number, callsign: string, utcDatetime: string,
+  band: string | null, mode: string | null,
+): Promise<number | null> {
+  const [rows] = await db.execute<RowDataPacket[]>(
+    `SELECT QSO_ID FROM Contacts
+      WHERE user_id = ?
+        AND UPPER(QSO_Callsign) = UPPER(?)
+        AND DATE_FORMAT(qso_datetime_utc, '%Y-%m-%d %H:%i')
+          = DATE_FORMAT(?, '%Y-%m-%d %H:%i')
+        AND band <=> ?
+        AND mode <=> ?
+      LIMIT 1`,
+    [userId, callsign, utcDatetime, band, mode],
+  );
+  return Array.isArray(rows) && rows.length > 0 ? Number(rows[0].QSO_ID) : null;
+}
+
 export async function createContact(input: CreateQsoInput, userId: number): Promise<number> {
   const formatted = formatDate(input.date) + ' 00:00:00';
   const timeStr = input.time || '00:00';
   const utcDatetime = toUtcDatetime(input.date, timeStr);
   const freqDecimal = parseFrequency(input.frequency);
+
+  const dup = await findDuplicateContactId(
+    userId, input.callsign, utcDatetime, input.band || null, input.mode || null);
+  if (dup !== null) throw new DuplicateQsoError();
 
   const [result] = await db.execute<ResultSetHeader>(
     `INSERT INTO Contacts
@@ -106,8 +141,12 @@ export async function importAdif(records: AdifRecord[], userId: number): Promise
       }
       importedIds.push(id);
     } catch (err) {
-      logger.warn({ err, callsign: rawCall }, 'ADIF import: record failed, skipping');
-      skipped.push({ callsign: rawCall, reason: 'insert failed' });
+      if (err instanceof DuplicateQsoError) {
+        skipped.push({ callsign: rawCall, reason: 'duplicate' });
+      } else {
+        logger.warn({ err, callsign: rawCall }, 'ADIF import: record failed, skipping');
+        skipped.push({ callsign: rawCall, reason: 'insert failed' });
+      }
     }
   }
 

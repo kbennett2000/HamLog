@@ -177,7 +177,12 @@ export async function backfillCallsignData(): Promise<{ total: number; updated: 
   return res.data;
 }
 
-export async function importAdif(file: File): Promise<{ imported: number; ids: number[] }> {
+export async function importAdif(file: File): Promise<{
+  imported: number;
+  ids: number[];
+  skipped: number;
+  skippedRecords: Array<{ callsign: string; reason: string }>;
+}> {
   const formData = new FormData();
   formData.append('file', file);
   const res = await client.post('/qsos/import', formData, {

@@ -127,7 +127,12 @@ const Contacts = () => {
     if (!file) return;
     try {
       const result = await importAdif(file);
-      alert(`Imported ${result.imported} QSOs`);
+      let msg = `Imported ${result.imported} QSOs.`;
+      if (result.skipped) {
+        const dupes = result.skippedRecords.filter(r => r.reason === 'duplicate').length;
+        msg += `\nSkipped ${result.skipped}${dupes ? ` (${dupes} duplicate${dupes === 1 ? '' : 's'} already in your log)` : ''}.`;
+      }
+      alert(msg);
       fetchData();
     } catch {
       alert('Import failed.');

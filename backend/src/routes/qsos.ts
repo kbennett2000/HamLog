@@ -9,7 +9,7 @@ import {
   deleteContact, getAllQsosWithPota,
   getQsosByCallsign, getQsosByPark, getQsosForExport,
   getQsosForMap, getQsoCountForRange, verifyContactOwnership,
-  importAdif, ImportLimitError,
+  importAdif, ImportLimitError, DuplicateQsoError,
 } from '../services/qso-service.js';
 import { parseAdif } from '../services/adif-parser.js';
 import { exportAdif } from '../services/adif-exporter.js';
@@ -115,6 +115,10 @@ router.post('/', requireAuth, validate(createQsoSchema), async (req: Request, re
     const id = await createContact(req.body, req.user!.userId);
     res.status(201).json({ id });
   } catch (err) {
+    if (err instanceof DuplicateQsoError) {
+      res.status(409).json({ error: 'Duplicate QSO: this contact is already logged' });
+      return;
+    }
     next(err);
   }
 });

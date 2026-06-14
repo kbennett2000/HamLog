@@ -66,6 +66,46 @@ describe('importAdif', () => {
     expect(result.skipped[0].reason).toBe('insert failed');
   });
 
+  describe('duplicate detection', () => {
+    it('skips-and-reports a record that duplicates an existing QSO', async () => {
+      // The dedup lookup (first execute of the record) finds an existing row.
+      mockExecute.mockResolvedValueOnce([[{ QSO_ID: 9 }], []]);
+
+      const records = [
+        { call: 'W1AW', qso_date: '20260101', time_on: '1200', freq: '14.074', band: '20m', mode: 'SSB' },
+      ];
+
+      const result = await importAdif(records, 1);
+
+      expect(result.importedIds).toHaveLength(0);
+      expect(result.skipped).toHaveLength(1);
+      expect(result.skipped[0].reason).toBe('duplicate');
+      expect(mockExecute).toHaveBeenCalledTimes(1); // threw before the INSERT
+    });
+
+    it('catches a duplicate that appears twice within the same file', async () => {
+      let inserted = false;
+      mockExecute.mockImplementation((sql: string) => {
+        if (/SELECT QSO_ID FROM Contacts/.test(sql)) {
+          // dedup lookup: empty until the first copy has been inserted
+          return Promise.resolve([inserted ? [{ QSO_ID: 1 }] : [], []]);
+        }
+        if (/INSERT INTO Contacts/.test(sql)) {
+          inserted = true;
+          return Promise.resolve([{ insertId: 1 }, []]);
+        }
+        return Promise.resolve([[], []]); // background contact-info lookups
+      });
+
+      const rec = { call: 'W1AW', qso_date: '20260101', time_on: '1200', freq: '14.074', band: '20m', mode: 'SSB' };
+      const result = await importAdif([{ ...rec }, { ...rec }], 1);
+
+      expect(result.importedIds).toHaveLength(1);
+      expect(result.skipped).toHaveLength(1);
+      expect(result.skipped[0].reason).toBe('duplicate');
+    });
+  });
+
   describe('record cap (F10)', () => {
     it('rejects an over-cap file before any insert (zero rows written)', async () => {
       process.env.MAX_IMPORT_RECORDS = '2';

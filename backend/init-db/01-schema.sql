@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS `Contacts` (
   `band` VARCHAR(10) NULL,
   PRIMARY KEY (`QSO_ID`),
   INDEX `idx_contacts_user_id` (`user_id`),
+  INDEX `idx_contacts_dedup` (`user_id`, `QSO_Callsign`, `qso_datetime_utc`),
   CONSTRAINT `fk_contacts_user_id` FOREIGN KEY (`user_id`) REFERENCES `Users`(`id`) ON DELETE RESTRICT
 );
 

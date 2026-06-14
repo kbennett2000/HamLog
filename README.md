@@ -217,6 +217,15 @@ Architecture overview: [design_useCases.md](design_useCases.md)
 
 ---
 
+## Related Projects
+
+- **[pota-board](https://github.com/kbennett2000/pota-board)** — a self-hosted
+  [Parks on the Air](https://parksontheair.com/) live spot board by the same author.
+  It can log the parks you hunt straight into HamLog via an opt-in "Also log this
+  contact to HamLog" option.
+
+---
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
